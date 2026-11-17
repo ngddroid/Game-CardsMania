@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Privacy Policy — Cards Mania</title>
+<style>
+  :root {
+    --royal: #2A0E5C;
+    --midnight: #120634;
+    --gold: #FFC93C;
+    --gold-soft: #FFE39A;
+    --text: #F3EEFF;
+    --muted: #C9BCEB;
+    --ruby: #E0245E;
+    --sapphire: #1E7BFF;
+    --emerald: #19C37D;
+    --amber: #FFB000;
+    --glass: rgba(255, 255, 255, 0.06);
+    --glass-edge: rgba(255, 201, 60, 0.22);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    min-height: 100vh;
+    background-color: var(--midnight);
+    background-image:
+      radial-gradient(ellipse at 50% -10%, rgba(255, 201, 60, 0.16), transparent 55%),
+      radial-gradient(circle at 100% 40%, rgba(30, 123, 255, 0.10), transparent 45%),
+      radial-gradient(circle at 0% 75%, rgba(224, 36, 94, 0.10), transparent 45%),
+      linear-gradient(180deg, var(--royal) 0%, var(--midnight) 100%);
+    background-attachment: fixed;
+    color: var(--text);
+    font-family: -apple-system, "Roboto", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden;
+    -webkit-text-size-adjust: 100%;
+    word-wrap: break-word;
+    overflow-wrap: anywhere;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 24px 16px 48px; }
+  header { text-align: center; padding: 8px 0 4px; }
+  .badge {
+    display: inline-block;
+    width: 64px; height: 64px;
+    margin-bottom: 10px;
+    transform: rotate(45deg);
+    border-radius: 14px;
+    background: linear-gradient(135deg, #FFE39A 0%, var(--gold) 45%, #C98A00 100%);
+    box-shadow: 0 0 24px rgba(255, 201, 60, 0.45), inset 0 0 0 3px rgba(255, 255, 255, 0.35);
+    position: relative;
+  }
+  .badge span {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    transform: rotate(-45deg);
+    font-weight: 900; font-size: 22px; letter-spacing: 1px;
+    color: var(--royal);
+  }
+  h1 {
+    margin: 6px 0 4px;
+    font-size: 30px;
+    font-weight: 900;
+    letter-spacing: 0.5px;
+    color: var(--gold);
+    text-shadow: 0 0 14px rgba(255, 201, 60, 0.55), 0 2px 0 #7A4B00;
+  }
+  .sub { color: var(--muted); font-size: 14px; margin: 0; }
+  .divider {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    margin: 22px 0 18px; font-size: 14px; letter-spacing: 6px;
+  }
+  .divider::before, .divider::after {
+    content: ""; flex: 1; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--glass-edge), transparent);
+  }
+  .s-ruby { color: var(--ruby); }
+  .s-sapphire { color: var(--sapphire); }
+  .s-emerald { color: var(--emerald); }
+  .s-amber { color: var(--amber); }
+  section {
+    background: var(--glass);
+    border: 1px solid var(--glass-edge);
+    border-radius: 18px;
+    padding: 18px 18px 14px;
+    margin: 0 0 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+  h2 {
+    margin: 0 0 8px;
+    font-size: 19px;
+    font-weight: 800;
+    color: var(--gold);
+    text-shadow: 0 0 10px rgba(255, 201, 60, 0.35);
+  }
+  p { margin: 0 0 10px; }
+  ul { list-style: none; margin: 4px 0 10px; padding: 0; }
+  li { position: relative; padding-left: 26px; margin: 0 0 8px; }
+  li::before {
+    content: "";
+    position: absolute; left: 4px; top: 0.55em;
+    width: 10px; height: 10px;
+    transform: rotate(45deg);
+    border-radius: 2px;
+    box-shadow: 0 0 8px currentColor;
+  }
+  li.ruby::before { background: var(--ruby); color: var(--ruby); }
+  li.sapphire::before { background: var(--sapphire); color: var(--sapphire); }
+  li.emerald::before { background: var(--emerald); color: var(--emerald); }
+  li.amber::before { background: var(--amber); color: var(--amber); }
+  strong { color: #FFFFFF; }
+  .highlight {
+    border-left: 4px solid var(--emerald);
+    background: rgba(25, 195, 125, 0.10);
+    padding: 10px 12px;
+    border-radius: 10px;
+    margin: 8px 0 4px;
+  }
+  .contact {
+    display: inline-block;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, rgba(255, 201, 60, 0.22), rgba(255, 201, 60, 0.10));
+    border: 1px solid var(--glass-edge);
+    color: var(--gold-soft);
+    font-weight: 700;
+  }
+  footer { text-align: center; color: var(--muted); font-size: 13px; margin-top: 26px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="badge"><span>CM</span></div>
+    <h1>Privacy Policy</h1>
+    <p class="sub">Cards Mania &middot; Effective date: November 5, 2026</p>
+  </header>
+
+  <div class="divider"><span class="s-ruby">◆</span><span class="s-sapphire">●</span><span class="s-emerald">▲</span><span class="s-amber">★</span></div>
+
+  <section>
+    <h2>The short version</h2>
+    <p>Cards Mania is a collection of card games you play against computer-controlled opponents, or with friends whose phones are on the same Wi-Fi network as yours. It is published by <strong>[Your Company]</strong> (&ldquo;we&rdquo;, &ldquo;us&rdquo;).</p>
+    <p>The collection includes <strong>Classic Mania</strong>, <strong>Merciless Mania</strong> and <strong>Flip Mania</strong> (color-matching games), <strong>Spider Solitaire</strong> (a single-player patience game) and <strong>Mindi</strong> (a team trick-taking game). This policy covers all of them in the same way.</p>
+    <div class="highlight"><strong>We do not collect, store on our servers, share or sell any personal data.</strong> The game has no servers and never connects to the internet.</div>
+  </section>
+
+  <section>
+    <h2>What the game does not do</h2>
+    <ul>
+      <li class="ruby">No accounts, sign-ins or registrations.</li>
+      <li class="sapphire">No advertising and no advertising identifiers.</li>
+      <li class="emerald">No analytics, crash-reporting or tracking tools.</li>
+      <li class="amber">No internet connection is used: the game never talks to our servers or any third party. (Multiplayer uses only your local Wi-Fi network &mdash; see below.)</li>
+      <li class="ruby">No access to your contacts, photos, location, camera or microphone.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Information kept on your device</h2>
+    <p>To remember your progress, the game saves a small amount of information <strong>only on your device</strong>:</p>
+    <ul>
+      <li class="sapphire">The player name and avatar you choose (a nickname of your choice).</li>
+      <li class="emerald">Game statistics, level, in-game coins, unlocked themes and achievements.</li>
+      <li class="amber">Your settings (sound, music, haptics, game speed, accessibility options) and any game in progress.</li>
+    </ul>
+    <p>This information never leaves your device and we cannot see it. You can delete it at any time with <strong>Settings &rsaquo; Reset progress</strong>, and it is removed automatically when you uninstall the app.</p>
+    <p>If your device&rsquo;s own system backup feature is turned on, your operating system may include app data in your personal device backup. That backup is controlled by you and your device provider, not by us.</p>
+  </section>
+
+  <section>
+    <h2>Local multiplayer on your Wi-Fi</h2>
+    <p>When you choose <strong>Multiplayer</strong>, phones on the <strong>same local Wi-Fi network</strong> connect directly to each other. Nothing passes through the internet or through us.</p>
+    <ul>
+      <li class="ruby">Hosting a room makes it visible to other phones on that Wi-Fi network, showing your player name.</li>
+      <li class="sapphire">The players in a room see each other&rsquo;s player name, avatar, the cards that are played, and emotes &mdash; just like at a real table.</li>
+      <li class="emerald">A random identifier created by the app (not linked to you or your device) lets you rejoin your seat if the connection drops.</li>
+      <li class="amber">Nothing from a multiplayer game is stored by us; the connection ends when you leave the room.</li>
+    </ul>
+    <p>Multiplayer works the same way in every game, including <strong>Mindi</strong> team rooms: the host&rsquo;s phone runs the game and each phone only receives what its player is allowed to see. Team names and seats are shared only with the phones in that room.</p>
+    <p>On newer Android versions you will be asked to allow access to devices on your local network. This permission is used only to find rooms and connect the phones in a room.</p>
+  </section>
+
+  <section>
+    <h2>Virtual coins and items</h2>
+    <p>Coins, chests, themes, card backs and other items in Cards Mania are virtual. They are earned only by playing, have <strong>no monetary value</strong>, cannot be purchased with real money, and cannot be exchanged, transferred or redeemed for anything outside the game.</p>
+  </section>
+
+  <section>
+    <h2>Children</h2>
+    <p>Cards Mania is a general-audience game and is <strong>not directed at children under 13</strong>. Because the game collects no personal information from anyone, we do not knowingly collect personal information from children. If you believe a child has somehow provided us personal information, please contact us and we will help.</p>
+  </section>
+
+  <section>
+    <h2>Changes to this policy</h2>
+    <p>If we update this policy (for example, if a future version adds a new feature), we will update the effective date above and include the new policy inside the app. If a change ever involved collecting data, we would tell you clearly in the app before it applied.</p>
+  </section>
+
+  <section>
+    <h2>Contact us</h2>
+    <p>Questions about privacy? Reach us at:</p>
+    <p><span class="contact">[contact@yourcompany.com]</span></p>
+    <p>[Your Company]</p>
+  </section>
+
+  <div class="divider"><span class="s-amber">★</span><span class="s-emerald">▲</span><span class="s-sapphire">●</span><span class="s-ruby">◆</span></div>
+  <footer>&copy; 2026 [Your Company]. Cards Mania and all of its artwork, sounds and names are original works of [Your Company]. The fonts Lilita One and Nunito are used under the SIL Open Font License 1.1; their license texts are included in the app.</footer>
+</div>
+</body>
+</html>
