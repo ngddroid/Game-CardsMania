@@ -35,6 +35,11 @@ android {
     buildFeatures {
         compose = true
     }
+    androidResources {
+        // SoundPool / MediaPlayer open res/raw sounds as file descriptors, which only works for files stored
+        // uncompressed in the APK. FLAC is already compressed, so zipping it again gains nothing anyway.
+        noCompress += "flac"
+    }
     testOptions {
         unitTests.isReturnDefaultValues = true
     }
@@ -56,6 +61,8 @@ dependencies {
     implementation(libs.androidx.lifecycle.process)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.datastore.preferences)
+    // installs the baseline profile (src/main/baseline-prof.txt) on sideloaded / non-Play installs too
+    implementation(libs.androidx.profileinstaller)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.coroutines.android)
     testImplementation(libs.junit)

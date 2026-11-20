@@ -26,6 +26,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
+import com.puzzel.lab.cardsmania.R
 import com.puzzel.lab.cardsmania.ui.components.RoyalBackground
 import com.puzzel.lab.cardsmania.ui.components.ScreenTitleBar
 import com.puzzel.lab.cardsmania.ui.theme.CM
@@ -33,7 +35,7 @@ import com.puzzel.lab.cardsmania.ui.theme.CM
 @Composable
 fun LegalScreen(doc: String, onBack: () -> Unit) {
     val isPrivacy = doc == "privacy"
-    val title = if (isPrivacy) "Privacy Policy" else "Terms of Service"
+    val title = if (isPrivacy) stringResource(R.string.shell_privacy) else stringResource(R.string.shell_terms)
     val url = if (isPrivacy) "file:///android_asset/privacy.html" else "file:///android_asset/terms.html"
     var loaded by remember { mutableStateOf(false) }
     val alpha by animateFloatAsState(if (loaded) 1f else 0f, tween(350), label = "web")

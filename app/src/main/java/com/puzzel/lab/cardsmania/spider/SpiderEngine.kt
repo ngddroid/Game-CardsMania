@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
  * Spider Solitaire rules (public-domain patience game), pure Kotlin.
  *
  * 104 cards (8 runs of 13), 10 columns. The first 4 columns get 6 cards, the other 6 get 5 (54 cards, top card face up);
- * the remaining 50 stay in the stock and are dealt 10 at a time, one onto each column.
+ * the remaining 50 stay in the stock and are dealt 10 at a time, one onto each column (empty columns get one too).
  * Any face-up card may go onto a card one rank higher (any suit); several cards move together only when they form a
  * descending run of ONE suit. A complete K→A run of one suit is removed automatically. Remove all 8 runs to win.
  * Scoring: 500 − moves + 100 × completed runs (dealing and undo also count as moves).
@@ -116,9 +116,8 @@ object SpiderEngine {
         return top.up && top.rank == moving.rank + 1
     }
 
-    /** Classic rule: every column must hold a card before dealing (unless fewer than 10 cards are left on the table). */
-    fun canDeal(s: SpiderState): Boolean =
-        s.stock.isNotEmpty() && (s.columns.none { it.isEmpty() } || s.columns.sumOf { it.size } < COLUMNS)
+    /** You can deal whenever the stock has cards. Empty columns are allowed: the deal puts a card in them too. */
+    fun canDeal(s: SpiderState): Boolean = s.stock.isNotEmpty()
 
     // ------------------------------------------------------------------ actions
 
@@ -304,26 +303,16 @@ object SpiderEngine {
     /** True when the stock is empty and every card on the table is face up (auto-finish may be possible). */
     fun allOpen(s: SpiderState): Boolean = s.stock.isEmpty() && s.columns.all { c -> c.all { it.up } }
 
-    /** A move that fills an empty column so the stock can be dealt (used when no better move exists). */
-    fun fillMove(s: SpiderState): SpiderMove? {
-        if (s.stock.isEmpty() || canDeal(s)) return null
-        val empty = s.columns.indexOfFirst { it.isEmpty() }
-        if (empty < 0) return null
-        val from = (0 until COLUMNS).filter { s.columns[it].size >= 2 }.maxByOrNull { s.columns[it].size } ?: return null
-        return SpiderMove(from, s.columns[from].lastIndex, empty)
-    }
-
     fun nextHint(s: SpiderState, lastFirstId: Int = -1, lastFrom: Int = -1, skip: Int = 0): SpiderHint {
         if (s.won) return SpiderHint.None
         val moves = hints(s, lastFirstId, lastFrom)
         if (moves.isNotEmpty()) return SpiderHint.Move(moves[skip % moves.size])
         if (canDeal(s)) return SpiderHint.Deal
-        fillMove(s)?.let { return SpiderHint.Move(it) }
         return SpiderHint.None
     }
 
-    /** True when there is no useful move, no deal and no way to fill a column. */
-    fun stuck(s: SpiderState): Boolean = !s.won && hints(s).isEmpty() && !canDeal(s) && fillMove(s) == null
+    /** True when there is no useful move and nothing left to deal. */
+    fun stuck(s: SpiderState): Boolean = !s.won && hints(s).isEmpty() && !canDeal(s)
 }
 
 sealed interface SpiderHint {

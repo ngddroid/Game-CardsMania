@@ -5,6 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.puzzel.lab.cardsmania.CardsManiaApp
 import com.puzzel.lab.cardsmania.GameLaunch
+import com.puzzel.lab.cardsmania.R
 import com.puzzel.lab.cardsmania.audio.Sfx
 import com.puzzel.lab.cardsmania.audio.Track
 import com.puzzel.lab.cardsmania.data.GameFactory
@@ -27,6 +28,7 @@ import com.puzzel.lab.cardsmania.engine.model.Kind
 import com.puzzel.lab.cardsmania.engine.model.Phase
 import com.puzzel.lab.cardsmania.engine.model.Side
 import com.puzzel.lab.cardsmania.engine.model.Suit
+import com.puzzel.lab.cardsmania.i18n.Strings
 import com.puzzel.lab.cardsmania.net.ClientStatus
 import com.puzzel.lab.cardsmania.net.Net
 import com.puzzel.lab.cardsmania.net.NetMsg
@@ -182,7 +184,7 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
         val host = c.multiplayer.host
         val config = launch.config
         if (host == null || config == null) {
-            _ui.update { it.copy(ready = true, ended = "The room is closed.") }
+            _ui.update { it.copy(ready = true, ended = Strings.get(R.string.mania_end_room_closed)) }
             return
         }
         net = NetRole.HOST
@@ -218,7 +220,7 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
     private fun startGuest() {
         val client = c.multiplayer.client
         if (client == null) {
-            _ui.update { it.copy(ready = true, ended = "You're not in a room any more.") }
+            _ui.update { it.copy(ready = true, ended = Strings.get(R.string.mania_end_not_in_room)) }
             return
         }
         net = NetRole.GUEST
@@ -417,7 +419,7 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
         if (s.phase is Phase.MatchOver) return
         val snap = s.copyDeep()
         val turns = tracker.humanTurns
-        c.scope.launch(Dispatchers.Default) { c.savedGames.save(SavedGame(snap, daily, turns)) }
+        c.savedGames.saveLater(SavedGame(snap, daily, turns))
     }
 
     // ------------------------------------------------------------------ bots
@@ -684,7 +686,7 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
         val s = engine?.state ?: return
         if (!_ui.value.myTurn) return
         val card = BotAI.hint(s, human) ?: run {
-            _ui.update { it.copy(banner = "Draw a card!", bannerAt = System.currentTimeMillis()) }
+            _ui.update { it.copy(banner = Strings.get(R.string.mania_banner_draw), bannerAt = System.currentTimeMillis()) }
             return
         }
         c.sound.play(Sfx.PRISM, 0.6f)
@@ -801,7 +803,7 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
             is GameEvent.RoundStarted -> {
                 if (_ui.value.result is ResultInfo.Round) _ui.update { it.copy(result = null) }
                 snd.play(Sfx.SHUFFLE)
-                _ui.update { it.copy(banner = if (s.config.targetScore > 0) "Round ${e.round}" else "Let's Play!", bannerAt = System.currentTimeMillis()) }
+                _ui.update { it.copy(banner = if (s.config.targetScore > 0) Strings.get(R.string.mania_banner_round, e.round) else Strings.get(R.string.mania_banner_lets_play), bannerAt = System.currentTimeMillis()) }
             }
             is GameEvent.Dealt -> viewModelScope.launch {
                 val n = minOf(e.order.size, 30)
@@ -825,7 +827,7 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
                     else -> Unit
                 }
                 if (e.playerId == human) hp.light()
-                if (e.jumpIn) _ui.update { it.copy(banner = "JUMP IN!", bannerAt = System.currentTimeMillis()) }
+                if (e.jumpIn) _ui.update { it.copy(banner = Strings.get(R.string.mania_banner_jump_in), bannerAt = System.currentTimeMillis()) }
                 if (f.isDraw && e.playerId != human) bump(e.playerId, listOf("😈", "😂", "😎").random(rnd), 0.35)
             }
             is GameEvent.CardsDrawn -> {

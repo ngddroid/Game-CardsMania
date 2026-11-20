@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Mindi setup -->
+    <string name="mindi_title">Mindi</string>
+    <string name="mindi_continue_title">Continue match</string>
+    <string name="mindi_continue_desc">Pick up your saved Mindi game</string>
+    <string name="mindi_daily_title">Daily Challenge</string>
+    <string name="mindi_daily_desc_best">One hand vs Hard bots · best %1$s</string>
+    <string name="mindi_daily_desc_new">One hand vs Hard bots · 3 stars to earn</string>
+    <string name="mindi_players">Players</string>
+    <string name="mindi_double_deck">Double deck</string>
+    <string name="mindi_double_deck_desc">104 cards and 8 tens — 5 tens win the hand</string>
+    <string name="mindi_trump_section">Trump</string>
+    <string name="mindi_must_trump">Must trump after reveal</string>
+    <string name="mindi_must_trump_desc">Whoever reveals the trump must play one if they can</string>
+    <string name="mindi_match">Match</string>
+    <string name="mindi_points_to_win">Points to win</string>
+    <string name="mindi_one_hand">1 hand</string>
+    <string name="mindi_points_info">Win = 1 point · Mendikot = 2 · Whitewash = 3</string>
+    <string name="mindi_bots">Bots</string>
+    <string name="mindi_expert">Expert</string>
+    <string name="mindi_turn_timer">Turn timer</string>
+    <string name="mindi_timer_off">Off</string>
+    <string name="mindi_timer_secs">%1$ds</string>
+    <string name="mindi_deal_cards">DEAL CARDS</string>
+    <string name="mindi_hero_title">Capture the 10s!</string>
+    <string name="mindi_hero_desc">Team up with your partner · win 3 of the 4 mindis</string>
+    <plurals name="mindi_n_players">
+        <item quantity="one">%d player</item>
+        <item quantity="other">%d players</item>
+    </plurals>
+    <string name="mindi_vs">%1$d vs %2$d</string>
+    <string name="mindi_classic">CLASSIC</string>
+    <string name="mindi_tile_title">MINDI</string>
+    <string name="mindi_tile_desc">Team trick game · capture the 10s · 4, 6 or 8 players</string>
+    <string name="mindi_table_4">2 vs 2 · partners sit opposite · 52 cards, 13 each</string>
+    <string name="mindi_table_6">3 vs 3 · alternate seats · the 2s are removed, 8 each</string>
+    <string name="mindi_table_6_double">3 vs 3 · alternate seats · double deck, 17 each</string>
+    <string name="mindi_table_8">4 vs 4 · alternate seats · the 2s are removed, 6 each</string>
+    <string name="mindi_table_8_double">4 vs 4 · alternate seats · double deck, 13 each</string>
+
+    <!-- table HUD -->
+    <string name="mindi_shuffling">Shuffling…</string>
+    <string name="mindi_cd_pause">Pause</string>
+    <string name="mindi_hud_title">MINDI · %1$s</string>
+    <string name="mindi_hud_daily">DAILY</string>
+    <string name="mindi_hud_line_single">Hand %1$d · Single hand · %2$d players</string>
+    <string name="mindi_hud_line_target">Hand %1$d · First to %2$d · %3$d players</string>
+    <string name="mindi_your_team">YOUR TEAM</string>
+    <string name="mindi_rivals">RIVALS</string>
+    <string name="mindi_tricks_label">tricks</string>
+    <string name="mindi_trump_label">TRUMP</string>
+    <string name="mindi_trump_yours">Yours</string>
+    <string name="mindi_trump_hidden">Hidden</string>
+    <string name="mindi_trump_not_cut">Not cut yet</string>
+    <string name="mindi_trump_choosing">Choosing</string>
+    <string name="mindi_cd_online_player">Online player</string>
+    <string name="mindi_bot_badge">BOT</string>
+    <string name="mindi_dealer_badge">D</string>
+    <string name="mindi_partner_name">%1$s (P)</string>
+    <string name="mindi_cd_hint">Hint</string>
+    <string name="mindi_cd_last_trick">Last trick</string>
+    <string name="mindi_cd_emote">Emote</string>
+    <string name="mindi_status_hide_confirm">Tap again to hide this card as trump</string>
+    <string name="mindi_status_hide_pick">Choose a card to hide — its suit becomes trump</string>
+    <string name="mindi_status_tap_again">Tap again or swipe up to play</string>
+    <string name="mindi_status_your_lead">Your lead!</string>
+    <string name="mindi_status_your_turn">Your turn</string>
+    <string name="mindi_status_thinking">%1$s is thinking…</string>
+    <string name="mindi_player">Player</string>
+    <string name="mindi_suit_spades">Spades</string>
+    <string name="mindi_suit_hearts">Hearts</string>
+    <string name="mindi_suit_diamonds">Diamonds</string>
+    <string name="mindi_suit_clubs">Clubs</string>
+
+    <!-- canvas pop-ups -->
+    <string name="mindi_pop_trump">TRUMP</string>
+    <string name="mindi_pop_secret_trump">SECRET TRUMP</string>
+    <string name="mindi_pop_trump_revealed">TRUMP REVEALED!</string>
+    <string name="mindi_pop_cut">CUT! NEW TRUMP</string>
+    <string name="mindi_pop_trump_play">TRUMP!</string>
+    <string name="mindi_pop_mindi">MINDI!</string>
+    <string name="mindi_pop_mindi_n">MINDI ×%1$d!</string>
+    <string name="mindi_pop_mendikot">MENDIKOT!</string>
+    <string name="mindi_pop_whitewash">WHITEWASH!</string>
+    <string name="mindi_trump_marker">T</string>
+
+    <!-- overlays -->
+    <string name="mindi_last_trick">Last trick</string>
+    <string name="mindi_no_trick_yet">No trick has been played yet.</string>
+    <string name="mindi_won_it">%1$s won it</string>
+    <string name="mindi_close">Close</string>
+    <string name="mindi_kind_normal">Hand won</string>
+    <string name="mindi_kind_mendikot">MENDIKOT! All four 10s</string>
+    <string name="mindi_kind_whitewash">WHITEWASH! Every trick</string>
+    <string name="mindi_your_team_wins">Your team wins!</string>
+    <string name="mindi_rivals_win">Rivals win the hand</string>
+    <plurals name="mindi_result_points">
+        <item quantity="one">%1$s  ·  +%2$d point</item>
+        <item quantity="other">%1$s  ·  +%2$d points</item>
+    </plurals>
+    <string name="mindi_tens_tricks">%1$d tens · %2$d tricks</string>
+    <string name="mindi_sb_title">SCOREBOARD</string>
+    <string name="mindi_sb_hand">Hand</string>
+    <string name="mindi_sb_winner">Winner</string>
+    <string name="mindi_sb_tens">10s</string>
+    <string name="mindi_sb_tricks">Tricks</string>
+    <string name="mindi_sb_pts">Pts</string>
+    <string name="mindi_sb_you">You</string>
+    <string name="mindi_sb_rivals">Rivals</string>
+    <string name="mindi_next_dealer">Next dealer: %1$s (the losing side deals)</string>
+    <string name="mindi_next_hand">Next Hand</string>
+    <string name="mindi_victory">VICTORY!</string>
+    <string name="mindi_good_game">Good game!</string>
+    <string name="mindi_final_score">Final score  %1$d – %2$d</string>
+    <string name="mindi_daily_stars_info">Daily: ★ win · ★★ 3+ tens · ★★★ 9+ tricks or Mendikot</string>
+    <string name="mindi_xp">+%1$d XP</string>
+    <string name="mindi_achievement">Achievement: %1$s</string>
+    <string name="mindi_leave">Leave</string>
+    <string name="mindi_home">Home</string>
+    <string name="mindi_room">Room</string>
+    <string name="mindi_rematch">Rematch</string>
+    <string name="mindi_play_again">Play Again</string>
+    <string name="mindi_end_game_q">End game?</string>
+    <string name="mindi_leave_game_q">Leave game?</string>
+    <string name="mindi_menu">Menu</string>
+    <string name="mindi_paused">Paused</string>
+    <string name="mindi_end_host_desc">This ends the match and closes the room for everyone.</string>
+    <string name="mindi_leave_desc">A bot will take your seat for the rest of this match.</string>
+    <string name="mindi_stay">Stay</string>
+    <string name="mindi_net_running">Multiplayer matches keep running while this menu is open.</string>
+    <string name="mindi_back_to_game">Back to Game</string>
+    <string name="mindi_resume">Resume</string>
+    <string name="mindi_how_to_play">How to Play</string>
+    <string name="mindi_saved_note">Your match is saved — continue it later from Mindi.</string>
+    <string name="mindi_end_game">End Game</string>
+    <string name="mindi_leave_game">Leave Game</string>
+    <string name="mindi_quit_home">Quit to Home</string>
+    <string name="mindi_waiting_host">Waiting for the host…</string>
+
+    <!-- view model -->
+    <string name="mindi_you">You</string>
+    <string name="mindi_room_closed">The room is closed.</string>
+    <string name="mindi_not_in_room">You\'re not in a room any more.</string>
+    <string name="mindi_toast_follow_suit">Follow suit: play a %1$s card</string>
+    <string name="mindi_toast_must_trump">You must play a trump card</string>
+</resources>

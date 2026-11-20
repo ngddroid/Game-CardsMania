@@ -67,6 +67,8 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -79,6 +81,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.puzzel.lab.cardsmania.GameLaunch
 import com.puzzel.lab.cardsmania.LocalApp
+import com.puzzel.lab.cardsmania.R
+import com.puzzel.lab.cardsmania.i18n.Strings
 import com.puzzel.lab.cardsmania.data.AvatarRef
 import com.puzzel.lab.cardsmania.data.DifficultyInfo
 import com.puzzel.lab.cardsmania.data.ModeInfo
@@ -146,7 +150,7 @@ fun GameScreen(onExit: () -> Unit, onHowTo: (GameMode?) -> Unit, onBackToRoom: (
         onExit = {
             vm.abandonIfOver()
             when (role) {
-                com.puzzel.lab.cardsmania.net.NetRole.HOST -> mp.closeRoom("The host left the game.")
+                com.puzzel.lab.cardsmania.net.NetRole.HOST -> mp.closeRoom(Strings.get(R.string.shell_host_left))
                 com.puzzel.lab.cardsmania.net.NetRole.GUEST -> mp.leaveRoom()
                 else -> Unit
             }
@@ -333,8 +337,8 @@ private fun GameContent(
 @Composable
 private fun LoadingTable() {
     Box(Modifier.fillMaxSize().background(Brush.radialGradient(listOf(CM.RoyalLight, CM.Abyss))), contentAlignment = Alignment.Center) {
-        val pulse = rememberPulse(700)
-        OutlinedTitle("Shuffling…", fontSize = 30.sp, modifier = Modifier.scale(0.95f + pulse * 0.08f))
+        val pulse by rememberPulse(700)
+        OutlinedTitle(stringResource(R.string.mania_shuffling), fontSize = 30.sp, modifier = Modifier.graphicsLayer { val k = 0.95f + pulse * 0.08f; scaleX = k; scaleY = k })
     }
 }
 
@@ -346,7 +350,7 @@ private fun TopBar(s: GameState, modifier: Modifier, onPause: () -> Unit, onHelp
         modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        RoundIconButton(GameIcons.Pause, onPause, size = 42.dp, contentDescription = "Pause")
+        RoundIconButton(GameIcons.Pause, onPause, size = 42.dp, contentDescription = stringResource(R.string.mania_cd_pause))
         Spacer(Modifier.width(10.dp))
         // HUD plate: dark glass with a gold rim so it reads on any table theme
         Column(
@@ -358,15 +362,15 @@ private fun TopBar(s: GameState, modifier: Modifier, onPause: () -> Unit, onHelp
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(ModeInfo.title(s.mode).uppercase(), color = CM.GoldLight, fontFamily = DisplayFamily, fontSize = 16.sp, letterSpacing = 1.sp)
-            val sub = buildString {
-                if (s.config.targetScore > 0) append("Round ${s.round} · First to ${s.config.targetScore}") else append("Single round")
-                if (s.mode == GameMode.ECLIPSE) append(if (s.side == com.puzzel.lab.cardsmania.engine.model.Side.SUN) " · Light side" else " · Dark side")
-                if (s.mode == GameMode.CHAOS) append(" · 25 = out")
-            }
+            val sub = listOfNotNull(
+                if (s.config.targetScore > 0) stringResource(R.string.mania_hud_round_target, s.round, s.config.targetScore) else stringResource(R.string.mania_single_round),
+                if (s.mode == GameMode.ECLIPSE) stringResource(if (s.side == com.puzzel.lab.cardsmania.engine.model.Side.SUN) R.string.mania_light_side else R.string.mania_dark_side) else null,
+                if (s.mode == GameMode.CHAOS) stringResource(R.string.mania_hud_knockout) else null,
+            ).joinToString(" · ")
             Text(sub, color = CM.TextDim, fontSize = 11.sp, fontWeight = FontWeight.Bold)
         }
         Spacer(Modifier.width(10.dp))
-        RoundIconButton(GameIcons.Help, onHelp, size = 42.dp, contentDescription = "How to play")
+        RoundIconButton(GameIcons.Help, onHelp, size = 42.dp, contentDescription = stringResource(R.string.mania_cd_how_to_play))
     }
 }
 
@@ -390,7 +394,7 @@ private fun OpponentSeat(
     val boxDp = with(density) { boxPx.toDp() }
     val avatarDp = with(density) { avatarPx.toDp() }
     val active = !state.isOver && state.actingPlayer == p.id
-    val pulse = rememberPulse(650)
+    val pulse by rememberPulse(650)
     val activeScale by animateFloatAsState(if (active) 1.12f else 1f, spring(0.5f, 400f), label = "seat")
     Box(Modifier.centeredAt(pos, boxPx).size(boxDp), contentAlignment = Alignment.Center) {
         if (active) {
@@ -409,7 +413,7 @@ private fun OpponentSeat(
                     .border(1.5.dp, if (p.hand.size == 1) Color.White else CM.Gold, RoundedCornerShape(50))
                     .padding(horizontal = 6.dp, vertical = 1.dp)
             ) {
-                Text(if (p.eliminated) "OUT" else "${p.hand.size}", color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Black)
+                Text(if (p.eliminated) stringResource(R.string.mania_seat_out) else "${p.hand.size}", color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Black)
             }
             if (p.shield) {
                 Box(Modifier.align(Alignment.TopStart).offset(x = (-6).dp, y = (-4).dp).size(18.dp).clip(CircleShape).background(CM.Aqua), contentAlignment = Alignment.Center) {
@@ -426,8 +430,8 @@ private fun OpponentSeat(
                         .padding(horizontal = 4.dp, vertical = 1.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    if (connected) androidx.compose.material3.Icon(GameIcons.Wifi, "Online player", tint = Color.White, modifier = Modifier.size(11.dp))
-                    else Text("BOT", color = Color.White, fontSize = 8.sp, fontWeight = FontWeight.Black)
+                    if (connected) androidx.compose.material3.Icon(GameIcons.Wifi, stringResource(R.string.mania_cd_online_player), tint = Color.White, modifier = Modifier.size(11.dp))
+                    else Text(stringResource(R.string.mania_seat_bot), color = Color.White, fontSize = 8.sp, fontWeight = FontWeight.Black)
                 }
             }
         }
@@ -454,25 +458,25 @@ private fun OpponentSeat(
         // catch!
         if (p.id in ui.catchTargets) {
             Box(
-                Modifier.align(Alignment.Center).offset(y = -(avatarDp * 0.75f)).scale(1f + 0.08f * pulse)
+                Modifier.align(Alignment.Center).offset(y = -(avatarDp * 0.75f)).graphicsLayer { val k = 1f + 0.08f * pulse; scaleX = k; scaleY = k }
                     .clip(RoundedCornerShape(50))
                     .background(Brush.verticalGradient(listOf(Color(0xFFFF7FA0), CM.Ruby)))
                     .border(2.dp, Color.White, RoundedCornerShape(50))
                     .clickable(onClick = onCatch)
                     .padding(horizontal = 10.dp, vertical = 4.dp)
-            ) { Text("CATCH!", color = Color.White, fontWeight = FontWeight.Black, fontSize = 12.sp) }
+            ) { Text(stringResource(R.string.mania_catch), color = Color.White, fontWeight = FontWeight.Black, fontSize = 12.sp) }
         }
         // swap target
         val ph = state.phase
         if (ui.idle && ph is Phase.ChooseSwap && ph.playerId == localId && !p.eliminated) {
             Box(
-                Modifier.align(Alignment.Center).offset(y = -(avatarDp * 0.78f)).scale(1f + 0.06f * pulse)
+                Modifier.align(Alignment.Center).offset(y = -(avatarDp * 0.78f)).graphicsLayer { val k = 1f + 0.06f * pulse; scaleX = k; scaleY = k }
                     .clip(RoundedCornerShape(50))
                     .background(Brush.verticalGradient(listOf(Color(0xFF7FF5EC), CM.Aqua)))
                     .border(2.dp, Color.White, RoundedCornerShape(50))
                     .clickable(onClick = onSwap)
                     .padding(horizontal = 10.dp, vertical = 4.dp)
-            ) { Text("SWAP", color = Color(0xFF04504A), fontWeight = FontWeight.Black, fontSize = 12.sp) }
+            ) { Text(stringResource(R.string.mania_swap), color = Color(0xFF04504A), fontWeight = FontWeight.Black, fontSize = 12.sp) }
         }
     }
 }
@@ -485,7 +489,7 @@ private fun HumanSeat(p: PlayerState, state: GameState, ui: GameUi, pos: Offset,
     val sizePx = avatarPx * 0.9f
     val avatarDp = with(density) { sizePx.toDp() }
     val active = !state.isOver && state.actingPlayer == p.id
-    val pulse = rememberPulse(650)
+    val pulse by rememberPulse(650)
     var now by remember { mutableLongStateOf(System.currentTimeMillis()) }
     LaunchedEffect(ui.turnDeadline) {
         while (ui.turnDeadline > 0) {
@@ -549,24 +553,24 @@ private fun StatusPill(s: GameState, ui: GameUi, human: Int, modifier: Modifier)
     val text = when {
         s.isOver -> ""
         !ui.idle -> ""
-        me.eliminated -> "You're out — watching the rivals battle!"
+        me.eliminated -> stringResource(R.string.mania_status_out)
         s.actingPlayer == human -> when (val ph = s.phase) {
             is Phase.Play -> when {
-                s.pendingDraw > 0 && ui.playable.isNotEmpty() -> "Stack a +card or tap the deck to take ${s.pendingDraw}"
-                s.pendingDraw > 0 -> "Tap the deck to take ${s.pendingDraw} cards"
-                ui.playable.isEmpty() -> "No match — tap the deck to draw"
-                ui.selected.isNotEmpty() -> "Tap again or swipe up to play"
-                else -> "Your turn!"
+                s.pendingDraw > 0 && ui.playable.isNotEmpty() -> stringResource(R.string.mania_status_stack_or_take, s.pendingDraw)
+                s.pendingDraw > 0 -> pluralStringResource(R.plurals.mania_status_take_cards, s.pendingDraw, s.pendingDraw)
+                ui.playable.isEmpty() -> stringResource(R.string.mania_status_no_match)
+                ui.selected.isNotEmpty() -> stringResource(R.string.mania_status_tap_again)
+                else -> stringResource(R.string.mania_status_your_turn)
             }
-            is Phase.DrawnCard -> "Play the drawn card or keep it"
-            is Phase.ChooseSwap -> "Choose a rival to swap hands with"
+            is Phase.DrawnCard -> stringResource(R.string.mania_status_drawn)
+            is Phase.ChooseSwap -> stringResource(R.string.mania_status_choose_swap)
             else -> ""
         }
         actor != null -> when (s.phase) {
-            is Phase.ChooseColor -> "${actor.name} is choosing a color…"
-            is Phase.Challenge -> "${actor.name} is deciding…"
-            is Phase.ChooseSwap -> "${actor.name} is picking a swap…"
-            else -> if (ui.jumpIn.isNotEmpty()) "Jump in with your matching card!" else "${actor.name} is thinking…"
+            is Phase.ChooseColor -> stringResource(R.string.mania_status_choosing_color, actor.name)
+            is Phase.Challenge -> stringResource(R.string.mania_status_deciding, actor.name)
+            is Phase.ChooseSwap -> stringResource(R.string.mania_status_picking_swap, actor.name)
+            else -> if (ui.jumpIn.isNotEmpty()) stringResource(R.string.mania_status_jump_in) else stringResource(R.string.mania_status_thinking, actor.name)
         }
         else -> ""
     }
@@ -600,34 +604,34 @@ private fun ActionBar(
     onPeek: () -> Unit,
 ) {
     val me = state.players[human]
-    val pulse = rememberPulse(420)
+    val pulse by rememberPulse(420)
     Row(
         Modifier.fillMaxWidth().offset { IntOffset(0, y.roundToInt()) }.padding(horizontal = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Spacer(Modifier.width(56.dp)) // room for the human avatar
-        RoundIconButton(GameIcons.Sort, onSort, size = 40.dp, contentDescription = "Sort")
+        RoundIconButton(GameIcons.Sort, onSort, size = 40.dp, contentDescription = stringResource(R.string.mania_cd_sort))
         Spacer(Modifier.width(8.dp))
-        RoundIconButton(GameIcons.Hint, onHint, size = 40.dp, tint = if (ui.myTurn) CM.GoldLight else Color.White, contentDescription = "Hint")
+        RoundIconButton(GameIcons.Hint, onHint, size = 40.dp, tint = if (ui.myTurn) CM.GoldLight else Color.White, contentDescription = stringResource(R.string.mania_cd_hint))
         Spacer(Modifier.width(8.dp))
-        RoundIconButton(GameIcons.Emote, onEmote, size = 40.dp, contentDescription = "Emote")
+        RoundIconButton(GameIcons.Emote, onEmote, size = 40.dp, contentDescription = stringResource(R.string.mania_cd_emote))
         if (state.config.powerUps && me.tokens > 0 && !me.eliminated) {
             Spacer(Modifier.width(8.dp))
-            RoundIconButton(GameIcons.Eye, onPeek, size = 40.dp, tint = CM.Aqua, badge = "${me.tokens}", contentDescription = "Peek")
+            RoundIconButton(GameIcons.Eye, onPeek, size = 40.dp, tint = CM.Aqua, badge = "${me.tokens}", contentDescription = stringResource(R.string.mania_cd_peek))
             if (!me.shield) {
                 Spacer(Modifier.width(8.dp))
-                RoundIconButton(GameIcons.Shield, onShield, size = 40.dp, tint = CM.Aqua, contentDescription = "Shield")
+                RoundIconButton(GameIcons.Shield, onShield, size = 40.dp, tint = CM.Aqua, contentDescription = stringResource(R.string.mania_cd_shield))
             }
         }
         Spacer(Modifier.weight(1f))
         val ph = state.phase
         if (ui.idle && ph is Phase.DrawnCard && ph.playerId == human && !state.config.forcedPlay) {
-            GameButton("KEEP", onKeep, style = ButtonStyle.PURPLE, height = 40.dp, fontSize = 14.sp, modifier = Modifier.width(84.dp))
+            GameButton(stringResource(R.string.mania_keep), onKeep, style = ButtonStyle.PURPLE, height = 40.dp, fontSize = 14.sp, modifier = Modifier.width(84.dp))
             Spacer(Modifier.width(8.dp))
         }
         AnimatedVisibility(ui.showMania, enter = scaleIn(spring(0.4f, 500f)) + fadeIn(), exit = scaleOut() + fadeOut()) {
             val armed = ui.maniaArmed
-            Box(Modifier.scale(if (armed) 1f else 1f + 0.07f * pulse)) {
+            Box(Modifier.graphicsLayer { val k = if (armed) 1f else 1f + 0.07f * pulse; scaleX = k; scaleY = k }) {
                 GameButton(
                     if (armed) "MANIA! ✓" else "MANIA!", onMania,
                     style = if (armed) ButtonStyle.GREEN else ButtonStyle.RED, height = 46.dp, fontSize = 17.sp,
@@ -678,7 +682,7 @@ private fun SwapHint() {
 private fun PeekOverlay(cards: List<com.puzzel.lab.cardsmania.engine.model.Card>, s: GameState) {
     Box(Modifier.fillMaxSize().background(Color(0x99000000)), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            OutlinedTitle("Next cards", fontSize = 26.sp)
+            OutlinedTitle(stringResource(R.string.mania_peek_title), fontSize = 26.sp)
             Spacer(Modifier.height(14.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 cards.forEach { c ->
@@ -689,7 +693,7 @@ private fun PeekOverlay(cards: List<com.puzzel.lab.cardsmania.engine.model.Card>
                 }
             }
             Spacer(Modifier.height(8.dp))
-            Text("Top of the deck, in draw order", color = CM.TextDim, fontSize = 12.sp, textAlign = TextAlign.Center)
+            Text(stringResource(R.string.mania_peek_sub), color = CM.TextDim, fontSize = 12.sp, textAlign = TextAlign.Center)
         }
     }
 }

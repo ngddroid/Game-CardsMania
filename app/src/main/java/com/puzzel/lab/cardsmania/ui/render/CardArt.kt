@@ -12,12 +12,15 @@ import android.graphics.RectF
 import android.graphics.Shader
 import android.graphics.SweepGradient
 import android.graphics.Typeface
+import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.toArgb
+import com.puzzel.lab.cardsmania.R
 import com.puzzel.lab.cardsmania.engine.model.Face
 import com.puzzel.lab.cardsmania.engine.model.Kind
 import com.puzzel.lab.cardsmania.engine.model.Suit
+import com.puzzel.lab.cardsmania.i18n.Strings
 import com.puzzel.lab.cardsmania.ui.theme.Gems
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.cos
@@ -25,17 +28,19 @@ import kotlin.math.min
 import kotlin.math.sin
 
 /** Card back designs (collectible). */
-enum class CardBack(val title: String, val c1: Int, val c2: Int, val accent: Int, val pattern: Int, val price: Int, val level: Int) {
-    ROYAL("Royal Gold", 0xFF3A1784.toInt(), 0xFF150638.toInt(), 0xFFFFC93C.toInt(), 0, 0, 1),
-    CRIMSON("Crimson Crown", 0xFF8E0F3A.toInt(), 0xFF2E0414.toInt(), 0xFFFFD27A.toInt(), 1, 400, 1),
-    SAPPHIRE("Sapphire Wave", 0xFF0F4BB0.toInt(), 0xFF061A47.toInt(), 0xFF9FE3FF.toInt(), 2, 400, 2),
-    EMERALD("Emerald Leaf", 0xFF0A7A4C.toInt(), 0xFF032A1A.toInt(), 0xFFB8FFD9.toInt(), 1, 600, 3),
-    OBSIDIAN("Obsidian", 0xFF2A2A35.toInt(), 0xFF07070B.toInt(), 0xFFE8E8F0.toInt(), 3, 800, 4),
-    ROSE_GOLD("Rose Gold", 0xFFB5577A.toInt(), 0xFF4A1530.toInt(), 0xFFFFD1B8.toInt(), 0, 900, 5),
-    ARCTIC("Arctic", 0xFF4FA7C9.toInt(), 0xFF123A55.toInt(), 0xFFFFFFFF.toInt(), 2, 1100, 6),
-    SUNBURST("Sunburst", 0xFFE06A00.toInt(), 0xFF5A1C00.toInt(), 0xFFFFF0A0.toInt(), 3, 1300, 8),
-    GALAXY("Galaxy", 0xFF3B1E8F.toInt(), 0xFF05021A.toInt(), 0xFFFF9DF2.toInt(), 4, 1600, 10),
-    NEON("Neon Grid", 0xFF0B0B2A.toInt(), 0xFF000008.toInt(), 0xFF2CFFE1.toInt(), 5, 2000, 12),
+enum class CardBack(@StringRes val titleRes: Int, val c1: Int, val c2: Int, val accent: Int, val pattern: Int, val price: Int, val level: Int) {
+    ROYAL(R.string.data_back_royal, 0xFF3A1784.toInt(), 0xFF150638.toInt(), 0xFFFFC93C.toInt(), 0, 0, 1),
+    CRIMSON(R.string.data_back_crimson, 0xFF8E0F3A.toInt(), 0xFF2E0414.toInt(), 0xFFFFD27A.toInt(), 1, 400, 1),
+    SAPPHIRE(R.string.data_back_sapphire, 0xFF0F4BB0.toInt(), 0xFF061A47.toInt(), 0xFF9FE3FF.toInt(), 2, 400, 2),
+    EMERALD(R.string.data_back_emerald, 0xFF0A7A4C.toInt(), 0xFF032A1A.toInt(), 0xFFB8FFD9.toInt(), 1, 600, 3),
+    OBSIDIAN(R.string.data_back_obsidian, 0xFF2A2A35.toInt(), 0xFF07070B.toInt(), 0xFFE8E8F0.toInt(), 3, 800, 4),
+    ROSE_GOLD(R.string.data_back_rose_gold, 0xFFB5577A.toInt(), 0xFF4A1530.toInt(), 0xFFFFD1B8.toInt(), 0, 900, 5),
+    ARCTIC(R.string.data_back_arctic, 0xFF4FA7C9.toInt(), 0xFF123A55.toInt(), 0xFFFFFFFF.toInt(), 2, 1100, 6),
+    SUNBURST(R.string.data_back_sunburst, 0xFFE06A00.toInt(), 0xFF5A1C00.toInt(), 0xFFFFF0A0.toInt(), 3, 1300, 8),
+    GALAXY(R.string.data_back_galaxy, 0xFF3B1E8F.toInt(), 0xFF05021A.toInt(), 0xFFFF9DF2.toInt(), 4, 1600, 10),
+    NEON(R.string.data_back_neon, 0xFF0B0B2A.toInt(), 0xFF000008.toInt(), 0xFF2CFFE1.toInt(), 5, 2000, 12);
+
+    val title: String get() = Strings.get(titleRes)
 }
 
 /**
@@ -43,29 +48,42 @@ enum class CardBack(val title: String, val c1: Int, val c2: Int, val accent: Int
  * Card proportions are 5:7.
  */
 object CardArt {
-    private val cache = ConcurrentHashMap<String, ImageBitmap>()
-    @Volatile var widthPx: Int = 240
-        private set
+    /**
+     * All bitmaps for one card width. Looked up with the Face / CardBack itself as the key, so drawing a card every
+     * frame allocates nothing (no key strings). A new width swaps in a fresh set.
+     */
+    private class Sheet(val w: Int) {
+        val h: Int = (w * 1.4f).toInt()
+        val faces = ConcurrentHashMap<Face, ImageBitmap>()
+        val facesNoCb = ConcurrentHashMap<Face, ImageBitmap>()
+        val backs = ConcurrentHashMap<CardBack, ImageBitmap>()
+    }
+
+    @Volatile private var sheet = Sheet(240)
+
+    val widthPx: Int get() = sheet.w
 
     fun configure(width: Int) {
         val w = width.coerceIn(140, 340)
-        if (w != widthPx) {
-            widthPx = w
-            cache.clear()
-        }
+        if (w != sheet.w) sheet = Sheet(w)
     }
 
-    val heightPx: Int get() = (widthPx * 1.4f).toInt()
+    val heightPx: Int get() = sheet.h
 
-    fun face(face: Face, colorBlind: Boolean = true): ImageBitmap =
-        cache.getOrPut("f:${face.suit}:${face.kind}:${face.value}:$colorBlind:$widthPx") {
-            renderFace(face, widthPx, heightPx, colorBlind).asImageBitmap()
-        }
+    fun face(face: Face, colorBlind: Boolean = true): ImageBitmap {
+        val s = sheet
+        val map = if (colorBlind) s.faces else s.facesNoCb
+        return map[face] ?: map.getOrPut(face) { renderFace(face, s.w, s.h, colorBlind).asImageBitmap() }
+    }
 
-    fun back(back: CardBack): ImageBitmap =
-        cache.getOrPut("b:${back.name}:$widthPx") { renderBack(back, widthPx, heightPx).asImageBitmap() }
+    fun back(back: CardBack): ImageBitmap {
+        val s = sheet
+        return s.backs[back] ?: s.backs.getOrPut(back) { renderBack(back, s.w, s.h).asImageBitmap() }
+    }
 
-    fun clear() = cache.clear()
+    fun clear() {
+        sheet = Sheet(sheet.w)
+    }
 
     // ---------------------------------------------------------------- rendering
 

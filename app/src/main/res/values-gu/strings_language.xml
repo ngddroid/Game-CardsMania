@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="lang_title">તમારી ભાષા પસંદ કરો</string>
+    <string name="lang_change_later">તમે સેટિંગ્સમાં ગમે ત્યારે ભાષા બદલી શકો છો.</string>
+    <string name="lang_continue">આગળ વધો</string>
+    <string name="lang_save">સેવ કરો</string>
+    <string name="lang_settings_group">ભાષા</string>
+    <string name="lang_settings_row">એપની ભાષા: %1$s</string>
+</resources>

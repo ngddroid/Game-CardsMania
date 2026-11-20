@@ -50,7 +50,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import com.puzzel.lab.cardsmania.LocalApp
+import com.puzzel.lab.cardsmania.R
 import com.puzzel.lab.cardsmania.audio.Sfx
 import com.puzzel.lab.cardsmania.data.Achievement
 import com.puzzel.lab.cardsmania.data.Achievements
@@ -99,16 +102,16 @@ fun EventsTab(onDaily: () -> Unit, onSpiderDaily: () -> Unit = {}, onMindiDaily:
             .padding(horizontal = 16.dp)
     ) {
         Row(Modifier.fillMaxWidth().padding(vertical = 10.dp).staggerIn(0), verticalAlignment = Alignment.CenterVertically) {
-            OutlinedTitle("Events", fontSize = 30.sp, outlineWidth = 10f)
+            OutlinedTitle(stringResource(R.string.shell_tab_events), fontSize = 30.sp, outlineWidth = 10f)
             Spacer(Modifier.weight(1f))
             CoinChip(profile.coins)
         }
-        RibbonHeader("DAILY CHALLENGES", Modifier.align(Alignment.CenterHorizontally).staggerIn(1), color = Color(0xFFB0203F), icon = GameIcons.Calendar)
+        RibbonHeader(stringResource(R.string.shell_events_daily_challenges), Modifier.align(Alignment.CenterHorizontally).staggerIn(1), color = Color(0xFFB0203F), icon = GameIcons.Calendar)
         Spacer(Modifier.height(10.dp))
         var game by rememberSaveable { mutableIntStateOf(0) }
         Row(Modifier.fillMaxWidth().staggerIn(1), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            listOf("Mania", "Spider", "Mindi").forEachIndexed { i, t ->
-                ChoiceChip(t, game == i, { game = i }, Modifier.weight(1f))
+            listOf(R.string.shell_chip_mania, R.string.shell_chip_spider, R.string.shell_chip_mindi).forEachIndexed { i, t ->
+                ChoiceChip(stringResource(t), game == i, { game = i }, Modifier.weight(1f))
             }
         }
         Spacer(Modifier.height(12.dp))
@@ -121,8 +124,8 @@ fun EventsTab(onDaily: () -> Unit, onSpiderDaily: () -> Unit = {}, onMindiDaily:
         }
 
         Spacer(Modifier.height(24.dp))
-        RibbonHeader("WEEKLY MISSIONS", Modifier.align(Alignment.CenterHorizontally).staggerIn(2), color = Color(0xFF1E6FE8), icon = GameIcons.Chest)
-        Text("Resets in ${daysLeft}d", color = CM.TextDim, fontSize = 12.sp, fontWeight = FontWeight.Bold, modifier = Modifier.align(Alignment.CenterHorizontally))
+        RibbonHeader(stringResource(R.string.shell_events_weekly_missions), Modifier.align(Alignment.CenterHorizontally).staggerIn(2), color = Color(0xFF1E6FE8), icon = GameIcons.Chest)
+        Text(stringResource(R.string.shell_events_resets_in, daysLeft), color = CM.TextDim, fontSize = 12.sp, fontWeight = FontWeight.Bold, modifier = Modifier.align(Alignment.CenterHorizontally))
         Spacer(Modifier.height(10.dp))
         missions.forEachIndexed { i, m ->
             val progress = if (profile.missionWeek == week) profile.missionProgress[m.id] ?: 0 else 0
@@ -147,8 +150,8 @@ fun EventsTab(onDaily: () -> Unit, onSpiderDaily: () -> Unit = {}, onMindiDaily:
 
         Spacer(Modifier.height(14.dp))
         val unlocked = profile.achievements
-        RibbonHeader("TROPHY WALL", Modifier.align(Alignment.CenterHorizontally).staggerIn(6), color = Color(0xFF8E5A00), icon = GameIcons.Trophy)
-        Text("${unlocked.size} / ${Achievements.all.size} unlocked", color = CM.GoldLight, fontSize = 13.sp, fontWeight = FontWeight.Black, modifier = Modifier.align(Alignment.CenterHorizontally))
+        RibbonHeader(stringResource(R.string.shell_events_trophy_wall), Modifier.align(Alignment.CenterHorizontally).staggerIn(6), color = Color(0xFF8E5A00), icon = GameIcons.Trophy)
+        Text(stringResource(R.string.shell_events_unlocked_count, unlocked.size, Achievements.all.size), color = CM.GoldLight, fontSize = 13.sp, fontWeight = FontWeight.Black, modifier = Modifier.align(Alignment.CenterHorizontally))
         Spacer(Modifier.height(10.dp))
         val sorted = remember(unlocked) { Achievements.all.sortedBy { if (it.id in unlocked) 0 else 1 } }
         sorted.chunked(2).forEachIndexed { r, row ->
@@ -178,12 +181,12 @@ private fun DailyPanel(stars: Int, streak: Int, onDaily: () -> Unit, modifier: M
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(GameIcons.Calendar, null, tint = CM.GoldLight, modifier = Modifier.size(22.dp))
             Spacer(Modifier.width(8.dp))
-            Text("TODAY'S CHALLENGE", color = CM.GoldLight, fontSize = 13.sp, fontWeight = FontWeight.Black, letterSpacing = 1.sp, modifier = Modifier.weight(1f))
+            Text(stringResource(R.string.shell_daily_today), color = CM.GoldLight, fontSize = 13.sp, fontWeight = FontWeight.Black, letterSpacing = 1.sp, modifier = Modifier.weight(1f))
             Text(daily.date, color = Color.White.copy(alpha = 0.7f), fontSize = 12.sp, fontWeight = FontWeight.Bold)
         }
         Spacer(Modifier.height(6.dp))
         OutlinedTitle(ModeInfo.title(daily.mode), fontSize = 26.sp, outlineWidth = 9f)
-        Text("Same deal for every player today. Beat these rivals:", color = Color.White.copy(alpha = 0.8f), fontSize = 13.sp)
+        Text(stringResource(R.string.shell_daily_beat_rivals), color = Color.White.copy(alpha = 0.8f), fontSize = 13.sp)
         Spacer(Modifier.height(10.dp))
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
             daily.bots.forEach { b ->
@@ -216,9 +219,9 @@ private fun DailyPanel(stars: Int, streak: Int, onDaily: () -> Unit, modifier: M
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(Icons.Rounded.LocalFireDepartment, null, tint = CM.Tangerine, modifier = Modifier.size(22.dp))
             Spacer(Modifier.width(4.dp))
-            Text("Daily streak: $streak", color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Black, modifier = Modifier.weight(1f))
+            Text(stringResource(R.string.shell_daily_streak, streak), color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Black, modifier = Modifier.weight(1f))
             GameButton(
-                if (stars >= 3) "PLAY AGAIN" else "PLAY",
+                if (stars >= 3) stringResource(R.string.shell_play_again) else stringResource(R.string.shell_play),
                 onDaily,
                 style = ButtonStyle.GOLD,
                 modifier = Modifier.width(140.dp),
@@ -263,9 +266,9 @@ private fun MissionRow(m: MissionDef, progress: Int, claimed: Boolean, onClaim: 
             when {
                 claimed -> Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(GameIcons.Check, null, tint = CM.Emerald, modifier = Modifier.size(20.dp))
-                    Text("DONE", color = CM.Emerald, fontSize = 13.sp, fontWeight = FontWeight.Black)
+                    Text(stringResource(R.string.shell_mission_done), color = CM.Emerald, fontSize = 13.sp, fontWeight = FontWeight.Black)
                 }
-                done -> GameButton("CLAIM", onClaim, style = ButtonStyle.GREEN, modifier = Modifier.width(84.dp), height = 40.dp, fontSize = 14.sp, sound = Sfx.SELECT)
+                done -> GameButton(stringResource(R.string.shell_mission_claim), onClaim, style = ButtonStyle.GREEN, modifier = Modifier.width(84.dp), height = 40.dp, fontSize = 14.sp, sound = Sfx.SELECT)
                 else -> Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     TreasureChest(0f, Modifier.size(38.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -328,7 +331,7 @@ private fun SpiderDailyPanel(solved: Map<String, Long>, onPlay: () -> Unit) {
     val today = GameFactory.today()
     val cal = remember { Calendar.getInstance() }
     val month = remember { java.text.SimpleDateFormat("yyyy-MM", java.util.Locale.US).format(cal.time) }
-    val monthName = remember { java.text.SimpleDateFormat("MMMM", java.util.Locale.US).format(cal.time) }
+    val monthName = remember { java.text.SimpleDateFormat("LLLL", java.util.Locale.getDefault()).format(cal.time) }
     val days = cal.getActualMaximum(Calendar.DAY_OF_MONTH)
     val done = solved.keys.count { it.startsWith(month) }
     val tier = when {
@@ -337,11 +340,11 @@ private fun SpiderDailyPanel(solved: Map<String, Long>, onPlay: () -> Unit) {
         done >= 10 -> Rim.BRONZE
         else -> null
     }
-    JewelPanel(Modifier.fillMaxWidth(), rim = Rim.EMERALD, fill = PanelFill.FELT, title = "SPIDER DAILY", titleColor = Color(0xFF0E6B3A)) {
+    JewelPanel(Modifier.fillMaxWidth(), rim = Rim.EMERALD, fill = PanelFill.FELT, title = stringResource(R.string.shell_spider_daily_title), titleColor = Color(0xFF0E6B3A)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
                 Text(monthName, color = Color.White, fontFamily = DisplayFamily, fontSize = 22.sp)
-                Text("A new winnable deal every day", color = Color.White.copy(alpha = 0.8f), fontSize = 12.sp)
+                Text(stringResource(R.string.shell_spider_daily_sub), color = Color.White.copy(alpha = 0.8f), fontSize = 12.sp)
             }
             Box(contentAlignment = Alignment.Center) {
                 Icon(GameIcons.Trophy, null, tint = when (tier) {
@@ -383,12 +386,12 @@ private fun SpiderDailyPanel(solved: Map<String, Long>, onPlay: () -> Unit) {
         }
         Spacer(Modifier.height(6.dp))
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            listOf(Triple("Bronze", 10, Rim.BRONZE), Triple("Silver", 20, Rim.SILVER), Triple("Gold", days, Rim.GOLD)).forEach { (name, need, rim) ->
+            listOf(Triple(R.string.shell_spider_tier_bronze, 10, Rim.BRONZE), Triple(R.string.shell_spider_tier_silver, 20, Rim.SILVER), Triple(R.string.shell_spider_tier_gold, days, Rim.GOLD)).forEach { (name, need, rim) ->
                 val reached = done >= need
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(GameIcons.Crown, null, tint = if (reached) rim.mid else Color(0x44FFFFFF), modifier = Modifier.size(16.dp))
                     Spacer(Modifier.width(3.dp))
-                    Text("$name $need", color = if (reached) Color.White else CM.TextMuted, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    Text(stringResource(name, need), color = if (reached) Color.White else CM.TextMuted, fontSize = 11.sp, fontWeight = FontWeight.Bold)
                 }
             }
         }
@@ -396,7 +399,7 @@ private fun SpiderDailyPanel(solved: Map<String, Long>, onPlay: () -> Unit) {
         GemProgressBar(done / days.toFloat(), Modifier.fillMaxWidth(), height = 10.dp)
         Spacer(Modifier.height(12.dp))
         GameButton(
-            if (today in solved) "PLAY TODAY AGAIN" else "PLAY TODAY'S DEAL", onPlay, style = ButtonStyle.GOLD,
+            if (today in solved) stringResource(R.string.shell_spider_play_again) else stringResource(R.string.shell_spider_play_today), onPlay, style = ButtonStyle.GOLD,
             modifier = Modifier.fillMaxWidth(), height = 50.dp, fontSize = 16.sp, icon = GameIcons.Play, sound = Sfx.SELECT,
         )
     }
@@ -407,7 +410,7 @@ private fun MindiDailyPanel(daily: Map<String, Int>, onPlay: () -> Unit) {
     val today = GameFactory.today()
     val stars = daily[today] ?: 0
     val total = daily.values.sum()
-    JewelPanel(Modifier.fillMaxWidth(), rim = Rim.GOLD, fill = PanelFill.WINE, title = "MINDI DAILY", titleColor = Color(0xFFC0392B)) {
+    JewelPanel(Modifier.fillMaxWidth(), rim = Rim.GOLD, fill = PanelFill.WINE, title = stringResource(R.string.shell_mindi_daily_title), titleColor = Color(0xFFC0392B)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Box(Modifier.size(width = 96.dp, height = 70.dp), contentAlignment = Alignment.Center) {
                 listOf(0, 1, 3, 2).forEachIndexed { i, suit ->
@@ -420,8 +423,8 @@ private fun MindiDailyPanel(daily: Map<String, Int>, onPlay: () -> Unit) {
             }
             Spacer(Modifier.width(10.dp))
             Column(Modifier.weight(1f)) {
-                Text("Today's team deal", color = Color.White, fontFamily = DisplayFamily, fontSize = 18.sp)
-                Text("Same cards for everyone. Partner up and capture the 10s against Hard bots.", color = Color.White.copy(alpha = 0.8f), fontSize = 12.sp)
+                Text(stringResource(R.string.shell_mindi_daily_heading), color = Color.White, fontFamily = DisplayFamily, fontSize = 18.sp)
+                Text(stringResource(R.string.shell_mindi_daily_body), color = Color.White.copy(alpha = 0.8f), fontSize = 12.sp)
             }
         }
         Spacer(Modifier.height(10.dp))
@@ -429,13 +432,13 @@ private fun MindiDailyPanel(daily: Map<String, Int>, onPlay: () -> Unit) {
             repeat(3) { StarIcon(it < stars, 34.dp) }
         }
         Text(
-            if (stars == 0) "Earn up to 3 stars" else "$stars / 3 stars today",
+            if (stars == 0) stringResource(R.string.shell_mindi_daily_earn) else stringResource(R.string.shell_mindi_daily_today, stars),
             color = CM.GoldLight, fontSize = 13.sp, fontWeight = FontWeight.Bold, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center,
         )
-        Text("$total stars collected so far", color = CM.TextDim, fontSize = 11.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+        Text(pluralStringResource(R.plurals.shell_mindi_daily_total, total, total), color = CM.TextDim, fontSize = 11.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
         Spacer(Modifier.height(12.dp))
         GameButton(
-            if (stars >= 3) "PLAY AGAIN" else "PLAY", onPlay, style = ButtonStyle.GOLD,
+            if (stars >= 3) stringResource(R.string.shell_play_again) else stringResource(R.string.shell_play), onPlay, style = ButtonStyle.GOLD,
             modifier = Modifier.fillMaxWidth(), height = 50.dp, fontSize = 16.sp, icon = GameIcons.Play, sound = Sfx.SELECT,
         )
     }

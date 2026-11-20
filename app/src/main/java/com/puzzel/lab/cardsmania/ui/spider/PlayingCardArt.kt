@@ -21,28 +21,32 @@ import kotlin.math.max
  * Below it: one large suit symbol (2–10), an ornate ringed symbol (Ace) or a royal crown emblem (J/Q/K).
  */
 object PlayingCardArt {
-    private val cache = ConcurrentHashMap<String, ImageBitmap>()
+    /**
+     * All faces for one card width, in a flat array indexed by (fourColor, suit, rank): drawing 104 cards every frame
+     * allocates nothing. A new width swaps in a fresh sheet. A race only means a face may be rendered twice.
+     */
+    private class Sheet(val w: Int) {
+        val faces = arrayOfNulls<ImageBitmap>(2 * 4 * 14)
+    }
 
     @Volatile
-    private var width = 96
+    private var sheet = Sheet(96)
 
-    val widthPx: Int get() = width
-    val heightPx: Int get() = (width * 1.4f).toInt()
+    val widthPx: Int get() = sheet.w
+    val heightPx: Int get() = (sheet.w * 1.4f).toInt()
 
     fun configure(widthPx: Int) {
         val w = widthPx.coerceIn(40, 360)
-        if (w != width) {
-            width = w
-            cache.clear()
-        }
+        if (w != sheet.w) sheet = Sheet(w)
     }
 
     /** rank 1..13 (1 = A, 11 = J, 12 = Q, 13 = K); suit 0 = spades, 1 = hearts, 2 = diamonds, 3 = clubs */
     fun face(rank: Int, suit: Int, fourColor: Boolean = false): ImageBitmap {
-        val w = width
-        return cache.getOrPut("$rank:$suit:$fourColor:$w") {
-            render(rank.coerceIn(1, 13), suit.coerceIn(0, 3), fourColor, w, (w * 1.4f).toInt()).asImageBitmap()
-        }
+        val s = sheet
+        val r = rank.coerceIn(1, 13)
+        val su = suit.coerceIn(0, 3)
+        val i = ((if (fourColor) 4 else 0) + su) * 14 + r
+        return s.faces[i] ?: render(r, su, fourColor, s.w, (s.w * 1.4f).toInt()).asImageBitmap().also { s.faces[i] = it }
     }
 
     fun suitColor(suit: Int, fourColor: Boolean = false): Int = when (suit) {
@@ -60,7 +64,9 @@ object PlayingCardArt {
         else -> rank.toString()
     }
 
-    fun clear() = cache.clear()
+    fun clear() {
+        sheet = Sheet(sheet.w)
+    }
 
     /** Suit glyph centered at ([cx], [cy]); [size] ≈ full glyph height. */
     fun suitPath(suit: Int, cx: Float, cy: Float, size: Float): Path = when (suit) {

@@ -43,7 +43,9 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
 import com.puzzel.lab.cardsmania.LocalApp
+import com.puzzel.lab.cardsmania.R
 import com.puzzel.lab.cardsmania.audio.Track
 import com.puzzel.lab.cardsmania.engine.model.DeckFactory
 import com.puzzel.lab.cardsmania.engine.model.Face
@@ -67,7 +69,9 @@ import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 
-private val messages = listOf("Shuffling the deck…", "Polishing the gems…", "Waking up the rivals…", "Setting the table…")
+private val messages = listOf(
+    R.string.shell_splash_msg_shuffle, R.string.shell_splash_msg_polish, R.string.shell_splash_msg_wake, R.string.shell_splash_msg_table,
+)
 
 @Composable
 fun SplashScreen(onFinished: (onboardingDone: Boolean, profileCreated: Boolean) -> Unit) {
@@ -223,7 +227,7 @@ fun SplashScreen(onFinished: (onboardingDone: Boolean, profileCreated: Boolean) 
                 }
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    "MATCH  ·  STACK  ·  FLIP  ·  WIN",
+                    stringResource(R.string.shell_splash_tagline),
                     color = CM.TextDim,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Black,
@@ -244,7 +248,7 @@ fun SplashScreen(onFinished: (onboardingDone: Boolean, profileCreated: Boolean) 
                         colors = listOf(Color(0xFFE0245E), Color(0xFFFFB000), Color(0xFF19C37D), Color(0xFF1E7BFF)),
                     )
                     Spacer(Modifier.height(10.dp))
-                    Text(messages[msg], color = CM.TextDim, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                    Text(stringResource(messages[msg]), color = CM.TextDim, fontSize = 13.sp, fontWeight = FontWeight.Bold)
                 }
             }
         }

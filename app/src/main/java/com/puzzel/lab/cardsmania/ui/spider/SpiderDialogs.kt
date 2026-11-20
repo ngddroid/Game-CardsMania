@@ -43,11 +43,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.annotation.StringRes
+import com.puzzel.lab.cardsmania.R
 import com.puzzel.lab.cardsmania.data.GameFactory
+import com.puzzel.lab.cardsmania.i18n.Strings
 import com.puzzel.lab.cardsmania.spider.SpiderRules
 import com.puzzel.lab.cardsmania.ui.components.ButtonStyle
 import com.puzzel.lab.cardsmania.ui.components.ChoiceChip
@@ -83,19 +88,19 @@ fun SpiderDialogs(vm: SpiderViewModel, ui: SpiderUi, onExit: () -> Unit) {
 
 @Composable
 private fun NewGameDialog(ui: SpiderUi, onPick: (Int) -> Unit, onReplay: () -> Unit, onDaily: () -> Unit, onStats: () -> Unit, onDismiss: () -> Unit) {
-    GemDialog("New Game", onDismiss) {
+    GemDialog(stringResource(R.string.spider_new_game), onDismiss) {
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            SuitOption(1, "Easy", "Spades only · every deal is winnable", Color(0xFF19C37D), ui.prefs.lastSuits == 1) { onPick(1) }
-            SuitOption(2, "Medium", "Spades & hearts · a real challenge", Color(0xFFFF9F1A), ui.prefs.lastSuits == 2) { onPick(2) }
-            SuitOption(4, "Hard", "All four suits · for Spider masters", Color(0xFFE0245E), ui.prefs.lastSuits == 4) { onPick(4) }
+            SuitOption(1, stringResource(R.string.spider_level_easy), stringResource(R.string.spider_suits_1_desc), Color(0xFF19C37D), ui.prefs.lastSuits == 1) { onPick(1) }
+            SuitOption(2, stringResource(R.string.spider_level_medium), stringResource(R.string.spider_suits_2_desc), Color(0xFFFF9F1A), ui.prefs.lastSuits == 2) { onPick(2) }
+            SuitOption(4, stringResource(R.string.spider_level_hard), stringResource(R.string.spider_suits_4_desc), Color(0xFFE0245E), ui.prefs.lastSuits == 4) { onPick(4) }
         }
         Spacer(Modifier.height(14.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            GameButton("Replay deal", onReplay, style = ButtonStyle.PURPLE, modifier = Modifier.weight(1f), height = 46.dp, fontSize = 14.sp, icon = Icons.Rounded.Refresh, enabled = ui.state != null)
-            GameButton("Daily", onDaily, style = ButtonStyle.BLUE, modifier = Modifier.weight(1f), height = 46.dp, fontSize = 14.sp)
+            GameButton(stringResource(R.string.spider_replay_deal), onReplay, style = ButtonStyle.PURPLE, modifier = Modifier.weight(1f), height = 46.dp, fontSize = 14.sp, icon = Icons.Rounded.Refresh, enabled = ui.state != null)
+            GameButton(stringResource(R.string.spider_daily), onDaily, style = ButtonStyle.BLUE, modifier = Modifier.weight(1f), height = 46.dp, fontSize = 14.sp)
         }
         Spacer(Modifier.height(10.dp))
-        Text("View statistics", color = CM.GoldLight, fontWeight = FontWeight.Bold, fontSize = 13.sp, modifier = Modifier.clickable(onClick = onStats).padding(6.dp))
+        Text(stringResource(R.string.spider_view_stats), color = CM.GoldLight, fontWeight = FontWeight.Bold, fontSize = 13.sp, modifier = Modifier.clickable(onClick = onStats).padding(6.dp))
     }
 }
 
@@ -113,7 +118,7 @@ private fun SuitOption(suits: Int, level: String, desc: String, color: Color, la
         Spacer(Modifier.width(10.dp))
         Column(Modifier.weight(1f)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("$suits Suit" + if (suits > 1) "s" else "", color = Color.White, fontWeight = FontWeight.Black, fontSize = 17.sp)
+                Text(pluralStringResource(R.plurals.spider_suit_count, suits, suits), color = Color.White, fontWeight = FontWeight.Black, fontSize = 17.sp)
                 Spacer(Modifier.width(8.dp))
                 Box(Modifier.clip(RoundedCornerShape(50)).background(color).padding(horizontal = 8.dp, vertical = 1.dp)) {
                     Text(level, color = Color.White, fontWeight = FontWeight.Black, fontSize = 11.sp)
@@ -160,7 +165,7 @@ private fun DailyDialog(ui: SpiderUi, onPlay: (String) -> Unit, onDismiss: () ->
         }
     }
     val fmt = remember { SimpleDateFormat("yyyy-MM-dd", Locale.US) }
-    val monthName = remember(monthOffset) { SimpleDateFormat("MMMM yyyy", Locale.US).format(cal.time) }
+    val monthName = remember(monthOffset) { SimpleDateFormat("LLLL yyyy", Locale.getDefault()).format(cal.time) }
     val daysInMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH)
     val firstDow = (cal.get(Calendar.DAY_OF_WEEK) + 5) % 7 // Monday = 0
     val todayStr = GameFactory.today()
@@ -168,19 +173,22 @@ private fun DailyDialog(ui: SpiderUi, onPlay: (String) -> Unit, onDismiss: () ->
     val monthPrefix = SimpleDateFormat("yyyy-MM", Locale.US).format(cal.time)
     val solvedThisMonth = solved.keys.count { it.startsWith(monthPrefix) }
 
-    GemDialog("Daily Challenge", onDismiss) {
-        Text("A new winnable deal every day — same deal for every player.", color = CM.TextDim, fontSize = 12.sp, textAlign = TextAlign.Center)
+    GemDialog(stringResource(R.string.spider_daily_title), onDismiss) {
+        Text(stringResource(R.string.spider_daily_desc), color = CM.TextDim, fontSize = 12.sp, textAlign = TextAlign.Center)
         Spacer(Modifier.height(10.dp))
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            Icon(Icons.AutoMirrored.Rounded.KeyboardArrowLeft, "Previous month", tint = if (monthOffset > -11) Color.White else Color(0x33FFFFFF),
+            Icon(Icons.AutoMirrored.Rounded.KeyboardArrowLeft, stringResource(R.string.spider_cd_prev_month), tint = if (monthOffset > -11) Color.White else Color(0x33FFFFFF),
                 modifier = Modifier.size(34.dp).clickable(enabled = monthOffset > -11) { monthOffset-- })
             Text(monthName, color = Color.White, fontWeight = FontWeight.Black, fontSize = 17.sp, textAlign = TextAlign.Center, modifier = Modifier.weight(1f))
-            Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, "Next month", tint = if (monthOffset < 0) Color.White else Color(0x33FFFFFF),
+            Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, stringResource(R.string.spider_cd_next_month), tint = if (monthOffset < 0) Color.White else Color(0x33FFFFFF),
                 modifier = Modifier.size(34.dp).clickable(enabled = monthOffset < 0) { monthOffset++ })
         }
         Spacer(Modifier.height(6.dp))
         Row(Modifier.fillMaxWidth()) {
-            listOf("M", "T", "W", "T", "F", "S", "S").forEach {
+            listOf(
+                R.string.spider_dow_mon, R.string.spider_dow_tue, R.string.spider_dow_wed, R.string.spider_dow_thu,
+                R.string.spider_dow_fri, R.string.spider_dow_sat, R.string.spider_dow_sun,
+            ).map { stringResource(it) }.forEach {
                 Text(it, color = CM.TextMuted, fontSize = 11.sp, fontWeight = FontWeight.Black, textAlign = TextAlign.Center, modifier = Modifier.weight(1f))
             }
         }
@@ -222,26 +230,26 @@ private fun DailyDialog(ui: SpiderUi, onPlay: (String) -> Unit, onDismiss: () ->
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             Crown(CrownTier.GOLD, Modifier.size(20.dp))
             Spacer(Modifier.width(6.dp))
-            Text("$solvedThisMonth / $daysInMonth crowns this month", color = CM.GoldLight, fontWeight = FontWeight.Bold, fontSize = 13.sp)
+            Text(stringResource(R.string.spider_crowns_month, solvedThisMonth, daysInMonth), color = CM.GoldLight, fontWeight = FontWeight.Bold, fontSize = 13.sp)
         }
         Spacer(Modifier.height(6.dp))
         GemProgressBar(solvedThisMonth / daysInMonth.toFloat(), Modifier.fillMaxWidth())
         Spacer(Modifier.height(10.dp))
         // monthly crown tiers
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-            TierBadge(CrownTier.BRONZE, "10 days", solvedThisMonth >= 10)
-            TierBadge(CrownTier.SILVER, "20 days", solvedThisMonth >= 20)
-            TierBadge(CrownTier.GOLD, "Every day", solvedThisMonth >= daysInMonth)
+            TierBadge(CrownTier.BRONZE, pluralStringResource(R.plurals.spider_tier_days, 10, 10), solvedThisMonth >= 10)
+            TierBadge(CrownTier.SILVER, pluralStringResource(R.plurals.spider_tier_days, 20, 20), solvedThisMonth >= 20)
+            TierBadge(CrownTier.GOLD, stringResource(R.string.spider_tier_every_day), solvedThisMonth >= daysInMonth)
         }
         Spacer(Modifier.height(10.dp))
         TrophyShelf(solved.keys, today)
         Spacer(Modifier.height(14.dp))
         val todayDone = todayStr in solved
         GameButton(
-            if (todayDone) "Play today again" else "Play today's challenge", { onPlay(todayStr) },
+            stringResource(if (todayDone) R.string.spider_play_today_again else R.string.spider_play_today), { onPlay(todayStr) },
             style = ButtonStyle.GOLD, modifier = Modifier.fillMaxWidth(), height = 52.dp, fontSize = 16.sp, icon = Icons.Rounded.PlayArrow,
         )
-        Text("First solve of each day: +100 bonus coins", color = CM.TextMuted, fontSize = 11.sp, modifier = Modifier.padding(top = 6.dp))
+        Text(stringResource(R.string.spider_daily_bonus), color = CM.TextMuted, fontSize = 11.sp, modifier = Modifier.padding(top = 6.dp))
     }
 }
 
@@ -249,9 +257,9 @@ private fun DailyDialog(ui: SpiderUi, onPlay: (String) -> Unit, onDismiss: () ->
 
 @Composable
 private fun LookDialog(ui: SpiderUi, vm: SpiderViewModel, onDismiss: () -> Unit) {
-    GemDialog("Table & Cards", onDismiss) {
+    GemDialog(stringResource(R.string.spider_look_title), onDismiss) {
         Column(Modifier.heightIn(max = 520.dp).verticalScroll(rememberScrollState())) {
-            Text("BACKGROUND", color = CM.GoldLight, fontWeight = FontWeight.Black, fontSize = 12.sp)
+            Text(stringResource(R.string.spider_look_background), color = CM.GoldLight, fontWeight = FontWeight.Black, fontSize = 12.sp)
             Spacer(Modifier.height(8.dp))
             SpiderBackground.entries.chunked(4).forEach { row ->
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -278,27 +286,26 @@ private fun LookDialog(ui: SpiderUi, vm: SpiderViewModel, onDismiss: () -> Unit)
                 Spacer(Modifier.height(8.dp))
             }
             Spacer(Modifier.height(6.dp))
-            Text("Card backs come from your Collection.", color = CM.TextMuted, fontSize = 11.sp)
+            Text(stringResource(R.string.spider_look_card_backs), color = CM.TextMuted, fontSize = 11.sp)
             Spacer(Modifier.height(12.dp))
-            ToggleLine("Four-color suits", "Clubs green, diamonds blue — easier to tell apart", ui.prefs.fourColor, vm::setFourColor)
+            ToggleLine(stringResource(R.string.spider_four_color), stringResource(R.string.spider_four_color_desc), ui.prefs.fourColor, vm::setFourColor)
             Spacer(Modifier.height(4.dp))
-            Text("CONTROLS", color = CM.GoldLight, fontWeight = FontWeight.Black, fontSize = 12.sp)
+            Text(stringResource(R.string.spider_look_controls), color = CM.GoldLight, fontWeight = FontWeight.Black, fontSize = 12.sp)
             Spacer(Modifier.height(6.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                ChoiceChip("Smart tap", !ui.prefs.selectMode, { vm.setSelectMode(false) }, Modifier.weight(1f))
-                ChoiceChip("Tap, then target", ui.prefs.selectMode, { vm.setSelectMode(true) }, Modifier.weight(1f))
+                ChoiceChip(stringResource(R.string.spider_smart_tap), !ui.prefs.selectMode, { vm.setSelectMode(false) }, Modifier.weight(1f))
+                ChoiceChip(stringResource(R.string.spider_tap_target), ui.prefs.selectMode, { vm.setSelectMode(true) }, Modifier.weight(1f))
             }
             Text(
-                if (ui.prefs.selectMode) "Tap cards to pick them up, then tap the column to place them. Drag works too."
-                else "Tap cards to send them to the best spot. Tap again to try the next spot. Drag works too.",
+                stringResource(if (ui.prefs.selectMode) R.string.spider_tap_target_desc else R.string.spider_smart_tap_desc),
                 color = CM.TextDim, fontSize = 11.sp, modifier = Modifier.padding(top = 4.dp, bottom = 4.dp)
             )
-            ToggleLine("Idle hints", "Gently show a good move after 25 seconds", ui.prefs.idleHint, vm::setIdleHint)
-            ToggleLine("Left-handed layout", "Stock and finished runs on the left", ui.prefs.leftHanded, vm::setLeftHanded)
-            ToggleLine("Show timer", "Display the game clock", ui.prefs.showTimer, vm::setShowTimer)
+            ToggleLine(stringResource(R.string.spider_idle_hints), stringResource(R.string.spider_idle_hints_desc), ui.prefs.idleHint, vm::setIdleHint)
+            ToggleLine(stringResource(R.string.spider_left_handed), stringResource(R.string.spider_left_handed_desc), ui.prefs.leftHanded, vm::setLeftHanded)
+            ToggleLine(stringResource(R.string.spider_show_timer), stringResource(R.string.spider_show_timer_desc), ui.prefs.showTimer, vm::setShowTimer)
             Spacer(Modifier.height(6.dp))
             Text(
-                "View statistics", color = CM.GoldLight, fontWeight = FontWeight.Bold, fontSize = 14.sp,
+                stringResource(R.string.spider_view_stats), color = CM.GoldLight, fontWeight = FontWeight.Bold, fontSize = 14.sp,
                 modifier = Modifier.clickable { vm.showDialog(SpiderDialog.STATS) }.padding(vertical = 8.dp)
             )
         }
@@ -320,18 +327,18 @@ private fun ToggleLine(title: String, desc: String, on: Boolean, onChange: (Bool
 
 @Composable
 private fun RulesDialog(onDismiss: () -> Unit) {
-    GemDialog("How to Play", onDismiss) {
+    GemDialog(stringResource(R.string.spider_rules_title), onDismiss) {
         Column(Modifier.heightIn(max = 480.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             listOf(
-                "Goal" to "Build 8 complete runs from King down to Ace in a single suit. Each finished run leaves the table automatically.",
-                "Moving" to "Put any face-up card on a card one rank higher, in any suit (a 7 on any 8).",
-                "Moving groups" to "A group of cards moves together only when it runs down in order AND all in one suit.",
-                "Empty columns" to "Any card or same-suit run can go into an empty column. Use them wisely!",
-                "Dealing" to "Tap the stock (top right) to deal one card onto every column. Every column needs at least one card first.",
-                "Hints & Undo" to "Stuck? Hint shows a good move (tap again for another). Undo is unlimited.",
-                "Score" to "Start with 500. Each move or undo costs 1 point, each finished run earns 100.",
-                "Tip" to "Turn over face-down cards early, and build in one suit whenever you can.",
-            ).forEach { (t, b) ->
+                R.string.spider_rules_goal_t to R.string.spider_rules_goal_b,
+                R.string.spider_rules_moving_t to R.string.spider_rules_moving_b,
+                R.string.spider_rules_groups_t to R.string.spider_rules_groups_b,
+                R.string.spider_rules_empty_t to R.string.spider_rules_empty_b,
+                R.string.spider_rules_dealing_t to R.string.spider_rules_dealing_b,
+                R.string.spider_rules_hints_t to R.string.spider_rules_hints_b,
+                R.string.spider_rules_score_t to R.string.spider_rules_score_b,
+                R.string.spider_rules_tip_t to R.string.spider_rules_tip_b,
+            ).map { (t, b) -> stringResource(t) to stringResource(b) }.forEach { (t, b) ->
                 Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(Color(0x1FFFFFFF)).padding(10.dp)) {
                     Text(t, color = CM.GoldLight, fontWeight = FontWeight.Black, fontSize = 14.sp)
                     Text(b, color = CM.Text, fontSize = 13.sp)
@@ -339,52 +346,52 @@ private fun RulesDialog(onDismiss: () -> Unit) {
             }
         }
         Spacer(Modifier.height(12.dp))
-        GameButton("Got it!", onDismiss, style = ButtonStyle.GOLD, modifier = Modifier.fillMaxWidth(), height = 48.dp, fontSize = 16.sp)
+        GameButton(stringResource(R.string.spider_got_it), onDismiss, style = ButtonStyle.GOLD, modifier = Modifier.fillMaxWidth(), height = 48.dp, fontSize = 16.sp)
     }
 }
 
 @Composable
 private fun StuckDialog(ui: SpiderUi, onUndo: () -> Unit, onNew: () -> Unit, onDismiss: () -> Unit) {
-    GemDialog("No moves left", onDismiss) {
-        Text("There are no useful moves and nothing left to deal. Undo a few moves to try another path, or start a fresh game.",
+    GemDialog(stringResource(R.string.spider_stuck_title), onDismiss) {
+        Text(stringResource(R.string.spider_stuck_body),
             color = CM.Text, fontSize = 14.sp, textAlign = TextAlign.Center)
         Spacer(Modifier.height(16.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            GameButton("Undo", onUndo, style = ButtonStyle.PURPLE, modifier = Modifier.weight(1f), height = 48.dp, fontSize = 15.sp, icon = Icons.AutoMirrored.Rounded.Undo, enabled = ui.canUndo)
-            GameButton("New Game", onNew, style = ButtonStyle.GOLD, modifier = Modifier.weight(1.2f), height = 48.dp, fontSize = 15.sp)
+            GameButton(stringResource(R.string.spider_undo), onUndo, style = ButtonStyle.PURPLE, modifier = Modifier.weight(1f), height = 48.dp, fontSize = 15.sp, icon = Icons.AutoMirrored.Rounded.Undo, enabled = ui.canUndo)
+            GameButton(stringResource(R.string.spider_new_game), onNew, style = ButtonStyle.GOLD, modifier = Modifier.weight(1.2f), height = 48.dp, fontSize = 15.sp)
         }
-        Text("Keep looking", color = CM.TextDim, fontWeight = FontWeight.Bold, fontSize = 13.sp, modifier = Modifier.clickable(onClick = onDismiss).padding(10.dp))
+        Text(stringResource(R.string.spider_keep_looking), color = CM.TextDim, fontWeight = FontWeight.Bold, fontSize = 13.sp, modifier = Modifier.clickable(onClick = onDismiss).padding(10.dp))
     }
 }
 
 @Composable
 private fun StatsDialog(ui: SpiderUi, onDismiss: () -> Unit) {
-    GemDialog("Statistics", onDismiss) {
+    GemDialog(stringResource(R.string.spider_stats_title), onDismiss) {
         listOf(1, 2, 4).forEach { suits ->
             val st = ui.profile.spider.stat(suits)
             Column(Modifier.fillMaxWidth().padding(vertical = 4.dp).clip(RoundedCornerShape(14.dp)).background(Color(0x1FFFFFFF)).padding(10.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     SuitGlyphs(suits, Modifier.width(48.dp).height(20.dp))
                     Spacer(Modifier.width(6.dp))
-                    Text("$suits Suit" + if (suits > 1) "s" else "", color = CM.GoldLight, fontWeight = FontWeight.Black, fontSize = 15.sp)
+                    Text(pluralStringResource(R.plurals.spider_suit_count, suits, suits), color = CM.GoldLight, fontWeight = FontWeight.Black, fontSize = 15.sp)
                 }
                 Spacer(Modifier.height(4.dp))
                 Row(Modifier.fillMaxWidth()) {
-                    StatCell("Played", "${st.played}")
-                    StatCell("Won", "${st.won}")
-                    StatCell("Win %", if (st.played == 0) "–" else "${st.won * 100 / st.played}%")
-                    StatCell("Streak", "${st.bestStreak}")
+                    StatCell(stringResource(R.string.spider_stat_played), "${st.played}")
+                    StatCell(stringResource(R.string.spider_stat_won), "${st.won}")
+                    StatCell(stringResource(R.string.spider_stat_win_pct), if (st.played == 0) "–" else "${st.won * 100 / st.played}%")
+                    StatCell(stringResource(R.string.spider_stat_streak), "${st.bestStreak}")
                 }
                 Row(Modifier.fillMaxWidth()) {
-                    StatCell("Best time", if (st.bestTimeMs == 0L) "–" else SpiderRules.formatTime(st.bestTimeMs))
-                    StatCell("Fewest moves", if (st.bestMoves == 0) "–" else "${st.bestMoves}")
-                    StatCell("Top score", if (st.bestScore == 0) "–" else "${st.bestScore}")
+                    StatCell(stringResource(R.string.spider_stat_best_time), if (st.bestTimeMs == 0L) "–" else SpiderRules.formatTime(st.bestTimeMs))
+                    StatCell(stringResource(R.string.spider_stat_fewest_moves), if (st.bestMoves == 0) "–" else "${st.bestMoves}")
+                    StatCell(stringResource(R.string.spider_stat_top_score), if (st.bestScore == 0) "–" else "${st.bestScore}")
                 }
             }
         }
-        Text("Daily Challenges solved: ${ui.profile.spider.dailySolved.size}", color = CM.Text, fontSize = 13.sp, modifier = Modifier.padding(top = 8.dp))
+        Text(stringResource(R.string.spider_daily_solved_count, ui.profile.spider.dailySolved.size), color = CM.Text, fontSize = 13.sp, modifier = Modifier.padding(top = 8.dp))
         Spacer(Modifier.height(10.dp))
-        GameButton("Close", onDismiss, style = ButtonStyle.GLASS, modifier = Modifier.fillMaxWidth(), height = 46.dp, fontSize = 15.sp)
+        GameButton(stringResource(R.string.spider_close), onDismiss, style = ButtonStyle.GLASS, modifier = Modifier.fillMaxWidth(), height = 46.dp, fontSize = 15.sp)
     }
 }
 
@@ -400,7 +407,7 @@ private fun androidx.compose.foundation.layout.RowScope.StatCell(label: String, 
 
 @Composable
 private fun WinDialog(w: SpiderWin, ui: SpiderUi, onNew: () -> Unit, onDaily: () -> Unit, onHome: () -> Unit) {
-    GemDialog(if (w.daily != null) "Daily Solved!" else "You Win!", onDismiss = {}, dismissible = false, onBack = onHome) {
+    GemDialog(stringResource(if (w.daily != null) R.string.spider_win_daily else R.string.spider_win_title), onDismiss = {}, dismissible = false, onBack = onHome) {
         Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
             val stars = when {
                 w.moves <= 120 -> 3
@@ -411,18 +418,18 @@ private fun WinDialog(w: SpiderWin, ui: SpiderUi, onNew: () -> Unit, onDaily: ()
         }
         Spacer(Modifier.height(12.dp))
         Row(Modifier.fillMaxWidth()) {
-            StatCell("Time", SpiderRules.formatTime(w.timeMs))
-            StatCell("Moves", "${w.moves}")
-            StatCell("Score", "${w.score}")
+            StatCell(stringResource(R.string.spider_stat_time), SpiderRules.formatTime(w.timeMs))
+            StatCell(stringResource(R.string.spider_stat_moves), "${w.moves}")
+            StatCell(stringResource(R.string.spider_stat_score), "${w.score}")
         }
-        if (w.bestTime) Text("New best time!", color = CM.Emerald, fontWeight = FontWeight.Black, fontSize = 14.sp, modifier = Modifier.padding(top = 4.dp))
+        if (w.bestTime) Text(stringResource(R.string.spider_new_best_time), color = CM.Emerald, fontWeight = FontWeight.Black, fontSize = 14.sp, modifier = Modifier.padding(top = 4.dp))
         Spacer(Modifier.height(10.dp))
         Row(verticalAlignment = Alignment.CenterVertically) {
             CoinIcon(26.dp)
             Spacer(Modifier.width(6.dp))
             Text("+${w.coins}", color = CM.GoldLight, fontWeight = FontWeight.Black, fontSize = 22.sp)
             Spacer(Modifier.width(18.dp))
-            Text("+${w.xp} XP", color = Color(0xFFC0A6FF), fontWeight = FontWeight.Black, fontSize = 18.sp)
+            Text(stringResource(R.string.spider_xp, w.xp), color = Color(0xFFC0A6FF), fontWeight = FontWeight.Black, fontSize = 18.sp)
         }
         w.achievements.forEach { a ->
             Spacer(Modifier.height(6.dp))
@@ -439,11 +446,11 @@ private fun WinDialog(w: SpiderWin, ui: SpiderUi, onNew: () -> Unit, onDaily: ()
             }
         }
         Spacer(Modifier.height(16.dp))
-        GameButton("New Game", onNew, style = ButtonStyle.GOLD, modifier = Modifier.fillMaxWidth(), height = 52.dp, fontSize = 17.sp, icon = Icons.Rounded.PlayArrow)
+        GameButton(stringResource(R.string.spider_new_game), onNew, style = ButtonStyle.GOLD, modifier = Modifier.fillMaxWidth(), height = 52.dp, fontSize = 17.sp, icon = Icons.Rounded.PlayArrow)
         Spacer(Modifier.height(8.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            GameButton("Home", onHome, style = ButtonStyle.PURPLE, modifier = Modifier.weight(1f), height = 46.dp, fontSize = 14.sp, icon = Icons.Rounded.Home)
-            GameButton("Daily", onDaily, style = ButtonStyle.BLUE, modifier = Modifier.weight(1f), height = 46.dp, fontSize = 14.sp)
+            GameButton(stringResource(R.string.spider_home), onHome, style = ButtonStyle.PURPLE, modifier = Modifier.weight(1f), height = 46.dp, fontSize = 14.sp, icon = Icons.Rounded.Home)
+            GameButton(stringResource(R.string.spider_daily), onDaily, style = ButtonStyle.BLUE, modifier = Modifier.weight(1f), height = 46.dp, fontSize = 14.sp)
         }
         @Suppress("UNUSED_VARIABLE") val unused = ui
     }
@@ -451,10 +458,12 @@ private fun WinDialog(w: SpiderWin, ui: SpiderUi, onNew: () -> Unit, onDaily: ()
 
 // ------------------------------------------------------------------------------------------- crowns & trophies
 
-enum class CrownTier(val light: Long, val base: Long, val dark: Long, val label: String) {
-    BRONZE(0xFFF2B57A, 0xFFC9783C, 0xFF7A4218, "Bronze"),
-    SILVER(0xFFFFFFFF, 0xFFC9CFDB, 0xFF7C8496, "Silver"),
-    GOLD(0xFFFFF1A8, 0xFFFFC93C, 0xFFB97A00, "Gold"),
+enum class CrownTier(val light: Long, val base: Long, val dark: Long, @StringRes val labelRes: Int) {
+    BRONZE(0xFFF2B57A, 0xFFC9783C, 0xFF7A4218, R.string.spider_tier_bronze),
+    SILVER(0xFFFFFFFF, 0xFFC9CFDB, 0xFF7C8496, R.string.spider_tier_silver),
+    GOLD(0xFFFFF1A8, 0xFFFFC93C, 0xFFB97A00, R.string.spider_tier_gold);
+
+    val label: String get() = Strings.get(labelRes)
 }
 
 /** A small crown drawn with paths (tinted by tier, or grey when [lit] is false). */
@@ -492,7 +501,7 @@ private fun TierBadge(tier: CrownTier, label: String, earned: Boolean) {
                 .border(1.5.dp, if (earned) Color(tier.light) else Color(0x33FFFFFF), CircleShape),
             contentAlignment = Alignment.Center
         ) { Crown(tier, Modifier.size(30.dp), lit = earned) }
-        Text(tier.label, color = if (earned) Color(tier.light) else CM.TextMuted, fontWeight = FontWeight.Black, fontSize = 11.sp)
+        Text(stringResource(tier.labelRes), color = if (earned) Color(tier.light) else CM.TextMuted, fontWeight = FontWeight.Black, fontSize = 11.sp)
         Text(label, color = CM.TextMuted, fontSize = 10.sp)
     }
 }
@@ -504,7 +513,7 @@ private fun TrophyShelf(solved: Set<String>, today: Calendar) {
         (5 downTo 0).map { back ->
             val cal = (today.clone() as Calendar).apply { set(Calendar.DAY_OF_MONTH, 1); add(Calendar.MONTH, -back) }
             val prefix = SimpleDateFormat("yyyy-MM", Locale.US).format(cal.time)
-            val name = SimpleDateFormat("MMM", Locale.US).format(cal.time)
+            val name = SimpleDateFormat("LLL", Locale.getDefault()).format(cal.time)
             val count = solved.count { it.startsWith(prefix) }
             val days = cal.getActualMaximum(Calendar.DAY_OF_MONTH)
             val tier = when {
@@ -522,7 +531,7 @@ private fun TrophyShelf(solved: Set<String>, today: Calendar) {
             .border(1.dp, Color(0x33FFFFFF), RoundedCornerShape(14.dp))
             .padding(horizontal = 8.dp, vertical = 6.dp)
     ) {
-        Text("TROPHY SHELF", color = CM.GoldLight, fontWeight = FontWeight.Black, fontSize = 11.sp)
+        Text(stringResource(R.string.spider_trophy_shelf), color = CM.GoldLight, fontWeight = FontWeight.Black, fontSize = 11.sp)
         Row(Modifier.fillMaxWidth().padding(top = 4.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
             months.forEach { (name, tier, count) ->
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {

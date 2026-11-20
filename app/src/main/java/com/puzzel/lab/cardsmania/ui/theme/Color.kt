@@ -1,7 +1,9 @@
 package com.puzzel.lab.cardsmania.ui.theme
 
 import androidx.compose.ui.graphics.Color
+import com.puzzel.lab.cardsmania.R
 import com.puzzel.lab.cardsmania.engine.model.Suit
+import com.puzzel.lab.cardsmania.i18n.Strings
 
 object CM {
     val Royal = Color(0xFF2A0E5C)
@@ -51,14 +53,14 @@ object Gems {
     fun color(suit: Suit): Color = tone(suit).base
 
     fun name(suit: Suit): String = when (suit) {
-        Suit.RUBY -> "Red"
-        Suit.SAPPHIRE -> "Blue"
-        Suit.EMERALD -> "Green"
-        Suit.AMBER -> "Yellow"
-        Suit.ROSE -> "Pink"
-        Suit.AQUA -> "Teal"
-        Suit.TANGERINE -> "Orange"
-        Suit.VIOLET -> "Purple"
-        Suit.WILD -> "Wild"
+        Suit.RUBY -> Strings.get(R.string.data_gem_red)
+        Suit.SAPPHIRE -> Strings.get(R.string.data_gem_blue)
+        Suit.EMERALD -> Strings.get(R.string.data_gem_green)
+        Suit.AMBER -> Strings.get(R.string.data_gem_yellow)
+        Suit.ROSE -> Strings.get(R.string.data_gem_pink)
+        Suit.AQUA -> Strings.get(R.string.data_gem_teal)
+        Suit.TANGERINE -> Strings.get(R.string.data_gem_orange)
+        Suit.VIOLET -> Strings.get(R.string.data_gem_purple)
+        Suit.WILD -> Strings.get(R.string.data_gem_wild)
     }
 }

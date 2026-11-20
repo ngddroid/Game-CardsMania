@@ -16,11 +16,14 @@ import android.os.SystemClock
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.toArgb
+import com.puzzel.lab.cardsmania.R
 import com.puzzel.lab.cardsmania.data.TableTheme
+import com.puzzel.lab.cardsmania.i18n.Strings
 import com.puzzel.lab.cardsmania.mindi.MCard
 import com.puzzel.lab.cardsmania.mindi.MStep
 import com.puzzel.lab.cardsmania.mindi.MindiEvent
 import com.puzzel.lab.cardsmania.mindi.MindiState
+import com.puzzel.lab.cardsmania.ui.game.AnimatedWorld
 import com.puzzel.lab.cardsmania.ui.game.Fx
 import com.puzzel.lab.cardsmania.ui.render.CardArt
 import com.puzzel.lab.cardsmania.ui.render.CardBack
@@ -44,7 +47,7 @@ private class MSprite(val id: Int, var card: MCard?) {
 }
 
 /** All animated cards on the Mindi table, the felt, and effects. */
-class MindiWorld(val layout: MindiLayout) {
+class MindiWorld(val layout: MindiLayout) : AnimatedWorld {
     private val sprites = HashMap<Int, MSprite>(64)
     val fx = Fx(layout.density)
     var state: MindiState? = null
@@ -76,6 +79,8 @@ class MindiWorld(val layout: MindiLayout) {
     private var feltTheme: TableTheme? = null
     private var shadow: Bitmap? = null
     private var glow: Bitmap? = null
+    /** Ids of my hand cards, refilled each frame (no per-frame allocation). */
+    private val myHandIds = HashSet<Int>(64)
     private val order = ArrayList<MSprite>(64)
     private val rnd = Random(5)
 
@@ -120,7 +125,7 @@ class MindiWorld(val layout: MindiLayout) {
             }
             is MindiEvent.TrumpShown -> {
                 val sp = spawnPhantom(L.deckPos, e.card, true, L.trickCardW)
-                fx.pop("TRUMP", L.center.x, L.center.y - L.trickCardH * 0.8f, 0xFFFFE27A.toInt(), now, 30f, 1100)
+                fx.pop(Strings.get(R.string.mindi_pop_trump), L.center.x, L.center.y - L.trickCardH * 0.8f, 0xFFFFE27A.toInt(), now, 30f, 1100)
                 tween(sp, L.trumpSlot.x, L.trumpSlot.y, 0f, L.trickCardW * 0.45f, now, (700 * sf).toLong(), (420 * sf).toLong(), 0.1f)
                 sp.removeAt = now + (1120 * sf).toLong()
             }
@@ -131,12 +136,12 @@ class MindiWorld(val layout: MindiLayout) {
                 sprites.remove(s.hidden?.id ?: -1) // my hand sprite of the hidden card leaves
                 tween(sp, L.trumpSlot.x, L.trumpSlot.y, 0f, L.trickCardW * 0.45f, now, 0, (480 * sf).toLong(), 0.25f)
                 sp.removeAt = now + (480 * sf).toLong()
-                fx.pop("SECRET TRUMP", L.center.x, L.center.y, 0xFFFFE27A.toInt(), now + 200, 26f, 1100)
+                fx.pop(Strings.get(R.string.mindi_pop_secret_trump), L.center.x, L.center.y, 0xFFFFE27A.toInt(), now + 200, 26f, 1100)
             }
             is MindiEvent.TrumpRevealed -> {
                 fx.flash(0xFFFFE6A0.toInt(), now, 400, 0.25f)
                 fx.ring(L.trumpSlot.x, L.trumpSlot.y, 0xFFFFC93C.toInt(), now, L.width * 0.5f, 700, 10f)
-                fx.pop("TRUMP REVEALED!", L.center.x, L.center.y - L.trickCardH * 0.9f, 0xFFFFE27A.toInt(), now + 150, 30f, 1400)
+                fx.pop(Strings.get(R.string.mindi_pop_trump_revealed), L.center.x, L.center.y - L.trickCardH * 0.9f, 0xFFFFE27A.toInt(), now + 150, 30f, 1400)
                 fx.sparkles(L.trumpSlot.x, L.trumpSlot.y, L.width * 0.12f, 24, 0xFFFFE89A.toInt())
                 if (e.owner != L.me) {
                     val sp = spawnPhantom(L.trumpSlot, e.card, true, L.trickCardW * 0.6f)
@@ -150,7 +155,7 @@ class MindiWorld(val layout: MindiLayout) {
                 }
             }
             is MindiEvent.TrumpCut -> {
-                fx.pop("CUT! NEW TRUMP", L.center.x, L.center.y - L.trickCardH * 0.9f, 0xFFFF8A8A.toInt(), now, 28f, 1300)
+                fx.pop(Strings.get(R.string.mindi_pop_cut), L.center.x, L.center.y - L.trickCardH * 0.9f, 0xFFFF8A8A.toInt(), now, 28f, 1300)
                 fx.ring(L.center.x, L.center.y, 0xFFE53935.toInt(), now, L.width * 0.45f, 650, 8f)
                 fx.shake(4f, 300, now)
             }
@@ -169,7 +174,7 @@ class MindiWorld(val layout: MindiLayout) {
                 if (!sp.faceUp) flip(sp, true, now + (80 * sf).toLong(), (200 * sf).toLong())
                 if (e.trump) {
                     fx.ring(target.x, target.y, 0xFFE53935.toInt(), now + (300 * sf).toLong(), L.trickCardW, 500, 6f)
-                    fx.pop("TRUMP!", target.x, target.y - L.trickCardH * 0.6f, 0xFFFF8A8A.toInt(), now + (250 * sf).toLong(), 20f, 800)
+                    fx.pop(Strings.get(R.string.mindi_pop_trump_play), target.x, target.y - L.trickCardH * 0.6f, 0xFFFF8A8A.toInt(), now + (250 * sf).toLong(), 20f, 800)
                 }
                 if (e.card.isTen) fx.sparkles(target.x, target.y, L.trickCardW * 0.6f, 10, 0xFFFFE89A.toInt())
             }
@@ -185,7 +190,7 @@ class MindiWorld(val layout: MindiLayout) {
                 }
                 if (e.tens > 0) {
                     val at = now + hold + (380 * sf).toLong()
-                    fx.pop(if (e.tens > 1) "MINDI ×${e.tens}!" else "MINDI!", pile.x, pile.y + layout.trackerH * 0.9f, 0xFFFFE27A.toInt(), at, 26f, 1200)
+                    fx.pop(if (e.tens > 1) Strings.get(R.string.mindi_pop_mindi_n, e.tens) else Strings.get(R.string.mindi_pop_mindi), pile.x, pile.y + layout.trackerH * 0.9f, 0xFFFFE27A.toInt(), at, 26f, 1200)
                     fx.burst(pile.x, pile.y, 30, intArrayOf(0xFFFFE27A.toInt(), 0xFFFFFFFF.toInt(), 0xFFFFB000.toInt()), 260f, 4f, 0f, 0.9f, 2)
                 }
             }
@@ -193,7 +198,7 @@ class MindiWorld(val layout: MindiLayout) {
                 val r = e.result
                 val mineWon = r.winnerTeam == s.team(L.me)
                 if (r.kind != com.puzzel.lab.cardsmania.mindi.HandKind.NORMAL) {
-                    fx.pop(if (r.kind == com.puzzel.lab.cardsmania.mindi.HandKind.MENDIKOT) "MENDIKOT!" else "WHITEWASH!", L.center.x, L.center.y, 0xFFFFE27A.toInt(), now, 44f, 1800)
+                    fx.pop(Strings.get(if (r.kind == com.puzzel.lab.cardsmania.mindi.HandKind.MENDIKOT) R.string.mindi_pop_mendikot else R.string.mindi_pop_whitewash), L.center.x, L.center.y, 0xFFFFE27A.toInt(), now, 44f, 1800)
                     fx.shake(6f, 450, now)
                 }
                 if (mineWon) fx.confetti(L.width, 120)
@@ -281,6 +286,37 @@ class MindiWorld(val layout: MindiLayout) {
         sp.faceUp = up
         sp.flipAt = at
         sp.flipDur = dur.coerceAtLeast(1)
+    }
+
+    // ------------------------------------------------------------------ frame pacing
+
+    /**
+     * Busy while a card moves (or waits on its start delay), a flip is still turning, a card is waiting to be removed
+     * at [MSprite.removeAt] (removal happens in [update]) or any effect / shake is running.
+     */
+    override fun isBusy(now: Long): Boolean {
+        if (fx.isActive(now)) return true
+        for (sp in sprites.values) {
+            if (sp.moving || sp.flipFrom != null || sp.removeAt > 0) return true
+        }
+        return false
+    }
+
+    /**
+     * The only time-based visual in [draw] is the pulsing glow on my hint card and on my legal cards (when only some
+     * are legal); the selected card's glow is steady. Same conditions as [drawSprite].
+     */
+    override fun idleFrameMs(now: Long): Long {
+        if (!interactive) return 0L
+        val hand = state?.hands?.getOrNull(layout.me) ?: return 0L
+        val sel = selected
+        val h = hint
+        for (c in hand) {
+            val id = c.id
+            if (id == sel || id !in sprites) continue
+            if (id == h || (id in legal && legal.size < hand.size)) return 33L
+        }
+        return 0L
     }
 
     // ------------------------------------------------------------------ hit test
@@ -373,25 +409,28 @@ class MindiWorld(val layout: MindiLayout) {
 
     fun draw(c: Canvas, now: Long) {
         ensure()
-        val (sx, sy) = fx.shakeOffset(now)
+        fx.updateShake(now)
+        val sx = fx.shakeX
+        val sy = fx.shakeY
         c.save()
         c.translate(sx, sy)
         felt?.let { c.drawBitmap(it, 0f, 0f, null) }
         update(now)
         order.clear()
-        order.addAll(sprites.values)
+        for (sp in sprites.values) order += sp
         order.sortWith(drawOrder)
-        val s = state
-        val myHand = s?.hands?.get(layout.me)?.map { it.id }?.toHashSet() ?: emptySet<Int>()
-        for (sp in order) drawSprite(c, sp, now, sp.id in myHand)
+        myHandIds.clear()
+        state?.hands?.get(layout.me)?.let { hand -> for (card in hand) myHandIds += card.id }
+        for (sp in order) drawSprite(c, sp, now, sp.id in myHandIds)
         fx.draw(c, now, layout.width, layout.height)
         c.restore()
     }
 
     private fun update(now: Long) {
-        val dead = ArrayList<Int>()
-        for (sp in sprites.values) {
-            if (sp.removeAt in 1..now) { dead += sp.id; continue }
+        val iter = sprites.values.iterator()
+        while (iter.hasNext()) {
+            val sp = iter.next()
+            if (sp.removeAt in 1..now) { iter.remove(); continue }
             if (!sp.moving) continue
             val el = now - sp.start - sp.delay
             if (el <= 0) continue
@@ -408,7 +447,6 @@ class MindiWorld(val layout: MindiLayout) {
             sp.w = sp.fw + (sp.tw - sp.fw) * e
             if (t >= 1f) sp.moving = false
         }
-        dead.forEach { sprites.remove(it) }
     }
 
     private fun drawSprite(c: Canvas, sp: MSprite, now: Long, inHand: Boolean) {
@@ -465,7 +503,7 @@ class MindiWorld(val layout: MindiLayout) {
             p.textSize = r * 1.4f
             p.textAlign = Paint.Align.CENTER
             p.typeface = android.graphics.Typeface.DEFAULT_BOLD
-            c.drawText("T", w / 2 - r * 1.3f, h / 2 - r * 1.3f + r * 0.5f, p)
+            c.drawText(trumpMarker, w / 2 - r * 1.3f, h / 2 - r * 1.3f + r * 0.5f, p)
         }
         if (angle != 0f) {
             p.color = Fx.withAlpha(0xFF000000.toInt(), abs(angle) / 90f * 0.3f)
@@ -473,6 +511,9 @@ class MindiWorld(val layout: MindiLayout) {
         }
         c.restore()
     }
+
+    /** Small letter on my trump cards (localized once; the world is rebuilt when the language changes). */
+    private val trumpMarker = Strings.get(R.string.mindi_trump_marker)
 
     val busy: Boolean get() = sprites.values.any { it.moving } || fx.busy
 

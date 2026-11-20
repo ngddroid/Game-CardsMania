@@ -1,5 +1,6 @@
 package com.puzzel.lab.cardsmania.ui.mindi
 
+import androidx.compose.runtime.getValue
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Image
@@ -40,10 +41,13 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.puzzel.lab.cardsmania.R
 import com.puzzel.lab.cardsmania.data.AvatarRef
 import com.puzzel.lab.cardsmania.mindi.HandKind
 import com.puzzel.lab.cardsmania.mindi.HandResult
@@ -72,10 +76,10 @@ private fun Scrim(alpha: Float = 0.8f, onTap: (() -> Unit)? = null, content: @Co
 fun LastTrickDialog(s: MindiState, ui: MindiUi, onClose: () -> Unit) {
     Scrim(0.75f, onTap = onClose) {
         GlassPanel(Modifier.padding(horizontal = 24.dp).fillMaxWidth(), padding = 16.dp) {
-            OutlinedTitle("Last trick", fontSize = 26.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
+            OutlinedTitle(stringResource(R.string.mindi_last_trick), fontSize = 26.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
             Spacer(Modifier.height(10.dp))
             if (s.lastTrick.isEmpty()) {
-                Text("No trick has been played yet.", color = CM.TextDim, fontSize = 14.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
+                Text(stringResource(R.string.mindi_no_trick_yet), color = CM.TextDim, fontSize = 14.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
             } else {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
                     s.lastTrick.forEach { play ->
@@ -91,26 +95,27 @@ fun LastTrickDialog(s: MindiState, ui: MindiUi, onClose: () -> Unit) {
                                 ui.seats.getOrNull(play.seat)?.name?.take(8) ?: "", color = if (s.team(play.seat) == s.team(ui.me)) TeamBlue else TeamRed,
                                 fontSize = 10.sp, fontWeight = FontWeight.Bold,
                             )
-                            if (play.trump) Text("TRUMP", color = Color(0xFFFF8A8A), fontSize = 8.sp, fontWeight = FontWeight.Black)
+                            if (play.trump) Text(stringResource(R.string.mindi_trump_label), color = Color(0xFFFF8A8A), fontSize = 8.sp, fontWeight = FontWeight.Black)
                         }
                     }
                 }
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    "${ui.seats.getOrNull(s.lastWinner)?.name ?: ""} won it", color = CM.GoldLight, fontSize = 13.sp, fontWeight = FontWeight.Bold,
+                    stringResource(R.string.mindi_won_it, ui.seats.getOrNull(s.lastWinner)?.name ?: ""), color = CM.GoldLight, fontSize = 13.sp, fontWeight = FontWeight.Bold,
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
             }
             Spacer(Modifier.height(12.dp))
-            GameButton("Close", onClose, style = ButtonStyle.GLASS, modifier = Modifier.fillMaxWidth(), height = 46.dp, fontSize = 15.sp)
+            GameButton(stringResource(R.string.mindi_close), onClose, style = ButtonStyle.GLASS, modifier = Modifier.fillMaxWidth(), height = 46.dp, fontSize = 15.sp)
         }
     }
 }
 
+@Composable
 private fun kindLabel(k: HandKind) = when (k) {
-    HandKind.NORMAL -> "Hand won"
-    HandKind.MENDIKOT -> "MENDIKOT! All four 10s"
-    HandKind.WHITEWASH -> "WHITEWASH! Every trick"
+    HandKind.NORMAL -> stringResource(R.string.mindi_kind_normal)
+    HandKind.MENDIKOT -> stringResource(R.string.mindi_kind_mendikot)
+    HandKind.WHITEWASH -> stringResource(R.string.mindi_kind_whitewash)
 }
 
 @Composable
@@ -124,8 +129,8 @@ fun HandResultOverlay(s: MindiState, ui: MindiUi, r: HandResult, onNext: (() -> 
             Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding().verticalScroll(rememberScrollState()).padding(18.dp),
             horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center
         ) {
-            OutlinedTitle(if (won) "Your team wins!" else "Rivals win the hand", fontSize = if (won) 34.sp else 28.sp, modifier = Modifier.scale(pop.value))
-            Text(kindLabel(r.kind) + "  ·  +${r.points} point" + if (r.points > 1) "s" else "", color = CM.GoldLight, fontWeight = FontWeight.Black, fontSize = 15.sp)
+            OutlinedTitle(stringResource(if (won) R.string.mindi_your_team_wins else R.string.mindi_rivals_win), fontSize = if (won) 34.sp else 28.sp, modifier = Modifier.scale(pop.value))
+            Text(pluralStringResource(R.plurals.mindi_result_points, r.points, kindLabel(r.kind), r.points), color = CM.GoldLight, fontWeight = FontWeight.Black, fontSize = 15.sp)
             Spacer(Modifier.height(14.dp))
             // podium: winning team in front with crowns
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.Bottom) {
@@ -147,8 +152,8 @@ fun HandResultOverlay(s: MindiState, ui: MindiUi, r: HandResult, onNext: (() -> 
                             contentAlignment = Alignment.Center
                         ) {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Text(if (team == myTeam) "YOUR TEAM" else "RIVALS", color = Color.White, fontWeight = FontWeight.Black, fontSize = 12.sp)
-                                Text("${r.tens[team]} tens · ${r.tricks[team]} tricks", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                                Text(stringResource(if (team == myTeam) R.string.mindi_your_team else R.string.mindi_rivals), color = Color.White, fontWeight = FontWeight.Black, fontSize = 12.sp)
+                                Text(stringResource(R.string.mindi_tens_tricks, r.tens[team], r.tricks[team]), color = Color.White, fontWeight = FontWeight.Bold, fontSize = 12.sp)
                                 Text("★ ${s.scores[team]}", color = CM.GoldLight, fontWeight = FontWeight.Black, fontSize = 16.sp)
                             }
                         }
@@ -165,10 +170,11 @@ fun HandResultOverlay(s: MindiState, ui: MindiUi, r: HandResult, onNext: (() -> 
             Spacer(Modifier.height(14.dp))
             // scoreboard
             GlassPanel(Modifier.fillMaxWidth(), padding = 12.dp) {
-                Text("SCOREBOARD", color = CM.GoldLight, fontWeight = FontWeight.Black, fontSize = 12.sp, letterSpacing = 1.sp)
+                Text(stringResource(R.string.mindi_sb_title), color = CM.GoldLight, fontWeight = FontWeight.Black, fontSize = 12.sp, letterSpacing = 1.sp)
                 Spacer(Modifier.height(6.dp))
                 Row(Modifier.fillMaxWidth()) {
-                    listOf("Hand", "Winner", "10s", "Tricks", "Pts").forEachIndexed { i, h ->
+                    listOf(R.string.mindi_sb_hand, R.string.mindi_sb_winner, R.string.mindi_sb_tens, R.string.mindi_sb_tricks, R.string.mindi_sb_pts)
+                        .map { stringResource(it) }.forEachIndexed { i, h ->
                         Text(h, color = CM.TextMuted, fontSize = 11.sp, fontWeight = FontWeight.Black, modifier = Modifier.weight(if (i == 1) 1.5f else 1f), textAlign = TextAlign.Center)
                     }
                 }
@@ -178,7 +184,7 @@ fun HandResultOverlay(s: MindiState, ui: MindiUi, r: HandResult, onNext: (() -> 
                         Row(Modifier.fillMaxWidth().padding(vertical = 3.dp)) {
                             Text("${h.hand}", color = Color.White, fontSize = 12.sp, modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
                             Text(
-                                (if (mine) "You" else "Rivals") + when (h.kind) { HandKind.MENDIKOT -> " ★"; HandKind.WHITEWASH -> " ★★"; else -> "" },
+                                stringResource(if (mine) R.string.mindi_sb_you else R.string.mindi_sb_rivals) + when (h.kind) { HandKind.MENDIKOT -> " ★"; HandKind.WHITEWASH -> " ★★"; else -> "" },
                                 color = if (mine) TeamBlue else TeamRed, fontSize = 12.sp, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1.5f), textAlign = TextAlign.Center,
                             )
                             Text("${h.tens[myTeam]}–${h.tens[1 - myTeam]}", color = Color.White, fontSize = 12.sp, modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
@@ -190,13 +196,13 @@ fun HandResultOverlay(s: MindiState, ui: MindiUi, r: HandResult, onNext: (() -> 
                 Spacer(Modifier.height(4.dp))
                 val nextDealer = com.puzzel.lab.cardsmania.mindi.MindiEngine.nextDealer(s, r)
                 Text(
-                    "Next dealer: ${ui.seats.getOrNull(nextDealer)?.name ?: "-"} (the losing side deals)",
+                    stringResource(R.string.mindi_next_dealer, ui.seats.getOrNull(nextDealer)?.name ?: "-"),
                     color = CM.TextDim, fontSize = 11.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center,
                 )
             }
             Spacer(Modifier.height(16.dp))
             if (onNext != null) {
-                GameButton("Next Hand", onNext, style = ButtonStyle.GOLD, modifier = Modifier.fillMaxWidth(), icon = Icons.Rounded.PlayArrow)
+                GameButton(stringResource(R.string.mindi_next_hand), onNext, style = ButtonStyle.GOLD, modifier = Modifier.fillMaxWidth(), icon = Icons.Rounded.PlayArrow)
             } else {
                 WaitingForHost()
             }
@@ -215,14 +221,14 @@ fun MatchResultOverlay(s: MindiState, ui: MindiUi, mr: MindiWin, onHome: () -> U
             horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center
         ) {
             Text(if (mr.won) "🏆" else "🤝", fontSize = 72.sp, modifier = Modifier.scale(pop.value))
-            OutlinedTitle(if (mr.won) "VICTORY!" else "Good game!", fontSize = if (mr.won) 46.sp else 34.sp, modifier = Modifier.scale(pop.value))
+            OutlinedTitle(stringResource(if (mr.won) R.string.mindi_victory else R.string.mindi_good_game), fontSize = if (mr.won) 46.sp else 34.sp, modifier = Modifier.scale(pop.value))
             Text(
-                "Final score  ${s.scores[myTeam]} – ${s.scores[1 - myTeam]}", color = Color.White, fontWeight = FontWeight.Black, fontSize = 18.sp,
+                stringResource(R.string.mindi_final_score, s.scores[myTeam], s.scores[1 - myTeam]), color = Color.White, fontWeight = FontWeight.Black, fontSize = 18.sp,
             )
             if (ui.daily != null) {
                 Spacer(Modifier.height(8.dp))
                 Row { repeat(3) { StarIcon(it < mr.stars, 36.dp) } }
-                Text("Daily: ★ win · ★★ 3+ tens · ★★★ 9+ tricks or Mendikot", color = CM.TextDim, fontSize = 11.sp)
+                Text(stringResource(R.string.mindi_daily_stars_info), color = CM.TextDim, fontSize = 11.sp)
             }
             Spacer(Modifier.height(14.dp))
             GlassPanel(Modifier.fillMaxWidth()) {
@@ -232,7 +238,7 @@ fun MatchResultOverlay(s: MindiState, ui: MindiUi, mr: MindiWin, onHome: () -> U
                         Spacer(Modifier.width(6.dp))
                         Text("+${mr.coins}", color = CM.GoldLight, fontWeight = FontWeight.Black, fontSize = 24.sp)
                     }
-                    Text("+${mr.xp} XP", color = Color(0xFFC0A6FF), fontWeight = FontWeight.Black, fontSize = 20.sp)
+                    Text(stringResource(R.string.mindi_xp, mr.xp), color = Color(0xFFC0A6FF), fontWeight = FontWeight.Black, fontSize = 20.sp)
                 }
                 mr.achievements.forEach { a ->
                     Spacer(Modifier.height(8.dp))
@@ -243,7 +249,7 @@ fun MatchResultOverlay(s: MindiState, ui: MindiUi, mr: MindiWin, onHome: () -> U
                         Text(a.icon, fontSize = 24.sp)
                         Spacer(Modifier.width(8.dp))
                         Column(Modifier.weight(1f)) {
-                            Text("Achievement: ${a.title}", color = CM.GoldLight, fontWeight = FontWeight.Black, fontSize = 13.sp)
+                            Text(stringResource(R.string.mindi_achievement, a.title), color = CM.GoldLight, fontWeight = FontWeight.Black, fontSize = 13.sp)
                             Text(a.description, color = CM.TextDim, fontSize = 11.sp)
                         }
                         Text("+${a.reward}", color = CM.GoldLight, fontWeight = FontWeight.Black)
@@ -252,9 +258,9 @@ fun MatchResultOverlay(s: MindiState, ui: MindiUi, mr: MindiWin, onHome: () -> U
             }
             Spacer(Modifier.height(18.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                GameButton(if (onAgain == null) "Leave" else "Home", onHome, style = ButtonStyle.PURPLE, modifier = Modifier.weight(1f), icon = Icons.Rounded.Home)
-                if (onRoom != null) GameButton("Room", onRoom, style = ButtonStyle.BLUE, modifier = Modifier.weight(1f))
-                if (ui.daily == null && onAgain != null) GameButton(if (onRoom != null) "Rematch" else "Play Again", onAgain, style = ButtonStyle.GOLD, modifier = Modifier.weight(1.4f), icon = Icons.Rounded.Refresh)
+                GameButton(stringResource(if (onAgain == null) R.string.mindi_leave else R.string.mindi_home), onHome, style = ButtonStyle.PURPLE, modifier = Modifier.weight(1f), icon = Icons.Rounded.Home)
+                if (onRoom != null) GameButton(stringResource(R.string.mindi_room), onRoom, style = ButtonStyle.BLUE, modifier = Modifier.weight(1f))
+                if (ui.daily == null && onAgain != null) GameButton(stringResource(if (onRoom != null) R.string.mindi_rematch else R.string.mindi_play_again), onAgain, style = ButtonStyle.GOLD, modifier = Modifier.weight(1.4f), icon = Icons.Rounded.Refresh)
             }
         }
     }
@@ -274,34 +280,34 @@ fun MindiPauseMenu(
     Scrim(0.8f, onTap = onResume) {
         GlassPanel(Modifier.padding(horizontal = 32.dp).fillMaxWidth(), padding = 20.dp) {
             OutlinedTitle(
-                if (confirm) (if (isHost) "End game?" else "Leave game?") else if (isNet) "Menu" else "Paused",
+                stringResource(if (confirm) (if (isHost) R.string.mindi_end_game_q else R.string.mindi_leave_game_q) else if (isNet) R.string.mindi_menu else R.string.mindi_paused),
                 fontSize = 34.sp, modifier = Modifier.align(Alignment.CenterHorizontally),
             )
             Spacer(Modifier.height(16.dp))
             if (confirm) {
                 Text(
-                    if (isHost) "This ends the match and closes the room for everyone." else "A bot will take your seat for the rest of this match.",
+                    stringResource(if (isHost) R.string.mindi_end_host_desc else R.string.mindi_leave_desc),
                     color = CM.TextDim, fontSize = 14.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth(),
                 )
                 Spacer(Modifier.height(16.dp))
-                GameButton("Leave", onQuit, style = ButtonStyle.RED, modifier = Modifier.fillMaxWidth(), icon = Icons.Rounded.Home)
+                GameButton(stringResource(R.string.mindi_leave), onQuit, style = ButtonStyle.RED, modifier = Modifier.fillMaxWidth(), icon = Icons.Rounded.Home)
                 Spacer(Modifier.height(10.dp))
-                GameButton("Stay", { confirmState.value = false; onResume() }, style = ButtonStyle.GLASS, modifier = Modifier.fillMaxWidth())
+                GameButton(stringResource(R.string.mindi_stay), { confirmState.value = false; onResume() }, style = ButtonStyle.GLASS, modifier = Modifier.fillMaxWidth())
             } else {
                 if (isNet) {
-                    Text("Multiplayer matches keep running while this menu is open.", color = CM.TextDim, fontSize = 12.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+                    Text(stringResource(R.string.mindi_net_running), color = CM.TextDim, fontSize = 12.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
                     Spacer(Modifier.height(10.dp))
                 }
-                GameButton(if (isNet) "Back to Game" else "Resume", onResume, style = ButtonStyle.GREEN, modifier = Modifier.fillMaxWidth(), icon = Icons.Rounded.PlayArrow)
+                GameButton(stringResource(if (isNet) R.string.mindi_back_to_game else R.string.mindi_resume), onResume, style = ButtonStyle.GREEN, modifier = Modifier.fillMaxWidth(), icon = Icons.Rounded.PlayArrow)
                 Spacer(Modifier.height(10.dp))
-                GameButton("How to Play", onHowTo, style = ButtonStyle.BLUE, modifier = Modifier.fillMaxWidth(), icon = Icons.Rounded.MenuBook)
+                GameButton(stringResource(R.string.mindi_how_to_play), onHowTo, style = ButtonStyle.BLUE, modifier = Modifier.fillMaxWidth(), icon = Icons.Rounded.MenuBook)
                 Spacer(Modifier.height(10.dp))
                 if (!isNet) {
-                    Text("Your match is saved — continue it later from Mindi.", color = CM.TextDim, fontSize = 12.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+                    Text(stringResource(R.string.mindi_saved_note), color = CM.TextDim, fontSize = 12.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
                     Spacer(Modifier.height(10.dp))
                 }
                 GameButton(
-                    if (isHost) "End Game" else if (isNet) "Leave Game" else "Quit to Home",
+                    stringResource(if (isHost) R.string.mindi_end_game else if (isNet) R.string.mindi_leave_game else R.string.mindi_quit_home),
                     { if (isNet) confirmState.value = true else onQuit() },
                     style = ButtonStyle.RED, modifier = Modifier.fillMaxWidth(), icon = Icons.Rounded.Home,
                 )
@@ -312,11 +318,11 @@ fun MindiPauseMenu(
 
 @Composable
 private fun WaitingForHost() {
-    val pulse = com.puzzel.lab.cardsmania.ui.components.rememberPulse(700)
+    val pulse by com.puzzel.lab.cardsmania.ui.components.rememberPulse(700)
     Box(
         Modifier.fillMaxWidth().clip(RoundedCornerShape(50)).background(Color(0x33FFFFFF)).padding(vertical = 14.dp),
         contentAlignment = Alignment.Center
     ) {
-        Text("Waiting for the host…", color = CM.GoldLight.copy(alpha = 0.6f + 0.4f * pulse), fontWeight = FontWeight.Black, fontSize = 16.sp)
+        Text(stringResource(R.string.mindi_waiting_host), color = CM.GoldLight, fontWeight = FontWeight.Black, fontSize = 16.sp, modifier = Modifier.graphicsLayer { alpha = 0.6f + 0.4f * pulse })
     }
 }

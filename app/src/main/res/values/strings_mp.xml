@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Seat list / room summary -->
+    <string name="mp_players">Players</string>
+    <string name="mp_host">Host</string>
+    <string name="mp_guest">Guest</string>
+    <string name="mp_name_you">%1$s (you)</string>
+    <string name="mp_ready">Ready</string>
+    <string name="mp_reconnecting">Reconnecting…</string>
+    <string name="mp_bot">Bot</string>
+    <string name="mp_cd_remove_player">Remove player</string>
+    <string name="mp_open_seat">Open seat — waiting for a friend (a bot plays if empty)</string>
+    <string name="mp_sum_mindi_players">Mindi · %1$d players</string>
+    <string name="mp_sum_vs">%1$d vs %2$d</string>
+    <string name="mp_sum_double_deck">double deck</string>
+    <string name="mp_sum_single_hand">single hand</string>
+    <string name="mp_sum_first_to">first to %1$d</string>
+    <string name="mp_sum_single_round">single round</string>
+    <string name="mp_n_cards">%1$d cards</string>
+    <string name="mp_rule_must_trump">Must trump after reveal</string>
+    <string name="mp_rule_turns">%1$ds turns</string>
+    <string name="mp_rule_stacking">Stacking</string>
+    <string name="mp_rule_seven_zero">Seven &amp; Zero</string>
+    <string name="mp_rule_draw_to_match">Draw to Match</string>
+    <string name="mp_rule_challenge">Challenge</string>
+    <string name="mp_rule_jump_in">Jump-In</string>
+    <string name="mp_rule_forced_play">Forced Play</string>
+    <string name="mp_rule_combo_drop">Combo Drop</string>
+    <string name="mp_rule_power_ups">Power-ups</string>
+    <string name="mp_no_house_rules">No house rules</string>
+
+    <!-- Hub -->
+    <string name="mp_title">Multiplayer</string>
+    <string name="mp_err_permission">Cards Mania needs permission to find phones on your Wi-Fi.</string>
+    <string name="mp_play_with_friends">Play with friends</string>
+    <string name="mp_hub_intro">Everyone joins the same Wi-Fi. One phone hosts a room, the others join it — no internet needed.</string>
+    <string name="mp_host_room">Host a Room</string>
+    <string name="mp_host_room_sub">You choose the mode, seats and bots</string>
+    <string name="mp_join_room">Join a Room</string>
+    <string name="mp_join_room_sub">Find a room nearby or enter its code</string>
+    <string name="mp_permission_note">Android will ask to let Cards Mania find devices on your network. It\'s only used to connect phones in the same room.</string>
+    <string name="mp_how_it_works">HOW IT WORKS</string>
+    <string name="mp_step_1">1. Connect every phone to the same Wi-Fi (or to one phone\'s hotspot).</string>
+    <string name="mp_step_2">2. One player taps Host a Room and picks the mode, seats and bots.</string>
+    <string name="mp_step_3">3. Friends tap Join a Room and pick the room — or type its code.</string>
+    <string name="mp_step_4">4. The host taps Start. Up to 6 players, mixed with bots.</string>
+    <string name="mp_link_wifi">Connected to Wi-Fi</string>
+    <string name="mp_link_ethernet">Connected to a local network</string>
+    <string name="mp_link_hotspot">Hotspot is on — friends can join it</string>
+    <string name="mp_link_none">Not on Wi-Fi — connect to play together</string>
+
+    <!-- Guest lobby -->
+    <string name="mp_not_in_room">You\'re not in a room any more.</string>
+    <string name="mp_kicked">The host removed you from the room.</string>
+    <string name="mp_room">Room</string>
+    <string name="mp_youre_in">YOU\'RE IN!</string>
+    <string name="mp_hosts_room">%1$s\'s room</string>
+    <string name="mp_waiting_host">Waiting for the host to start…</string>
+    <string name="mp_game">Game</string>
+    <string name="mp_mindi_tagline">Two teams, alternate seats. Win 3 of the 4 tens to take the hand.</string>
+    <string name="mp_bhabhi_tagline">Everyone for themselves. Follow suit, thulla when you can\'t — the last one holding cards is the Bhabhi.</string>
+    <string name="mp_leave_room">Leave Room</string>
+    <string name="mp_leave_title">Leave room?</string>
+    <string name="mp_leave_text">You can join again while the host is still in the lobby.</string>
+    <string name="mp_leave">Leave</string>
+
+    <!-- Host room -->
+    <string name="mp_room_closed">The room is closed.</string>
+    <string name="mp_your_room">Your Room</string>
+    <string name="mp_room_open">Room open on your Wi-Fi</string>
+    <string name="mp_room_code">ROOM CODE</string>
+    <string name="mp_room_code_hint">Friends will see your room under Join a Room. If it doesn\'t show up, they can type this code.</string>
+    <string name="mp_mania_limit">Mania tables seat up to 6 — Mindi and Bhabhi fit up to 8.</string>
+    <string name="mp_seats_bots">Seats &amp; bots</string>
+    <string name="mp_seats_at_table">Seats at the table</string>
+    <string name="mp_bots">Bots</string>
+    <plurals name="mp_seats_open_friends">
+        <item quantity="one">%d seat open for friends</item>
+        <item quantity="other">%d seats open for friends</item>
+    </plurals>
+    <plurals name="mp_seats_open_friends_bots">
+        <item quantity="one">%d seat open for friends · bots fill any empty seat</item>
+        <item quantity="other">%d seats open for friends · bots fill any empty seat</item>
+    </plurals>
+    <string name="mp_bot_difficulty">Bot difficulty</string>
+    <string name="mp_expert">Expert</string>
+    <string name="mp_cards">Cards</string>
+    <string name="mp_starting_hand">Starting hand</string>
+    <string name="mp_deck">Deck</string>
+    <string name="mp_standard">Standard</string>
+    <string name="mp_double_deck">Double deck</string>
+    <string name="mp_match_length">Match length</string>
+    <string name="mp_single_round">Single round</string>
+    <string name="mp_first_to">First to %1$d</string>
+    <string name="mp_game_speed">Game speed</string>
+    <string name="mp_speed_relaxed">Relaxed</string>
+    <string name="mp_speed_normal">Normal</string>
+    <string name="mp_speed_fast">Fast</string>
+    <string name="mp_no_friends">No friends yet — you can still start with bots.</string>
+    <plurals name="mp_friends_ready">
+        <item quantity="one">%d friend ready</item>
+        <item quantity="other">%d friends ready</item>
+    </plurals>
+    <string name="mp_deal_cards">DEAL CARDS</string>
+    <string name="mp_start_game">START GAME</string>
+    <string name="mp_close_title">Close room?</string>
+    <string name="mp_close_text_empty">Your room will disappear from the Wi-Fi.</string>
+    <string name="mp_close_text_guests">Everyone in the room will be sent back home.</string>
+    <string name="mp_close_room">Close room</string>
+    <string name="mp_stay">Stay</string>
+    <string name="mp_table">Table</string>
+    <string name="mp_double_deck_desc">104 cards and 8 tens — 5 tens win the hand</string>
+    <string name="mp_teams">Teams</string>
+    <string name="mp_blue_team">BLUE TEAM</string>
+    <string name="mp_red_team">RED TEAM</string>
+    <string name="mp_trump">Trump</string>
+    <string name="mp_must_trump_desc">Whoever reveals the trump must play one if they can</string>
+    <string name="mp_match">Match</string>
+    <string name="mp_points_to_win">Points to win</string>
+    <string name="mp_one_hand">1 hand</string>
+    <string name="mp_points_note">Win = 1 point · Mendikot = 2 · Whitewash = 3</string>
+    <string name="mp_turn_timer">Turn timer</string>
+    <string name="mp_seconds">%1$ds</string>
+    <string name="mp_timer_note">When time runs out, a safe card is played for that player.</string>
+
+    <!-- Join room -->
+    <string name="mp_rooms_on_wifi">Rooms on your Wi-Fi</string>
+    <string name="mp_have_code">Have a room code?</string>
+    <string name="mp_bad_code">That code doesn\'t look right.</string>
+    <string name="mp_join">Join</string>
+    <string name="mp_rejoin">Rejoin</string>
+    <string name="mp_code_hint">The code is shown on the host\'s room screen.</string>
+    <string name="mp_joining">Joining…</string>
+    <string name="mp_mindi_room_line">Mindi · %1$d players · %2$s</string>
+    <string name="mp_bhabhi_room_line">Bhabhi · %1$d players</string>
+    <string name="mp_in_progress">Game in progress · rejoin if you were playing</string>
+    <string name="mp_room_full">Room full</string>
+    <plurals name="mp_players_count">
+        <item quantity="one">%d player</item>
+        <item quantity="other">%d players</item>
+    </plurals>
+    <plurals name="mp_seats_open_count">
+        <item quantity="one">%d seat open</item>
+        <item quantity="other">%d seats open</item>
+    </plurals>
+    <string name="mp_room_line">%1$s · %2$s</string>
+    <string name="mp_checking_room">Checking room…</string>
+    <string name="mp_looking">Looking for rooms…</string>
+    <string name="mp_looking_hint">Make sure the host has opened a room and you\'re on the same Wi-Fi.</string>
+
+    <!-- Network messages (shown on this phone or sent to the other phone) -->
+    <string name="mp_err_no_wifi">Connect to Wi-Fi (or turn on your hotspot) to host a room.</string>
+    <string name="mp_err_open_failed">Couldn\'t open a room on this network.</string>
+    <string name="mp_host_closed_room">The host closed the room.</string>
+    <string name="mp_err_unreachable">Couldn\'t reach the room. Are you on the same Wi-Fi?</string>
+    <string name="mp_removed">You were removed from the room.</string>
+    <string name="mp_lost_connection">Lost connection to the host.</string>
+    <string name="mp_connection_closed">Connection closed.</string>
+    <string name="mp_no_answer">The room didn\'t answer.</string>
+    <string name="mp_reject_version">Different app version — please update both phones.</string>
+    <string name="mp_reject_started">This game has already started.</string>
+    <string name="mp_reject_full">The room is full.</string>
+</resources>

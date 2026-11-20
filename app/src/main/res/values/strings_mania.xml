@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ===================== Mania table (GameScreen) ===================== -->
+    <string name="mania_shuffling">Shuffling…</string>
+    <string name="mania_cd_pause">Pause</string>
+    <string name="mania_cd_how_to_play">How to play</string>
+    <string name="mania_hud_round_target">Round %1$d · First to %2$d</string>
+    <string name="mania_single_round">Single round</string>
+    <string name="mania_first_to">First to %1$d</string>
+    <string name="mania_light_side">Light side</string>
+    <string name="mania_dark_side">Dark side</string>
+    <string name="mania_hud_knockout">25 = out</string>
+    <string name="mania_seat_out">OUT</string>
+    <string name="mania_cd_online_player">Online player</string>
+    <string name="mania_seat_bot">BOT</string>
+    <string name="mania_catch">CATCH!</string>
+    <string name="mania_swap">SWAP</string>
+    <string name="mania_status_out">You\'re out — watching the rivals battle!</string>
+    <string name="mania_status_stack_or_take">Stack a +card or tap the deck to take %1$d</string>
+    <plurals name="mania_status_take_cards">
+        <item quantity="one">Tap the deck to take %d card</item>
+        <item quantity="other">Tap the deck to take %d cards</item>
+    </plurals>
+    <string name="mania_status_no_match">No match — tap the deck to draw</string>
+    <string name="mania_status_tap_again">Tap again or swipe up to play</string>
+    <string name="mania_status_your_turn">Your turn!</string>
+    <string name="mania_status_drawn">Play the drawn card or keep it</string>
+    <string name="mania_status_choose_swap">Choose a rival to swap hands with</string>
+    <string name="mania_status_choosing_color">%1$s is choosing a color…</string>
+    <string name="mania_status_deciding">%1$s is deciding…</string>
+    <string name="mania_status_picking_swap">%1$s is picking a swap…</string>
+    <string name="mania_status_jump_in">Jump in with your matching card!</string>
+    <string name="mania_status_thinking">%1$s is thinking…</string>
+    <string name="mania_cd_sort">Sort</string>
+    <string name="mania_cd_hint">Hint</string>
+    <string name="mania_cd_emote">Emote</string>
+    <string name="mania_cd_peek">Peek</string>
+    <string name="mania_cd_shield">Shield</string>
+    <string name="mania_keep">KEEP</string>
+    <string name="mania_peek_title">Next cards</string>
+    <string name="mania_peek_sub">Top of the deck, in draw order</string>
+
+    <!-- Banners (GameViewModel) -->
+    <string name="mania_banner_draw">Draw a card!</string>
+    <string name="mania_banner_round">Round %1$d</string>
+    <string name="mania_banner_lets_play">Let\'s Play!</string>
+    <string name="mania_banner_jump_in">JUMP IN!</string>
+
+    <!-- Pop-up texts on the table (SpriteWorld) -->
+    <string name="mania_fx_skip">SKIP!</string>
+    <string name="mania_fx_reverse">REVERSE!</string>
+    <string name="mania_fx_skip_all">SKIP EVERYONE!</string>
+    <string name="mania_fx_discard_all">DISCARD ALL!</string>
+    <string name="mania_fx_reverse_four">REVERSE +4</string>
+    <string name="mania_fx_color_storm">COLOR STORM!</string>
+    <string name="mania_fx_draw_color">DRAW COLOR!</string>
+    <string name="mania_fx_combo">COMBO x%1$d!</string>
+    <string name="mania_fx_skipped">SKIPPED</string>
+    <string name="mania_fx_swap">SWAP!</string>
+    <string name="mania_fx_rotate">ROTATE!</string>
+    <string name="mania_fx_overload">OVERLOAD!</string>
+    <string name="mania_fx_dark_side">DARK SIDE!</string>
+    <string name="mania_fx_light_side">LIGHT SIDE!</string>
+    <string name="mania_fx_caught">CAUGHT!</string>
+    <string name="mania_fx_busted">BUSTED!</string>
+    <string name="mania_fx_failed">FAILED!</string>
+    <string name="mania_fx_shield">SHIELD!</string>
+    <string name="mania_fx_reshuffle">RESHUFFLE</string>
+    <string name="mania_fx_pass">PASS</string>
+
+    <!-- ===================== Overlays (GameOverlays) ===================== -->
+    <string name="mania_color_name_title">Name a color!</string>
+    <string name="mania_color_choose_title">Choose a color</string>
+    <string name="mania_color_storm_desc">Wild Color Storm! You\'ll reveal cards until this color appears — and keep them all.</string>
+    <string name="mania_challenge_title">Wild Draw %1$d!</string>
+    <string name="mania_challenge_body">%1$s hit you with a Wild +%2$d. Challenge it?\n\nIf they could have matched the color, they draw %2$d instead. If the play was fair, you draw %3$d.</string>
+    <string name="mania_challenge_accept">Accept +%1$d</string>
+    <string name="mania_challenge_button">Challenge!</string>
+    <string name="mania_pause_end_q">End game?</string>
+    <string name="mania_pause_leave_q">Leave game?</string>
+    <string name="mania_pause_menu">Menu</string>
+    <string name="mania_pause_paused">Paused</string>
+    <string name="mania_pause_host_warn">This ends the game and closes the room for everyone.</string>
+    <string name="mania_pause_net_warn">A bot will take your seat for the rest of this game.</string>
+    <string name="mania_pause_saved">Your game is saved — continue it any time from Home.</string>
+    <string name="mania_pause_net_note">Multiplayer games keep running while this menu is open.</string>
+    <string name="mania_leave">Leave</string>
+    <string name="mania_stay">Stay</string>
+    <string name="mania_back_to_game">Back to Game</string>
+    <string name="mania_resume">Resume</string>
+    <string name="mania_how_to_play">How to Play</string>
+    <string name="mania_music">Music</string>
+    <string name="mania_sfx">Sound effects</string>
+    <string name="mania_haptics">Haptics</string>
+    <string name="mania_end_game">End Game</string>
+    <string name="mania_leave_game">Leave Game</string>
+    <string name="mania_quit_home">Quit to Home</string>
+    <string name="mania_round_won">Round won!</string>
+    <string name="mania_round_winner">%1$s wins the round</string>
+    <plurals name="mania_round_points">
+        <item quantity="one">+%d point</item>
+        <item quantity="other">+%d points</item>
+    </plurals>
+    <string name="mania_name_you">%1$s (You)</string>
+    <string name="mania_overloaded">Overloaded</string>
+    <plurals name="mania_cards_left">
+        <item quantity="one">%d card left</item>
+        <item quantity="other">%d cards left</item>
+    </plurals>
+    <plurals name="mania_cards">
+        <item quantity="one">%d card</item>
+        <item quantity="other">%d cards</item>
+    </plurals>
+    <string name="mania_first_to_wins">First to %1$d wins the match</string>
+    <string name="mania_next_round">Next Round</string>
+    <string name="mania_victory">VICTORY!</string>
+    <string name="mania_player_wins">%1$s wins!</string>
+    <string name="mania_last_standing">Last one standing!</string>
+    <string name="mania_emptied_first">You emptied your hand first.</string>
+    <string name="mania_finished_place">You finished #%1$d. So close!</string>
+    <string name="mania_coins">Coins</string>
+    <string name="mania_level_short">Lv %1$d</string>
+    <string name="mania_level_up">LEVEL UP! You reached level %1$d</string>
+    <string name="mania_achievement">Achievement: %1$s</string>
+    <string name="mania_win">WIN</string>
+    <string name="mania_home">Home</string>
+    <string name="mania_room">Room</string>
+    <string name="mania_rematch">Rematch</string>
+    <string name="mania_play_again">Play Again</string>
+    <string name="mania_waiting_host">Waiting for the host…</string>
+    <string name="mania_game_over">Game over</string>
+    <string name="mania_ok">OK</string>
+    <string name="mania_end_room_closed">The room is closed.</string>
+    <string name="mania_end_not_in_room">You\'re not in a room any more.</string>
+    <string name="mania_end_host_left">The host left the game.</string>
+    <string name="mania_end_host_closed">The host closed the room.</string>
+    <string name="mania_end_removed">You were removed from the room.</string>
+    <string name="mania_end_lost_connection">Lost connection to the host.</string>
+
+    <!-- ===================== Game setup ===================== -->
+    <string name="mania_setup_title">Game Setup</string>
+    <string name="mania_setup_choose_mode">Choose your mode</string>
+    <string name="mania_setup_players">Players</string>
+    <string name="mania_setup_all_bots">All bots</string>
+    <string name="mania_setup_cards">Cards</string>
+    <string name="mania_setup_starting_hand">Starting hand</string>
+    <string name="mania_setup_deck">Deck</string>
+    <string name="mania_setup_standard">Standard</string>
+    <string name="mania_setup_double_deck">Double deck</string>
+    <string name="mania_setup_tip_double">Tip: a double deck keeps big Merciless tables flowing.</string>
+    <string name="mania_setup_match_length">Match length</string>
+    <string name="mania_setup_speed">Game speed</string>
+    <string name="mania_speed_relaxed">Relaxed</string>
+    <string name="mania_speed_normal">Normal</string>
+    <string name="mania_speed_fast">Fast</string>
+    <string name="mania_start_game">START GAME</string>
+    <string name="mania_setup_bot_hint">%1$s · tap avatar to change</string>
+    <string name="mania_rules_title">House rules</string>
+    <string name="mania_cd_reset_rules">Reset rules</string>
+    <string name="mania_rules_merciless_note">Always on in Merciless: stacking, Seven swap &amp; Zero rotate, draw until you match, and the 25-card knockout rule.</string>
+    <string name="mania_rule_stacking">Stacking</string>
+    <string name="mania_rule_stacking_desc">Answer a +card with an equal or bigger +card to pass the total on.</string>
+    <string name="mania_rule_seven_zero">Seven &amp; Zero</string>
+    <string name="mania_rule_seven_desc">A 7 swaps hands with a rival of your choice.</string>
+    <string name="mania_rule_seven_zero_desc">A 7 swaps hands with a rival; a 0 passes every hand along.</string>
+    <string name="mania_rule_draw_match">Draw to Match</string>
+    <string name="mania_rule_draw_match_desc">Keep drawing until you get a card you can play.</string>
+    <string name="mania_rule_challenge">Challenge</string>
+    <string name="mania_rule_challenge_four_desc">Wild Draw Four may be challenged. Off when stacking is on.</string>
+    <string name="mania_rule_challenge_two_desc">Wild Draw Two may be challenged. Off when stacking is on.</string>
+    <string name="mania_rule_jump_in">Jump-In</string>
+    <string name="mania_rule_jump_in_desc">Hold the exact same card as the top card? Play it out of turn!</string>
+    <string name="mania_rule_forced">Forced Play</string>
+    <string name="mania_rule_forced_desc">A playable drawn card must be played.</string>
+    <string name="mania_rule_combo">Combo Drop</string>
+    <string name="mania_rule_combo_desc">Play several cards with the same number in one go.</string>
+    <string name="mania_rule_powerups">Mania Power-ups</string>
+    <string name="mania_rule_powerups_desc">Action cards fill a meter that earns Peek and Shield tokens.</string>
+    <string name="mania_badge_new">NEW</string>
+
+    <!-- ===================== How to Play ===================== -->
+    <string name="mania_howto_chip_spider">Spider</string>
+    <string name="mania_howto_chip_mindi">Mindi</string>
+    <string name="mania_howto_chip_bhabhi">Bhabhi</string>
+    <string name="mania_howto_light_side">Light Side</string>
+    <string name="mania_howto_dark_side">Dark Side</string>
+    <string name="mania_howto_gallery">Card Gallery</string>
+    <string name="mania_howto_gallery_side">Card Gallery · %1$s</string>
+    <string name="mania_howto_tap_flip">Tap a card to flip it.</string>
+    <string name="mania_howto_number_cards">Number Cards %1$d–9</string>
+    <string name="mania_howto_number_desc">Match by color or by number.</string>
+    <string name="mania_howto_face_value">Worth their face value</string>
+    <string name="mania_howto_worth_points">Worth %1$d points</string>
+
+    <string name="mania_howto_basics_title">The Basics</string>
+    <string name="mania_howto_basics_1">Goal: be the first player to get rid of every card in your hand.</string>
+    <string name="mania_howto_basics_2">Setup: everyone is dealt the same number of cards (7 by default — choose 5, 7 or 10 before the match). One card is flipped face up to start the discard pile.</string>
+    <string name="mania_howto_basics_3">Your turn: play one card that matches the top card by color, by number, or by symbol. Wild cards fit on anything.</string>
+    <string name="mania_howto_basics_4">Can\'t play? Draw a card. If it fits you may play it right away; otherwise your turn ends.</string>
+    <string name="mania_howto_basics_5">MANIA! — when you\'re about to drop to your last card, tap the MANIA! button. Forget, and a sharp-eyed rival can catch you: you draw 2.</string>
+    <string name="mania_howto_basics_6">You can catch rivals too: when a bot forgets, tap Catch! above its seat.</string>
+    <string name="mania_howto_basics_7">Scoring: the round winner scores the cards left in everyone else\'s hand — numbers are worth their value, action cards 10–30, Wild cards 40–100. Play one round or race to a target score.</string>
+
+    <string name="mania_howto_classic_title">Classic Mania</string>
+    <string name="mania_howto_classic_1">108 cards in four colors: Red, Blue, Green and Yellow. Every color also has its own symbol for color-blind players.</string>
+    <string name="mania_howto_classic_2">Skip skips the next player, Reverse flips the direction and Draw Two makes the next player draw two and miss a turn.</string>
+    <string name="mania_howto_classic_3">With only two players, Reverse acts like Skip — you go again.</string>
+    <string name="mania_howto_classic_4">Wild Draw Four is only allowed when you hold no card of the current color. The next player may challenge: catch a bluff and you draw 4 instead — but a wrong challenge costs them 6.</string>
+    <string name="mania_howto_classic_5">Optional house rules: Stacking, Jump-In, Seven-Zero swaps, Draw to Match, Forced Play, Combo Drop and Mania Power-ups.</string>
+
+    <string name="mania_howto_merciless_title">Merciless Mania</string>
+    <string name="mania_howto_merciless_1">168 cards loaded with heavy hitters — expect big swings!</string>
+    <string name="mania_howto_merciless_2">Draw to Match: if you can\'t play, keep drawing until you find a card that fits.</string>
+    <string name="mania_howto_merciless_3">Stacking: answer a draw card with one of equal or higher value to pass the growing total on. Can\'t stack? Take the whole pile and lose your turn.</string>
+    <string name="mania_howto_merciless_4">Wild Reverse Draw Four reverses direction and adds 4 to the stack.</string>
+    <string name="mania_howto_merciless_5">Seven: swap hands with any rival. Zero: every hand slides one seat along in the direction of play.</string>
+    <string name="mania_howto_merciless_6">Discard All also throws away every other card of its color in your hand. Skip Everyone skips all rivals — play again!</string>
+    <string name="mania_howto_merciless_7">Wild Color Storm: the next player names a color, then reveals cards until it shows up, keeping all of them.</string>
+    <string name="mania_howto_merciless_8">Knockout rule: hold 25 cards or more and you\'re out. The last player standing wins too.</string>
+
+    <string name="mania_howto_flip_title">Flip Mania</string>
+    <string name="mania_howto_flip_1">112 two-sided cards. The match begins on the Light side.</string>
+    <string name="mania_howto_flip_2">You can see the hidden side of your rivals\' cards — but never the other side of your own. Use it!</string>
+    <string name="mania_howto_flip_3">Flip card: the whole table flips. Hands, the draw pile and the discard pile all turn to the Dark side (or back to the Light side).</string>
+    <string name="mania_howto_flip_4">Light side: gentler cards like Draw One, Skip and Wild Draw Two. Dark side hits harder: Draw Five, Skip Everyone and Wild Draw Color.</string>
+    <string name="mania_howto_flip_5">Wild Draw Color: pick a color — the next player draws until they find it.</string>
+    <string name="mania_howto_flip_6">Every match pairs Light and Dark faces differently, so no two games play alike.</string>
+
+    <!-- Spider -->
+    <string name="mania_howto_spider_name">Spider Solitaire</string>
+    <string name="mania_howto_spider_tagline">Patience classic: build King-to-Ace runs.</string>
+    <string name="mania_howto_spider_pill">Solo · 1, 2 or 4 suits</string>
+    <string name="mania_howto_spider_goal_title">Goal</string>
+    <string name="mania_howto_spider_goal_1">Build 8 complete runs from King down to Ace, each in a single suit. A finished run leaves the table on its own.</string>
+    <string name="mania_howto_spider_goal_2">Clear every run to win. Score starts at 500: each move or undo costs 1 point, each finished run earns 100.</string>
+    <string name="mania_howto_spider_table_title">The table</string>
+    <string name="mania_howto_spider_table_1">104 cards in 10 columns. The first four columns get 6 cards, the other six get 5; only the bottom card is face up.</string>
+    <string name="mania_howto_spider_table_2">The remaining 50 cards wait in the stock (top right) and come out 10 at a time — one onto every column.</string>
+    <string name="mania_howto_spider_table_3">Choose 1 suit (easy), 2 suits (medium) or 4 suits (hard).</string>
+    <string name="mania_howto_spider_moving_title">Moving cards</string>
+    <string name="mania_howto_spider_moving_1">Put any face-up card on a card exactly one rank higher, in any suit — a 7 goes on any 8.</string>
+    <string name="mania_howto_spider_moving_2">A group of cards moves together only when it runs down in order and is all one suit.</string>
+    <string name="mania_howto_spider_moving_3">Any card or same-suit run can go into an empty column.</string>
+    <string name="mania_howto_spider_moving_4">When a face-down card is uncovered it turns over automatically.</string>
+    <string name="mania_howto_spider_moving_5">Tap a card to send it to the best spot, or drag it where you want it.</string>
+    <string name="mania_howto_spider_deal_title">Dealing, hints &amp; undo</string>
+    <string name="mania_howto_spider_deal_1">Tap the stock to deal one card onto every column. Empty columns get a card too.</string>
+    <string name="mania_howto_spider_deal_2">Hint shows a good move (tap again for another). Undo is unlimited.</string>
+    <string name="mania_howto_spider_deal_3">Daily Challenge: one winnable deal per day, the same for every player.</string>
+    <string name="mania_howto_ex_spider_1">A same-suit run (K-Q-J-10) moves as one group.</string>
+    <string name="mania_howto_ex_spider_2">A 7 of hearts can go on an 8 of spades — but they can\'t move together.</string>
+
+    <!-- Mindi -->
+    <string name="mania_howto_mindi_name">Mindi</string>
+    <string name="mania_howto_mindi_tagline">Partner up and capture the 10s.</string>
+    <string name="mania_howto_mindi_pill">4, 6 or 8 players · teams</string>
+    <string name="mania_howto_mindi_teams_title">Teams &amp; deal</string>
+    <string name="mania_howto_mindi_teams_1">Mindi is a team trick-taking game. With 4 players, partners sit opposite each other (2 vs 2).</string>
+    <string name="mania_howto_mindi_teams_2">Big tables: 6 players (3 vs 3) or 8 players (4 vs 4), seated alternately, with the four 2s removed (48 cards). A double deck is also possible.</string>
+    <string name="mania_howto_mindi_teams_3">The whole deck is dealt out. The player after the dealer leads the first trick.</string>
+    <string name="mania_howto_mindi_trick_title">Playing a trick</string>
+    <string name="mania_howto_mindi_trick_1">Everyone plays one card. You must follow the suit that was led if you can; otherwise play any card.</string>
+    <string name="mania_howto_mindi_trick_2">The highest trump wins the trick. With no trump in it, the highest card of the suit led wins (A high, 2 low).</string>
+    <string name="mania_howto_mindi_trick_3">The winner of a trick leads the next one.</string>
+    <string name="mania_howto_mindi_trump_title">Choosing trump</string>
+    <string name="mania_howto_mindi_trump_1">Hide Trump: one player secretly sets aside a card; its suit is trump. It\'s revealed the first time anyone can\'t follow suit — from then on that suit is trump.</string>
+    <string name="mania_howto_mindi_trump_2">Cut Trump: there\'s no trump at first. The first card played by someone who can\'t follow suit decides trump for the rest of the hand.</string>
+    <string name="mania_howto_mindi_trump_3">Open Trump: trump is shown before play — the easiest way to learn.</string>
+    <string name="mania_howto_mindi_tens_title">The 10s win the hand</string>
+    <string name="mania_howto_mindi_tens_1">Only the four 10s (the \"mindis\") count. The team that captures 3 or 4 of them wins the hand.</string>
+    <string name="mania_howto_mindi_tens_2">If the 10s are split 2–2, the team with more tricks wins.</string>
+    <string name="mania_howto_mindi_tens_3">Mendikot: capturing all four 10s. Whitewash: winning every single trick.</string>
+    <string name="mania_howto_mindi_tens_4">Points: a normal win is 1, a Mendikot 2, a whitewash 3. First team to the target (5 by default) wins the match.</string>
+    <string name="mania_howto_mindi_tens_5">The losing team deals the next hand.</string>
+    <string name="mania_howto_ex_mindi_1">The four 10s. Capture 3 or more with your partner to win the hand.</string>
+    <string name="mania_howto_ex_mindi_2">Hearts were led; a player out of hearts can play a trump (here spades) to win.</string>
+
+    <!-- Bhabhi -->
+    <string name="mania_howto_bhabhi_name">Bhabhi</string>
+    <string name="mania_howto_bhabhi_tagline">Empty your hand — don\'t be the last one holding cards.</string>
+    <string name="mania_howto_bhabhi_pill">3 to 8 players · everyone for themselves</string>
+    <string name="mania_howto_bhabhi_goal_title">Goal</string>
+    <string name="mania_howto_bhabhi_goal_1">Get rid of all your cards. Once your hand is empty you are safe.</string>
+    <string name="mania_howto_bhabhi_goal_2">The last player still holding cards is the Bhabhi and loses the game. Everyone else is ranked by when they got out.</string>
+    <string name="mania_howto_bhabhi_deal_title">The deal</string>
+    <string name="mania_howto_bhabhi_deal_1">3 to 8 players share one 52-card deck. Ace is high, 2 is low.</string>
+    <string name="mania_howto_bhabhi_deal_2">Every card is dealt out, one at a time, so some players may get one card more than others.</string>
+    <string name="mania_howto_bhabhi_deal_3">Whoever holds the A♠ opens the first trick with it.</string>
+    <string name="mania_howto_bhabhi_trick_title">Playing a trick</string>
+    <string name="mania_howto_bhabhi_trick_1">Play goes round in turn. You must follow the suit that was led if you can.</string>
+    <string name="mania_howto_bhabhi_trick_2">If everyone follows suit, the trick is thrown away and nobody keeps those cards. The highest card of the led suit leads next.</string>
+    <string name="mania_howto_bhabhi_trick_3">If you can\'t follow suit, play any other card: that\'s a THULLA. The trick stops right there, and whoever played the highest card of the led suit must pick up every card of that trick.</string>
+    <string name="mania_howto_bhabhi_trick_4">The player who picked up leads the next trick.</string>
+    <string name="mania_howto_bhabhi_out_title">Getting out</string>
+    <string name="mania_howto_bhabhi_out_1">Play your last card and you\'re out — unless it lands in a trick that you have to pick up.</string>
+    <string name="mania_howto_bhabhi_out_2">If the highest card\'s owner has no cards left, the next player with cards leads.</string>
+    <string name="mania_howto_bhabhi_out_3">If everyone left runs out on the same trick, whoever played its highest card is the Bhabhi.</string>
+    <string name="mania_howto_bhabhi_tips_title">House rule &amp; tips</string>
+    <string name="mania_howto_bhabhi_tips_1">Safe first round (on by default): no thulla on the opening spade trick — players without a spade just throw any card away.</string>
+    <string name="mania_howto_bhabhi_tips_2">Throw your high cards while tricks are being thrown away, and keep low cards for when a cut is likely.</string>
+    <string name="mania_howto_bhabhi_tips_3">When you\'re out of a suit, use the thulla to dump your biggest card on the player who\'s winning the trick.</string>
+    <string name="mania_howto_bhabhi_tips_4">Watch who is out of which suit: leading that suit invites a thulla.</string>
+    <string name="mania_howto_ex_bhabhi_1">Everyone followed hearts: the trick is thrown away and the Queen leads next.</string>
+    <string name="mania_howto_ex_bhabhi_2">No hearts, so a club cuts it — THULLA! The Queen\'s owner picks up all three cards.</string>
+
+    <string name="mania_howto_examples">EXAMPLES</string>
+</resources>

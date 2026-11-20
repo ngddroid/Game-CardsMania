@@ -87,20 +87,22 @@ class SpiderEngineTest {
     }
 
     @Test
-    fun dealingNeedsEveryColumnFilled() {
+    fun dealingAlsoFillsEmptyColumns() {
         val full = SpiderEngine.newGame(1, 7)
         val d = SpiderEngine.deal(full)!!
         assertEquals(40, d.state.stock.size)
         assertTrue(d.state.columns.all { it.last().up })
         assertEquals(10, (d.events.first() as SpiderEvent.Dealt).cardIds.size)
 
+        // an empty column doesn't block the deal: it gets a face-up card like every other column
         val withEmpty = full.copy(columns = full.columns.mapIndexed { i, col -> if (i == 0) emptyList() else col })
-        assertFalse(SpiderEngine.canDeal(withEmpty))
-        assertNull(SpiderEngine.deal(withEmpty))
-        // the hint then suggests filling the empty column
-        val hint = SpiderEngine.fillMove(withEmpty)
-        assertNotNull(hint)
-        assertEquals(0, hint!!.to)
+        assertTrue(SpiderEngine.canDeal(withEmpty))
+        val e = SpiderEngine.deal(withEmpty)!!.state
+        assertEquals(1, e.columns[0].size)
+        assertTrue(e.columns[0].single().up)
+        assertEquals(40, e.stock.size)
+        // with no useful move left, the hint is to deal
+        assertEquals(SpiderHint.Deal, SpiderEngine.nextHint(SpiderState(1, 1L, List(10) { emptyList() }, full.stock)))
     }
 
     @Test

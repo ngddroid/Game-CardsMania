@@ -1,10 +1,12 @@
 package com.puzzel.lab.cardsmania.data
 
+import com.puzzel.lab.cardsmania.R
 import com.puzzel.lab.cardsmania.engine.model.Difficulty
 import com.puzzel.lab.cardsmania.engine.model.GameConfig
 import com.puzzel.lab.cardsmania.engine.model.GameMode
 import com.puzzel.lab.cardsmania.engine.model.HouseRules
 import com.puzzel.lab.cardsmania.engine.model.PlayerSetup
+import com.puzzel.lab.cardsmania.i18n.Strings
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -14,7 +16,7 @@ import java.util.Locale
 object GameFactory {
 
     fun fromSetup(setup: SetupPrefs, profile: Profile, seed: Long = System.nanoTime()): GameConfig {
-        val human = PlayerSetup(profile.name.ifBlank { "You" }, AvatarRef.player(profile.avatar), isHuman = true)
+        val human = PlayerSetup(profile.name.ifBlank { Strings.get(R.string.data_player_you) }, AvatarRef.player(profile.avatar), isHuman = true)
         val bots = setup.bots.take(5).ifEmpty { listOf(BotPick(0, Difficulty.NORMAL)) }.map {
             val ch = Characters.byId(it.characterId)
             PlayerSetup(ch.name, ch.id, isHuman = false, difficulty = it.difficulty)
@@ -82,9 +84,9 @@ data class DailyChallenge(
 ) {
     val goals: List<String>
         get() = listOf(
-            "Win the match",
-            "Win in $turnGoal of your turns or fewer",
-            "Win without ever holding more than 12 cards",
+            Strings.get(R.string.data_daily_goal_win),
+            Strings.get(R.string.data_daily_goal_turns, turnGoal),
+            Strings.get(R.string.data_daily_goal_max_hand),
         )
 
     fun config(profile: Profile): GameConfig {

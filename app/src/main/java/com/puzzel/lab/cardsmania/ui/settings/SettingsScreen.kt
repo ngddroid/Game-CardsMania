@@ -25,6 +25,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Language
 import androidx.compose.material.icons.automirrored.rounded.MenuBook
 import androidx.compose.material.icons.rounded.Accessibility
 import androidx.compose.material.icons.rounded.ChevronRight
@@ -60,7 +61,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
 import com.puzzel.lab.cardsmania.LocalApp
+import com.puzzel.lab.cardsmania.R
 import com.puzzel.lab.cardsmania.audio.Sfx
 import com.puzzel.lab.cardsmania.data.Profile
 import com.puzzel.lab.cardsmania.data.Settings
@@ -84,7 +87,7 @@ import com.puzzel.lab.cardsmania.ui.theme.CM
 import kotlinx.coroutines.launch
 
 @Composable
-fun SettingsScreen(onBack: () -> Unit, onLegal: (String) -> Unit, onHowTo: () -> Unit) {
+fun SettingsScreen(onBack: () -> Unit, onLegal: (String) -> Unit, onHowTo: () -> Unit, onLanguage: () -> Unit = {}) {
     val app = LocalApp.current
     val context = LocalContext.current
     val settings by rememberSettings()
@@ -107,20 +110,30 @@ fun SettingsScreen(onBack: () -> Unit, onLegal: (String) -> Unit, onHowTo: () ->
                 .statusBarsPadding()
                 .navigationBarsPadding()
         ) {
-            ScreenTitleBar("Settings", onBack)
+            ScreenTitleBar(stringResource(R.string.shell_settings), onBack)
             Column(
                 Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
                     .padding(horizontal = 16.dp)
             ) {
-                Group("Audio", 0) {
-                    SliderRow(GameIcons.Music, "Music", music, onChange = {
+                Group(androidx.compose.ui.res.stringResource(com.puzzel.lab.cardsmania.R.string.lang_settings_group), 0) {
+                    LinkRow(
+                        Icons.Rounded.Language,
+                        androidx.compose.ui.res.stringResource(
+                            com.puzzel.lab.cardsmania.R.string.lang_settings_row,
+                            com.puzzel.lab.cardsmania.i18n.LocaleManager.current(context).nativeName,
+                        ),
+                        onLanguage,
+                    )
+                }
+                Group(stringResource(R.string.shell_settings_audio), 0) {
+                    SliderRow(GameIcons.Music, stringResource(R.string.shell_settings_music), music, onChange = {
                         music = it
                         app.music.volume = it
                     }, onRelease = { update { s -> s.copy(musicVolume = music) } })
                     Spacer(Modifier.height(6.dp))
-                    SliderRow(GameIcons.Volume, "Sound Effects", sfx, onChange = {
+                    SliderRow(GameIcons.Volume, stringResource(R.string.shell_settings_sfx), sfx, onChange = {
                         sfx = it
                         app.sound.volume = it
                     }, onRelease = {
@@ -128,75 +141,94 @@ fun SettingsScreen(onBack: () -> Unit, onLegal: (String) -> Unit, onHowTo: () ->
                         update { s -> s.copy(sfxVolume = sfx) }
                     })
                 }
-                Group("Gameplay", 1) {
-                    ChipRow("Game speed", listOf("Relaxed", "Normal", "Fast"), settings.speed) { i -> update { it.copy(speed = i) } }
+                Group(stringResource(R.string.shell_settings_gameplay), 1) {
+                    ChipRow(
+                        stringResource(R.string.shell_settings_speed),
+                        listOf(
+                            stringResource(R.string.shell_settings_speed_relaxed),
+                            stringResource(R.string.shell_settings_speed_normal),
+                            stringResource(R.string.shell_settings_speed_fast),
+                        ),
+                        settings.speed,
+                    ) { i -> update { it.copy(speed = i) } }
                     Spacer(Modifier.height(12.dp))
                     val timers = listOf(0, 10, 15, 30)
-                    ChipRow("Turn timer", listOf("Off", "10s", "15s", "30s"), timers.indexOf(settings.turnTimer).coerceAtLeast(0)) { i ->
+                    val timerLabels = timers.map { t ->
+                        if (t == 0) stringResource(R.string.shell_settings_timer_off) else stringResource(R.string.shell_settings_timer_secs, t)
+                    }
+                    ChipRow(stringResource(R.string.shell_settings_timer), timerLabels, timers.indexOf(settings.turnTimer).coerceAtLeast(0)) { i ->
                         update { it.copy(turnTimer = timers[i]) }
                     }
                     Spacer(Modifier.height(12.dp))
-                    ChipRow("Sort my hand by", listOf("Color", "Value", "None"), settings.sortMode.ordinal) { i ->
+                    ChipRow(
+                        stringResource(R.string.shell_settings_sort),
+                        listOf(
+                            stringResource(R.string.shell_settings_sort_color),
+                            stringResource(R.string.shell_settings_sort_value),
+                            stringResource(R.string.shell_settings_sort_none),
+                        ),
+                        settings.sortMode.ordinal,
+                    ) { i ->
                         update { it.copy(sortMode = SortMode.entries[i]) }
                     }
                     Spacer(Modifier.height(8.dp))
-                    SwitchRow(Icons.Rounded.ExitToApp, "Confirm before leaving", "Ask before quitting a match", settings.confirmExit) { v ->
+                    SwitchRow(Icons.Rounded.ExitToApp, stringResource(R.string.shell_settings_confirm_exit), stringResource(R.string.shell_settings_confirm_exit_sub), settings.confirmExit) { v ->
                         update { it.copy(confirmExit = v) }
                     }
                 }
-                Group("Accessibility", 2) {
-                    SwitchRow(GameIcons.Palette, "Color-blind symbols", "Show suit symbols on every card", settings.colorBlind) { v -> update { it.copy(colorBlind = v) } }
-                    SwitchRow(Icons.Rounded.ZoomIn, "Large cards", "Bigger cards in your hand", settings.largeCards) { v -> update { it.copy(largeCards = v) } }
-                    SwitchRow(Icons.Rounded.Accessibility, "Reduce motion", "Calmer animations and effects", settings.reduceMotion) { v -> update { it.copy(reduceMotion = v) } }
-                    SwitchRow(Icons.Rounded.PanTool, "Left-handed layout", "Mirror the game buttons", settings.leftHanded) { v -> update { it.copy(leftHanded = v) } }
-                    SwitchRow(GameIcons.Vibrate, "Haptics", "Vibrate on key moments", settings.haptics) { v ->
+                Group(stringResource(R.string.shell_settings_accessibility), 2) {
+                    SwitchRow(GameIcons.Palette, stringResource(R.string.shell_settings_colorblind), stringResource(R.string.shell_settings_colorblind_sub), settings.colorBlind) { v -> update { it.copy(colorBlind = v) } }
+                    SwitchRow(Icons.Rounded.ZoomIn, stringResource(R.string.shell_settings_large_cards), stringResource(R.string.shell_settings_large_cards_sub), settings.largeCards) { v -> update { it.copy(largeCards = v) } }
+                    SwitchRow(Icons.Rounded.Accessibility, stringResource(R.string.shell_settings_reduce_motion), stringResource(R.string.shell_settings_reduce_motion_sub), settings.reduceMotion) { v -> update { it.copy(reduceMotion = v) } }
+                    SwitchRow(Icons.Rounded.PanTool, stringResource(R.string.shell_settings_left_handed), stringResource(R.string.shell_settings_left_handed_sub), settings.leftHanded) { v -> update { it.copy(leftHanded = v) } }
+                    SwitchRow(GameIcons.Vibrate, stringResource(R.string.shell_settings_haptics), stringResource(R.string.shell_settings_haptics_sub), settings.haptics) { v ->
                         app.haptics.enabled = v
                         if (v) app.haptics.medium()
                         update { it.copy(haptics = v) }
                     }
                 }
-                Group("Support", 3) {
-                    LinkRow(Icons.AutoMirrored.Rounded.MenuBook, "How to Play", onHowTo)
-                    LinkRow(GameIcons.Star, "Rate Cards Mania") { openStore(context) }
-                    LinkRow(GameIcons.Share, "Share with friends") { share(context) }
+                Group(stringResource(R.string.shell_settings_support), 3) {
+                    LinkRow(Icons.AutoMirrored.Rounded.MenuBook, stringResource(R.string.shell_how_to_play), onHowTo)
+                    LinkRow(GameIcons.Star, stringResource(R.string.shell_settings_rate)) { openStore(context) }
+                    LinkRow(GameIcons.Share, stringResource(R.string.shell_settings_share)) { share(context) }
                 }
-                Group("Legal", 4) {
-                    LinkRow(GameIcons.Doc, "Terms of Service") { onLegal("terms") }
-                    LinkRow(GameIcons.Shield, "Privacy Policy") { onLegal("privacy") }
+                Group(stringResource(R.string.shell_settings_legal), 4) {
+                    LinkRow(GameIcons.Doc, stringResource(R.string.shell_terms)) { onLegal("terms") }
+                    LinkRow(GameIcons.Shield, stringResource(R.string.shell_privacy)) { onLegal("privacy") }
                 }
-                Group("Danger Zone", 5) {
+                Group(stringResource(R.string.shell_settings_danger), 5) {
                     Text(
-                        "Erase your coins, levels, unlocks, stats and settings on this device.",
+                        stringResource(R.string.shell_settings_danger_body),
                         color = CM.TextDim,
                         fontSize = 13.sp,
                     )
                     Spacer(Modifier.height(10.dp))
-                    GameButton("RESET PROGRESS", { confirmReset = true }, style = ButtonStyle.RED, modifier = Modifier.fillMaxWidth(), height = 50.dp, fontSize = 16.sp)
+                    GameButton(stringResource(R.string.shell_settings_reset_btn), { confirmReset = true }, style = ButtonStyle.RED, modifier = Modifier.fillMaxWidth(), height = 50.dp, fontSize = 16.sp)
                 }
                 Column(Modifier.fillMaxWidth().padding(vertical = 20.dp).staggerIn(6), horizontalAlignment = Alignment.CenterHorizontally) {
                     Icon(Icons.Rounded.Layers, null, tint = CM.Gold, modifier = Modifier.size(26.dp))
                     Spacer(Modifier.height(4.dp))
                     Text("Cards Mania", color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Black)
-                    Text("Version $version", color = CM.TextDim, fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                    Text("Offline · No ads · No data collected", color = CM.TextMuted, fontSize = 12.sp)
+                    Text(stringResource(R.string.shell_settings_version, version), color = CM.TextDim, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.shell_settings_footer), color = CM.TextMuted, fontSize = 12.sp)
                 }
             }
         }
     }
 
     if (confirmReset) {
-        GemDialog(title = "Reset Progress?", onDismiss = { confirmReset = false }) {
+        GemDialog(title = stringResource(R.string.shell_reset_title), onDismiss = { confirmReset = false }) {
             Text(
-                "This permanently deletes your profile, coins, unlocks, achievements, stats, saved game and settings. This cannot be undone.",
+                stringResource(R.string.shell_reset_body),
                 color = CM.Text,
                 fontSize = 14.sp,
                 textAlign = TextAlign.Center,
             )
             Spacer(Modifier.height(16.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                GameButton("CANCEL", { confirmReset = false }, style = ButtonStyle.GLASS, modifier = Modifier.weight(1f), height = 50.dp, fontSize = 16.sp)
+                GameButton(stringResource(R.string.shell_cancel), { confirmReset = false }, style = ButtonStyle.GLASS, modifier = Modifier.weight(1f), height = 50.dp, fontSize = 16.sp)
                 GameButton(
-                    "RESET",
+                    stringResource(R.string.shell_reset_confirm),
                     onClick = {
                         scope.launch {
                             app.profile.reset()
@@ -308,7 +340,7 @@ private fun share(context: Context) {
     val send = Intent(Intent.ACTION_SEND).apply {
         type = "text/plain"
         putExtra(Intent.EXTRA_SUBJECT, "Cards Mania")
-        putExtra(Intent.EXTRA_TEXT, "Join me in Cards Mania — match, stack and flip your way to victory! https://play.google.com/store/apps/details?id=$pkg")
+        putExtra(Intent.EXTRA_TEXT, context.getString(R.string.shell_share_text, "https://play.google.com/store/apps/details?id=$pkg"))
     }
-    runCatching { context.startActivity(Intent.createChooser(send, "Share Cards Mania").addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
+    runCatching { context.startActivity(Intent.createChooser(send, context.getString(R.string.shell_share_chooser)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
 }

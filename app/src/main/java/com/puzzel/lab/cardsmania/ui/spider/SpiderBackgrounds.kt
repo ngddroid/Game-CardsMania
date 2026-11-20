@@ -9,6 +9,9 @@ import android.graphics.Path
 import android.graphics.RadialGradient
 import android.graphics.RectF
 import android.graphics.Shader
+import androidx.annotation.StringRes
+import com.puzzel.lab.cardsmania.R
+import com.puzzel.lab.cardsmania.i18n.Strings
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.exp
@@ -18,15 +21,17 @@ import kotlin.math.sin
 import kotlin.random.Random
 
 @kotlinx.serialization.Serializable
-enum class SpiderBackground(val title: String, val swatch: Long) {
-    FELT("Classic Felt", 0xFF1E7B43),
-    ROYAL("Royal Velvet", 0xFF4A1F8F),
-    WOOD("Walnut Wood", 0xFF7A4A26),
-    OCEAN("Ocean Bay", 0xFF0A5A7A),
-    SUNSET("Sunset Sky", 0xFFE8547A),
-    NIGHT("Starry Night", 0xFF0B1A3F),
-    MEADOW("Spring Meadow", 0xFF3E9B4F),
-    CANDY("Candy Pop", 0xFFB0457F),
+enum class SpiderBackground(@StringRes val titleRes: Int, val swatch: Long) {
+    FELT(R.string.data_spider_bg_felt, 0xFF1E7B43),
+    ROYAL(R.string.data_spider_bg_royal, 0xFF4A1F8F),
+    WOOD(R.string.data_spider_bg_wood, 0xFF7A4A26),
+    OCEAN(R.string.data_spider_bg_ocean, 0xFF0A5A7A),
+    SUNSET(R.string.data_spider_bg_sunset, 0xFFE8547A),
+    NIGHT(R.string.data_spider_bg_night, 0xFF0B1A3F),
+    MEADOW(R.string.data_spider_bg_meadow, 0xFF3E9B4F),
+    CANDY(R.string.data_spider_bg_candy, 0xFFB0457F);
+
+    val title: String get() = Strings.get(titleRes)
 }
 
 /** Procedural full-screen table backgrounds for Spider Solitaire (deterministic, no image assets). */

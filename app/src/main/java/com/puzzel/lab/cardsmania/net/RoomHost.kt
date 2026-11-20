@@ -1,10 +1,18 @@
 package com.puzzel.lab.cardsmania.net
 
+import com.puzzel.lab.cardsmania.R
+import com.puzzel.lab.cardsmania.bhabhi.BStep
+import com.puzzel.lab.cardsmania.bhabhi.BhabhiAction
+import com.puzzel.lab.cardsmania.bhabhi.BhabhiEngine
+import com.puzzel.lab.cardsmania.bhabhi.BhabhiSeat
+import com.puzzel.lab.cardsmania.bhabhi.BhabhiSetup
+import com.puzzel.lab.cardsmania.bhabhi.BhabhiState
 import com.puzzel.lab.cardsmania.engine.Action
 import com.puzzel.lab.cardsmania.engine.Step
 import com.puzzel.lab.cardsmania.engine.model.GameConfig
 import com.puzzel.lab.cardsmania.engine.model.GameState
 import com.puzzel.lab.cardsmania.engine.model.PlayerSetup
+import com.puzzel.lab.cardsmania.i18n.Strings
 import com.puzzel.lab.cardsmania.mindi.MStep
 import com.puzzel.lab.cardsmania.mindi.MindiAction
 import com.puzzel.lab.cardsmania.mindi.MindiEngine
@@ -51,6 +59,8 @@ class RoomHost(
     private var config: GameConfig? = null
     private var mindiSetup: MindiSetup? = null
     private var mindiSeats: List<MindiSeat> = emptyList()
+    private var bhabhiSetup: BhabhiSetup? = null
+    private var bhabhiSeats: List<BhabhiSeat> = emptyList()
 
     var port: Int = -1
         private set
@@ -66,6 +76,12 @@ class RoomHost(
 
     /** Supplies the authoritative Mindi state when a guest re-joins mid-match. */
     @Volatile var mindiStateProvider: (() -> MindiState?)? = null
+
+    /** (seat, Bhabhi action) from guests during a Bhabhi game. The seat is already forced to theirs. */
+    val bhabhiActions = Channel<Pair<Int, BhabhiAction>>(Channel.UNLIMITED)
+
+    /** Supplies the authoritative Bhabhi state when a guest re-joins mid-game. */
+    @Volatile var bhabhiStateProvider: (() -> BhabhiState?)? = null
 
     /** (seat, emote text) from guests. */
     val emotes = Channel<Pair<Int, String>>(Channel.UNLIMITED)
@@ -130,11 +146,11 @@ class RoomHost(
         }
     }
 
-    private fun cleanName(n: String) = n.trim().take(14).ifBlank { "Guest" }
+    private fun cleanName(n: String) = n.trim().take(14).ifBlank { Strings.get(R.string.mp_guest) }
 
     private fun onHello(conn: Connection, h: NetMsg.Hello): Guest? {
         if (h.protocol != Net.PROTOCOL) {
-            conn.send(NetMsg.Rejected("Different app version — please update both phones."))
+            conn.send(NetMsg.Rejected(Strings.get(R.string.mp_reject_version)))
             return null
         }
         var sync: NetMsg? = null
@@ -144,7 +160,7 @@ class RoomHost(
             val existing = guests[h.token]
             if (r.inGame) {
                 if (existing == null || existing.seat < 0) {
-                    conn.send(NetMsg.Rejected("This game has already started."))
+                    conn.send(NetMsg.Rejected(Strings.get(R.string.mp_reject_started)))
                     return null
                 }
                 existing.conn?.takeIf { it !== conn }?.close()
@@ -152,8 +168,11 @@ class RoomHost(
                 g = existing
                 val cfg = config
                 val ms = mindiSetup
+                val bs = bhabhiSetup
                 if (r.isMindi && ms != null) {
                     mindiStateProvider?.invoke()?.let { st -> sync = NetMsg.MindiSync(g.seat, ms, mindiSeats, r.speed, MindiRedact.state(st, g.seat)) }
+                } else if (r.isBhabhi && bs != null) {
+                    bhabhiStateProvider?.invoke()?.let { st -> sync = NetMsg.BhabhiSync(g.seat, bs, bhabhiSeats, r.speed, BhabhiRedact.state(st, g.seat)) }
                 } else {
                     val st = stateProvider?.invoke()
                     if (cfg != null && st != null) sync = NetMsg.Sync(g.seat, cfg, r.speed, Redact.state(st, g.seat))
@@ -167,7 +186,7 @@ class RoomHost(
                 g = existing
             } else {
                 if (r.openSeats <= 0) {
-                    conn.send(NetMsg.Rejected("The room is full."))
+                    conn.send(NetMsg.Rejected(Strings.get(R.string.mp_reject_full)))
                     return null
                 }
                 g = Guest(h.token, UUID.randomUUID().toString().take(8), cleanName(h.name), h.avatar, conn)
@@ -183,8 +202,9 @@ class RoomHost(
 
     private fun onGuestMessage(g: Guest, msg: NetMsg) {
         when (msg) {
-            is NetMsg.Act -> if (_room.value.inGame && !_room.value.isMindi && g.seat >= 0) actions.trySend(g.seat to msg.action.withPlayer(g.seat))
+            is NetMsg.Act -> if (_room.value.inGame && _room.value.isMania && g.seat >= 0) actions.trySend(g.seat to msg.action.withPlayer(g.seat))
             is NetMsg.MindiAct -> if (_room.value.inGame && _room.value.isMindi && g.seat >= 0) mindiActions.trySend(g.seat to msg.action.withSeat(g.seat))
+            is NetMsg.BhabhiAct -> if (_room.value.inGame && _room.value.isBhabhi && g.seat >= 0) bhabhiActions.trySend(g.seat to msg.action.withSeat(g.seat))
             is NetMsg.Emote -> if (_room.value.inGame && g.seat >= 0) emotes.trySend(g.seat to msg.text.take(8))
             is NetMsg.Leave -> {
                 synchronized(lock) {
@@ -233,6 +253,12 @@ class RoomHost(
             val bots = r.bots.coerceIn(0, (seats - 1 - r.guests.size).coerceAtLeast(0))
             val setup = MindiEngine.normalize(r.mindi.copy(players = seats, difficulty = r.botDifficulty))
             return r.copy(seats = seats, bots = bots, mindi = setup)
+        }
+        if (r.isBhabhi) {
+            val seats = maxOf(r.seats, 1 + r.guests.size).coerceIn(BhabhiEngine.MIN_PLAYERS, BhabhiEngine.MAX_PLAYERS)
+            val bots = r.bots.coerceIn(0, (seats - 1 - r.guests.size).coerceAtLeast(0))
+            val setup = BhabhiEngine.normalize(r.bhabhi.copy(players = seats, difficulty = r.botDifficulty))
+            return r.copy(seats = seats, bots = bots, bhabhi = setup)
         }
         var seats = r.seats.coerceIn(2, 6)
         seats = maxOf(seats, 1 + r.guests.size).coerceAtMost(6)
@@ -284,6 +310,8 @@ class RoomHost(
             }
             cfg = GameConfig(r.mode, players, r.handSize, r.deckCount, r.targetScore, r.rules, seed)
             config = cfg
+            mindiSetup = null
+            bhabhiSetup = null
             _room.value = r.copy(inGame = true)
             _seats.value = guests.values.associate { it.seat to true }
             guests.values.forEach { g -> g.conn?.let { starts += it to NetMsg.Start(g.seat, cfg, r.speed) } }
@@ -318,6 +346,7 @@ class RoomHost(
             mindiSetup = setup
             mindiSeats = seats.toList()
             config = null
+            bhabhiSetup = null
             _room.value = r.copy(inGame = true)
             _seats.value = guests.values.associate { it.seat to true }
             guests.values.forEach { g -> g.conn?.let { starts += it to NetMsg.MindiStart(g.seat, setup, mindiSeats, r.speed) } }
@@ -325,6 +354,51 @@ class RoomHost(
         }
         outQueue.trySend { starts.forEach { (c, m) -> c.send(m) } }
         return setup to seats.toList()
+    }
+
+    /**
+     * Seats a Bhabhi game: host = seat 0, guests in join order, bots fill the rest.
+     * Returns the setup and seats (the same list every phone receives).
+     */
+    fun startBhabhi(seed: Long, host: BhabhiSeat): Pair<BhabhiSetup, List<BhabhiSeat>> {
+        val starts = ArrayList<Pair<Connection, NetMsg.BhabhiStart>>()
+        val setup: BhabhiSetup
+        val seats = ArrayList<BhabhiSeat>()
+        synchronized(lock) {
+            guests.values.filter { it.conn == null }.map { it.token }.forEach { guests.remove(it) }
+            val r = sanitize(_room.value.copy(game = RoomGame.BHABHI, guests = guests.values.map { RoomGuest(it.id, it.name, it.avatar) }))
+            setup = r.bhabhi
+            seats += host.copy(isHuman = true)
+            guests.values.forEachIndexed { i, g ->
+                g.seat = i + 1
+                seats += BhabhiSeat(g.name, playerAvatar(g.avatar), isHuman = true, remote = true)
+            }
+            var b = 0
+            while (seats.size < setup.players) {
+                val (name, avatar) = botIdentity(b++, seed)
+                seats += BhabhiSeat(name, avatar, isHuman = false, difficulty = r.botDifficulty)
+            }
+            bhabhiSetup = setup
+            bhabhiSeats = seats.toList()
+            config = null
+            mindiSetup = null
+            _room.value = r.copy(inGame = true)
+            _seats.value = guests.values.associate { it.seat to true }
+            guests.values.forEach { g -> g.conn?.let { starts += it to NetMsg.BhabhiStart(g.seat, setup, bhabhiSeats, r.speed) } }
+            publishLocked()
+        }
+        outQueue.trySend { starts.forEach { (c, m) -> c.send(m) } }
+        return setup to seats.toList()
+    }
+
+    /** Relays Bhabhi steps to every seated guest, redacted for that guest. */
+    fun broadcastBhabhi(steps: List<BStep>) {
+        if (steps.isEmpty()) return
+        val targets = synchronized(lock) { guests.values.filter { it.seat >= 0 && it.conn != null }.map { it.seat to it.conn!! } }
+        if (targets.isEmpty()) return
+        outQueue.trySend {
+            for ((seat, conn) in targets) conn.send(NetMsg.BhabhiSteps(steps.map { BhabhiRedact.step(it.event, it.state, seat) }))
+        }
     }
 
     /** Relays Mindi steps to every seated guest, redacted for that guest. */
@@ -367,6 +441,7 @@ class RoomHost(
             guests.values.forEach { it.seat = -1 }
             config = null
             mindiSetup = null
+            bhabhiSetup = null
             _room.value = _room.value.copy(inGame = false)
             _seats.value = emptyMap()
             publishLocked()

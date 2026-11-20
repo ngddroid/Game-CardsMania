@@ -192,6 +192,7 @@ data class Profile(
     val profileCreated: Boolean = false,
     val spider: com.puzzel.lab.cardsmania.spider.SpiderProfile = com.puzzel.lab.cardsmania.spider.SpiderProfile(),
     val mindi: com.puzzel.lab.cardsmania.mindi.MindiProfile = com.puzzel.lab.cardsmania.mindi.MindiProfile(),
+    val bhabhi: com.puzzel.lab.cardsmania.bhabhi.BhabhiProfile = com.puzzel.lab.cardsmania.bhabhi.BhabhiProfile(),
 ) {
     val level: Int get() = Leveling.levelFor(xp)
     val totalWins: Int get() = stats.values.sumOf { it.wins }
@@ -262,16 +263,15 @@ data class SavedGame(val state: GameState, val daily: String? = null, val humanT
 class SavedGameStore(context: Context) {
     private val file = File(context.filesDir, "saved_game.json")
 
-    suspend fun save(game: SavedGame) = withContext(Dispatchers.IO) {
-        runCatching { file.writeText(AppJson.encodeToString(SavedGame.serializer(), game)) }
-    }
+    /** Queues the save (ordered and crash-safe, see [SaveFiles]). */
+    fun saveLater(game: SavedGame) = SaveFiles.write(file) { AppJson.encodeToString(SavedGame.serializer(), game) }
 
-    suspend fun load(): SavedGame? = withContext(Dispatchers.IO) {
-        if (!file.exists()) return@withContext null
-        runCatching { AppJson.decodeFromString(SavedGame.serializer(), file.readText()) }.getOrNull()
+    suspend fun load(): SavedGame? {
+        val text = SaveFiles.read(file) ?: return null
+        return withContext(Dispatchers.Default) { runCatching { AppJson.decodeFromString(SavedGame.serializer(), text) }.getOrNull() }
     }
 
     fun exists(): Boolean = file.exists()
 
-    suspend fun clear() = withContext(Dispatchers.IO) { runCatching { file.delete() } }
+    suspend fun clear() = SaveFiles.delete(file)
 }

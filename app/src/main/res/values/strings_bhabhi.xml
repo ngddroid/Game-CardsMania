@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Setup screen -->
+    <string name="bhabhi_title">Bhabhi</string>
+    <string name="bhabhi_tile_title">BHABHI</string>
+    <string name="bhabhi_continue_title">Continue game</string>
+    <string name="bhabhi_continue_sub">Pick up your saved Bhabhi game</string>
+    <string name="bhabhi_section_players">Players</string>
+    <string name="bhabhi_section_rules">Rules</string>
+    <string name="bhabhi_safe_first">Safe first round</string>
+    <string name="bhabhi_safe_first_desc">No thulla on the opening spade trick — players without a spade just throw any card</string>
+    <string name="bhabhi_section_table">Table</string>
+    <string name="bhabhi_bots">Bots</string>
+    <string name="bhabhi_expert">Expert</string>
+    <string name="bhabhi_turn_timer">Turn timer</string>
+    <string name="bhabhi_off">Off</string>
+    <string name="bhabhi_seconds">%1$ds</string>
+    <string name="bhabhi_deal_cards">DEAL CARDS</string>
+    <string name="bhabhi_hero_title">Don\'t be the Bhabhi!</string>
+    <string name="bhabhi_hero_sub">Follow suit · thulla when you can\'t · empty your hand first</string>
+    <string name="bhabhi_table_even">%1$d players · %2$d cards each</string>
+    <string name="bhabhi_table_uneven">%1$d players · %2$d–%3$d cards each</string>
+
+    <!-- Game screen -->
+    <string name="bhabhi_shuffling">Shuffling…</string>
+    <string name="bhabhi_cd_pause">Pause</string>
+    <string name="bhabhi_cd_hint">Hint</string>
+    <string name="bhabhi_cd_emote">Emote</string>
+    <string name="bhabhi_top_title">BHABHI · %1$d PLAYERS</string>
+    <plurals name="bhabhi_top_trick">
+        <item quantity="one">Trick %1$d · %2$d card thrown away</item>
+        <item quantity="other">Trick %1$d · %2$d cards thrown away</item>
+    </plurals>
+    <plurals name="bhabhi_top_trick_safe">
+        <item quantity="one">Trick %1$d · %2$d card thrown away · safe first round</item>
+        <item quantity="other">Trick %1$d · %2$d cards thrown away · safe first round</item>
+    </plurals>
+    <string name="bhabhi_finish_hint">Empty your hand to get away · last one holding cards is the Bhabhi</string>
+    <string name="bhabhi_you">You</string>
+    <string name="bhabhi_player">Player</string>
+    <string name="bhabhi_badge">BHABHI</string>
+    <string name="bhabhi_finish">FINISH</string>
+
+    <!-- Status pill -->
+    <string name="bhabhi_status_got_away">You got away! 🎉 Who will be the Bhabhi?</string>
+    <string name="bhabhi_status_tap_again">Tap again or swipe up to play</string>
+    <string name="bhabhi_status_open">You have the A♠ — open the game with it</string>
+    <string name="bhabhi_status_lead">Your lead — any card</string>
+    <string name="bhabhi_status_thulla">No %1$s? Throw any card — THULLA!</string>
+    <string name="bhabhi_status_no_suit_safe">No %1$s? Throw any card (first round is safe)</string>
+    <string name="bhabhi_status_follow">Follow %1$s %2$s</string>
+    <string name="bhabhi_status_your_turn">Your turn</string>
+    <string name="bhabhi_status_thinking">%1$s is thinking…</string>
+
+    <!-- Suit names (shown in the UI only; the engine keeps English) -->
+    <string name="bhabhi_suit_spades">Spades</string>
+    <string name="bhabhi_suit_hearts">Hearts</string>
+    <string name="bhabhi_suit_diamonds">Diamonds</string>
+    <string name="bhabhi_suit_clubs">Clubs</string>
+
+    <!-- Toasts -->
+    <string name="bhabhi_toast_time_up">Time\'s up! A card was played for you</string>
+    <string name="bhabhi_toast_open">Open the game with the A♠</string>
+    <string name="bhabhi_toast_follow">Follow suit: play a %1$s card</string>
+
+    <!-- Table pop-ups -->
+    <string name="bhabhi_pop_you_have_ace">YOU HAVE THE A♠</string>
+    <string name="bhabhi_pop_ace_opens">A♠ OPENS</string>
+    <string name="bhabhi_pop_thulla">THULLA!</string>
+    <string name="bhabhi_pop_you_pick_up">YOU PICK UP +%1$d</string>
+    <string name="bhabhi_pop_pick_up">PICK UP +%1$d</string>
+    <string name="bhabhi_pop_you_got_away">YOU GOT AWAY! %1$s</string>
+    <string name="bhabhi_pop_safe">SAFE %1$s</string>
+    <string name="bhabhi_pop_you_bhabhi">YOU\'RE THE BHABHI!</string>
+    <string name="bhabhi_pop_bhabhi">BHABHI!</string>
+
+    <!-- Result -->
+    <string name="bhabhi_result_you_bhabhi">You\'re the Bhabhi!</string>
+    <string name="bhabhi_result_first">FIRST OUT!</string>
+    <string name="bhabhi_result_got_away">You got away!</string>
+    <string name="bhabhi_result_bhabhi_sub">Last one holding cards — better luck next game</string>
+    <string name="bhabhi_result_finished">You finished %1$s of %2$d</string>
+    <string name="bhabhi_ordinal_1">1st</string>
+    <string name="bhabhi_ordinal_2">2nd</string>
+    <string name="bhabhi_ordinal_3">3rd</string>
+    <string name="bhabhi_ordinal_4">4th</string>
+    <string name="bhabhi_ordinal_5">5th</string>
+    <string name="bhabhi_ordinal_6">6th</string>
+    <string name="bhabhi_ordinal_7">7th</string>
+    <string name="bhabhi_ordinal_8">8th</string>
+    <string name="bhabhi_ordinal_n">#%1$d</string>
+    <string name="bhabhi_result_left">BHABHI · %1$d left</string>
+    <plurals name="bhabhi_pickups">
+        <item quantity="one">%d pickup</item>
+        <item quantity="other">%d pickups</item>
+    </plurals>
+    <string name="bhabhi_result_xp">+%1$d XP</string>
+    <string name="bhabhi_achievement">Achievement: %1$s</string>
+    <string name="bhabhi_home">Home</string>
+    <string name="bhabhi_play_again">Play Again</string>
+
+    <!-- Pause menu -->
+    <string name="bhabhi_paused">Paused</string>
+    <string name="bhabhi_resume">Resume</string>
+    <string name="bhabhi_how_to">How to Play</string>
+    <string name="bhabhi_saved_note">Your game is saved — continue it later from Bhabhi.</string>
+    <string name="bhabhi_quit">Quit to Home</string>
+</resources>

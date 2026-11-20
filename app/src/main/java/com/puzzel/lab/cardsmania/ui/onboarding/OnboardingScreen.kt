@@ -49,7 +49,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import androidx.annotation.StringRes
+import androidx.compose.ui.res.stringResource
 import com.puzzel.lab.cardsmania.LocalApp
+import com.puzzel.lab.cardsmania.R
 import com.puzzel.lab.cardsmania.audio.Sfx
 import com.puzzel.lab.cardsmania.data.Characters
 import com.puzzel.lab.cardsmania.data.DifficultyInfo
@@ -80,13 +83,13 @@ import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.sin
 
-private data class OnboardPage(val title: String, val body: String)
+private data class OnboardPage(@StringRes val title: Int, @StringRes val body: Int)
 
 private val pages = listOf(
-    OnboardPage("Welcome to\nCards Mania", "A dazzling card-game collection full of gems, stacks and surprises. Pick a game, beat the table, collect the rewards!"),
-    OnboardPage("5 Games\nin One", "Classic, Merciless and Flip Mania for color-matching battles, Spider Solitaire to relax, and Mindi — the team game of 10s."),
-    OnboardPage("Rivals & Teams", "Smart bots from Easy to Genius, partners who play as a team in Mindi, and friends on the same Wi-Fi in multiplayer rooms."),
-    OnboardPage("Collect &\nConquer", "Open daily gifts, finish challenges, earn coins and unlock stunning tables, card backs and avatar frames."),
+    OnboardPage(R.string.shell_onb1_title, R.string.shell_onb1_body),
+    OnboardPage(R.string.shell_onb2_title, R.string.shell_onb2_body),
+    OnboardPage(R.string.shell_onb3_title, R.string.shell_onb3_body),
+    OnboardPage(R.string.shell_onb4_title, R.string.shell_onb4_body),
 )
 
 @Composable
@@ -138,10 +141,10 @@ fun OnboardingScreen(onDone: () -> Unit) {
                         Modifier.fillMaxWidth().weight(0.4f).padding(horizontal = 28.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        OutlinedTitle(pages[page].title, fontSize = 34.sp, outlineWidth = 11f)
+                        OutlinedTitle(stringResource(pages[page].title), fontSize = 34.sp, outlineWidth = 11f)
                         Spacer(Modifier.height(14.dp))
                         Text(
-                            pages[page].body,
+                            stringResource(pages[page].body),
                             color = CM.Text,
                             fontSize = 16.sp,
                             lineHeight = 23.sp,
@@ -174,7 +177,7 @@ fun OnboardingScreen(onDone: () -> Unit) {
                 }
             }
             GameButton(
-                text = if (last) "Let's Play!" else "Next",
+                text = if (last) stringResource(R.string.shell_onb_lets_play) else stringResource(R.string.shell_onb_next),
                 onClick = {
                     if (last) onDone() else scope.launch { pager.animateScrollToPage(pager.currentPage + 1) }
                 },
@@ -289,10 +292,14 @@ private fun ModesIllustration(active: Boolean) {
     val moon = remember { Face(Suit.VIOLET, Kind.NUMBER, 4) }
     Box(Modifier.size(340.dp), contentAlignment = Alignment.Center) {
         Burst(Modifier.size(320.dp), color = CM.Violet)
-        val games = listOf("Classic", "Merciless", "Flip", "Spider", "Mindi")
-        val gameColors = listOf(ModeInfo.colors(GameMode.CLASSIC)[1], ModeInfo.colors(GameMode.CHAOS)[1], ModeInfo.colors(GameMode.ECLIPSE)[1], Color(0xFF0E6B3A), Color(0xFFC0392B))
+        val games = listOf(
+            R.string.shell_short_classic, R.string.shell_short_merciless, R.string.shell_short_flip,
+            R.string.shell_short_spider, R.string.shell_game_mindi, R.string.shell_game_bhabhi,
+        )
+        val gameColors = listOf(ModeInfo.colors(GameMode.CLASSIC)[1], ModeInfo.colors(GameMode.CHAOS)[1], ModeInfo.colors(GameMode.ECLIPSE)[1], Color(0xFF0E6B3A), Color(0xFFC0392B), Color(0xFFB0206A))
         val spiderAce = remember { com.puzzel.lab.cardsmania.ui.spider.PlayingCardArt.face(1, 0) }
         val mindiTen = remember { com.puzzel.lab.cardsmania.ui.spider.PlayingCardArt.face(10, 1) }
+        val bhabhiQueen = remember { com.puzzel.lab.cardsmania.ui.spider.PlayingCardArt.face(12, 1) }
         games.forEachIndexed { i, game ->
             val ang = (t * 2 * PI + i * 2 * PI / games.size).toFloat()
             val depth = sin(ang)
@@ -321,10 +328,11 @@ private fun ModesIllustration(active: Boolean) {
                         }
                     }
                     3 -> com.puzzel.lab.cardsmania.ui.kit.CardImage(spiderAce, 84.dp, elevation = 12.dp)
-                    else -> com.puzzel.lab.cardsmania.ui.kit.CardImage(mindiTen, 84.dp, elevation = 12.dp)
+                    4 -> com.puzzel.lab.cardsmania.ui.kit.CardImage(mindiTen, 84.dp, elevation = 12.dp)
+                    else -> com.puzzel.lab.cardsmania.ui.kit.CardImage(bhabhiQueen, 84.dp, elevation = 12.dp)
                 }
                 Spacer(Modifier.height(8.dp))
-                Pill(game, gameColors[i])
+                Pill(stringResource(game), gameColors[i])
             }
         }
     }

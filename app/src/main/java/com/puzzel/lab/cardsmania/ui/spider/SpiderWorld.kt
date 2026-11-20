@@ -18,6 +18,7 @@ import com.puzzel.lab.cardsmania.spider.SpiderEvent
 import com.puzzel.lab.cardsmania.spider.SpiderHint
 import com.puzzel.lab.cardsmania.spider.SpiderMove
 import com.puzzel.lab.cardsmania.spider.SpiderState
+import com.puzzel.lab.cardsmania.ui.game.AnimatedWorld
 import com.puzzel.lab.cardsmania.ui.game.Fx
 import com.puzzel.lab.cardsmania.ui.render.CardArt
 import com.puzzel.lab.cardsmania.ui.render.CardBack
@@ -53,8 +54,10 @@ private class SSprite(val id: Int, var rank: Int, var suit: Int) {
 
 private class WinCard(var x: Float, var y: Float, var vx: Float, var vy: Float, var rot: Float, var vr: Float, val rank: Int, val suit: Int, var life: Float)
 
-class SpiderWorld(val layout: SpiderLayout) {
+class SpiderWorld(val layout: SpiderLayout) : AnimatedWorld {
     private val sprites = HashMap<Int, SSprite>(128)
+    /** The same sprites as [sprites], as a list so per-frame loops don't allocate iterators. */
+    private val all = ArrayList<SSprite>(128)
     var state: SpiderState? = null
         private set
     val fx = Fx(layout.density)
@@ -84,7 +87,6 @@ class SpiderWorld(val layout: SpiderLayout) {
     private var hintSoft = false
 
     // cues
-    private var stockBlockedAt = 0L
     private var sweepCol = -1
     private var sweepTop = 0f
     private var sweepBottom = 0f
@@ -111,6 +113,24 @@ class SpiderWorld(val layout: SpiderLayout) {
     private val order = ArrayList<SSprite>(128)
     private val rnd = Random(3)
     private val dash = DashPathEffect(floatArrayOf(6f * layout.density, 4f * layout.density), 0f)
+
+    // per-frame allocation caches
+    private val zOrder = Comparator<SSprite> { a, b -> zOf(a).compareTo(zOf(b)) }
+    private var scrimShader: Shader? = null
+    private var scrimLuma = -1f
+    /** Sweep band gradient centred on y = 0, moved with [sweepMatrix] each frame. */
+    private val sweepShader: Shader by lazy {
+        val band = layout.cardH * 0.8f
+        LinearGradient(0f, -band / 2, 0f, band / 2, intArrayOf(0x00FFE27A, 0xAAFFE27A.toInt(), 0x00FFE27A), null, Shader.TileMode.CLAMP)
+    }
+    private val sweepMatrix = Matrix()
+    private val fm = Paint.FontMetrics()
+    private var dealsText = ""
+    private var dealsTextFor = -1
+    /** Valid targets for the tap-selected run, cached per (state, selection). */
+    private val selValid = BooleanArray(10)
+    private var selValidState: SpiderState? = null
+    private var selValidSel: Pair<Int, Int>? = null
 
     // ------------------------------------------------------------------ frames
 
@@ -175,6 +195,7 @@ class SpiderWorld(val layout: SpiderLayout) {
                 sp.x = start.x; sp.y = start.y; sp.tx = sp.x; sp.ty = sp.y
                 sp.up = if (f.kind == FrameKind.NEW_GAME) false else t.up
                 sprites[id] = sp
+                all += sp
             }
             if (f.kind == FrameKind.NEW_GAME && sp.zone != SZone.STOCK && t.zone == SZone.COLUMN) {
                 val st = layout.stockTap
@@ -206,7 +227,12 @@ class SpiderWorld(val layout: SpiderLayout) {
             ?: s.completed.firstNotNullOfOrNull { r -> r.firstOrNull { it.id == id } }
 
     private fun retarget(sp: SSprite, x: Float, y: Float, now: Long, delay: Long, dur: Long, arc: Float) {
-        if (abs(sp.tx - x) < 0.5f && abs(sp.ty - y) < 0.5f && !sp.moving) return
+        // Skip only when the card is really resting on the target. A dragged card keeps its old target (tx/ty) while
+        // its x/y follow the finger, so comparing tx/ty alone left a refused drop stuck where it was released.
+        if (!sp.moving && abs(sp.x - x) < 0.5f && abs(sp.y - y) < 0.5f) {
+            sp.tx = x; sp.ty = y
+            return
+        }
         sp.fx = sp.x; sp.fy = sp.y
         sp.tx = x; sp.ty = y
         sp.start = now; sp.delay = delay; sp.dur = dur
@@ -285,7 +311,7 @@ class SpiderWorld(val layout: SpiderLayout) {
      * plus the nearest column of any kind (for the "why not" message).
      */
     fun dropTarget(): Pair<Int, Int> {
-        val (cx, _) = dragCenter()
+        val cx = dragX - grabDx
         var bestValid = -1
         var bestValidD = Float.MAX_VALUE
         var nearest = -1
@@ -299,6 +325,28 @@ class SpiderWorld(val layout: SpiderLayout) {
         val target = if (bestValidD <= layout.cardW * 1.3f) bestValid else -1
         val any = if (nearestD <= layout.cardW * 1.3f) nearest else -1
         return target to any
+    }
+
+    /** The column a drop would land on right now (the magnetic valid target of [dropTarget]), without allocating. */
+    private fun validDropTarget(): Int {
+        val cx = dragX - grabDx
+        var bestValid = -1
+        var bestValidD = Float.MAX_VALUE
+        for (c in 0 until 10) {
+            if (c == dragCol || !dragValid[c]) continue
+            val d = abs(layout.columnX(c) - cx)
+            if (d < bestValidD) { bestValidD = d; bestValid = c }
+        }
+        return if (bestValidD <= layout.cardW * 1.3f) bestValid else -1
+    }
+
+    private fun selectionTargets(s: SpiderState, sel: Pair<Int, Int>): BooleanArray {
+        if (selValidState !== s || selValidSel != sel) {
+            for (to in 0 until 10) selValid[to] = SpiderEngine.canMove(s, SpiderMove(sel.first, sel.second, to))
+            selValidState = s
+            selValidSel = sel
+        }
+        return selValid
     }
 
     fun showHint(h: SpiderHint, soft: Boolean = false) {
@@ -318,18 +366,11 @@ class SpiderWorld(val layout: SpiderLayout) {
         for (i in index.coerceAtLeast(0) until cards.size) sprites[cards[i].id]?.shakeAt = now
     }
 
-    /** Dealing is blocked: shake the stock and outline the empty columns. */
-    fun stockBlocked() {
-        val s = state ?: return
-        val now = SystemClock.uptimeMillis()
-        stockBlockedAt = now
-        s.stock.forEach { sprites[it.id]?.shakeAt = now }
-    }
-
     // ------------------------------------------------------------------ win
 
     private fun startWin(now: Long) {
         winCards.clear()
+        lastFrame = 0L // the table may have been idle: start the throw with a normal frame step
         val d = layout.density
         repeat(if (reduceMotion) 16 else 52) { i ->
             val slot = layout.foundation(i % 8)
@@ -352,12 +393,12 @@ class SpiderWorld(val layout: SpiderLayout) {
         val floor = layout.height - layout.cardH * 0.4f
         val w = layout.cardW * 1.15f
         val h = w * 1.4f
-        val it = winCards.iterator()
-        while (it.hasNext()) {
-            val wc = it.next()
+        var i = 0
+        while (i < winCards.size) {
+            val wc = winCards[i++]
             wc.life += dt
             if (wc.life < 0f) continue
-            if (wc.life > 5.5f) { it.remove(); continue }
+            if (wc.life > 5.5f) { winCards.removeAt(--i); continue }
             wc.vy += 1400f * layout.density / 3f * dt
             wc.x += wc.vx * dt
             wc.y += wc.vy * dt
@@ -425,7 +466,9 @@ class SpiderWorld(val layout: SpiderLayout) {
     fun draw(c: Canvas, now: Long) {
         ensure()
         val s = state
-        val (sx, sy) = fx.shakeOffset(now)
+        fx.updateShake(now)
+        val sx = fx.shakeX
+        val sy = fx.shakeY
         c.save()
         c.translate(sx, sy)
         bg?.let { c.drawBitmap(it, 0f, 0f, null) }
@@ -433,8 +476,8 @@ class SpiderWorld(val layout: SpiderLayout) {
         drawSlots(c, s, now)
         update(now)
         order.clear()
-        order.addAll(sprites.values)
-        order.sortWith(compareBy<SSprite> { zOf(it) })
+        for (i in all.indices) order.add(all[i])
+        order.sortWith(zOrder)
         // everything except the dragged stack, then guidance, then the dragged stack on top
         for (sp in order) if (!isDragged(sp)) drawCard(c, sp, now)
         if (s != null) {
@@ -462,7 +505,8 @@ class SpiderWorld(val layout: SpiderLayout) {
     private fun update(now: Long) {
         val s = state
         val dragging = dragCol >= 0 && s != null
-        for (sp in sprites.values) {
+        for (i in all.indices) {
+            val sp = all[i]
             if (dragging && isDragged(sp)) {
                 val off = (sp.index - dragIndex) * layout.upGap(s!!, dragCol)
                 val tx = dragX - grabDx
@@ -498,7 +542,11 @@ class SpiderWorld(val layout: SpiderLayout) {
         val top = layout.rowTop - 8f * layout.density
         val bottom = layout.tableauBottom + 6f * layout.density
         p.color = 0xFF000000.toInt()
-        p.shader = LinearGradient(0f, top, 0f, bottom, intArrayOf(Fx.withAlpha(0xFF0A0420.toInt(), a), Fx.withAlpha(0xFF0A0420.toInt(), a * 0.75f)), null, Shader.TileMode.CLAMP)
+        if (scrimShader == null || scrimLuma != bgLuma) {
+            scrimShader = LinearGradient(0f, top, 0f, bottom, intArrayOf(Fx.withAlpha(0xFF0A0420.toInt(), a), Fx.withAlpha(0xFF0A0420.toInt(), a * 0.75f)), null, Shader.TileMode.CLAMP)
+            scrimLuma = bgLuma
+        }
+        p.shader = scrimShader
         rect.set(0f, top, layout.width, bottom)
         c.drawRoundRect(rect, 18f * layout.density, 18f * layout.density, p)
         p.shader = null
@@ -511,19 +559,9 @@ class SpiderWorld(val layout: SpiderLayout) {
         p.strokeWidth = 1.6f * L.density
         p.color = 0x66FFFFFF
         p.pathEffect = dash
-        val blockedT = (now - stockBlockedAt) / 1600f
-        val blocked = stockBlockedAt > 0 && blockedT in 0f..1f
         if (s != null) for (col in 0 until 10) if (s.columns[col].isEmpty()) {
             val x = L.columnX(col)
             rect.set(x - L.cardW / 2, L.tableauTop, x + L.cardW / 2, L.tableauTop + L.cardH)
-            if (blocked) {
-                val pulse = 0.5f + 0.5f * sin(blockedT * 18f)
-                p.strokeWidth = 3f * L.density
-                p.color = Fx.withAlpha(0xFFFF5A5A.toInt(), 0.5f + 0.5f * pulse)
-            } else {
-                p.strokeWidth = 1.6f * L.density
-                p.color = 0x66FFFFFF
-            }
             c.drawRoundRect(rect, r, r, p)
         }
         p.pathEffect = null
@@ -562,13 +600,13 @@ class SpiderWorld(val layout: SpiderLayout) {
             val sel = selected ?: return
             if (sel.first !in 0..9 || sel.second > s.columns[sel.first].lastIndex) return
             srcCol = sel.first
-            valid = BooleanArray(10) { to -> SpiderEngine.canMove(s, SpiderMove(sel.first, sel.second, to)) }
+            valid = selectionTargets(s, sel)
             // the selected run glows gold
             val top = L.cardTop(s, sel.first, sel.second) - 6f * L.density
             val bottom = L.columnBottom(s, sel.first) - 6f * L.density
             glow?.let { g -> glowRect(c, g, L.columnX(sel.first), top, bottom, 230) }
         }
-        val hover = if (dragging) dropTarget().first else -1
+        val hover = if (dragging) validDropTarget() else -1
         val pulse = 0.5f + 0.5f * sin(now / 160f)
         for (col in 0 until 10) {
             if (col == srcCol) continue
@@ -609,7 +647,10 @@ class SpiderWorld(val layout: SpiderLayout) {
         rect.set(x - layout.cardW / 2, sweepTop, x + layout.cardW / 2, sweepBottom)
         c.clipRect(rect)
         p.color = 0xFF000000.toInt()
-        p.shader = LinearGradient(0f, y - band / 2, 0f, y + band / 2, intArrayOf(0x00FFE27A, 0xAAFFE27A.toInt(), 0x00FFE27A), null, Shader.TileMode.CLAMP)
+        val shader = sweepShader
+        sweepMatrix.setTranslate(0f, y)
+        shader.setLocalMatrix(sweepMatrix)
+        p.shader = shader
         c.drawRect(rect, p)
         p.shader = null
         c.restore()
@@ -633,8 +674,9 @@ class SpiderWorld(val layout: SpiderLayout) {
             p.style = Paint.Style.FILL
             text.textSize = 11f * L.density
             text.color = 0xFFFFFFFF.toInt()
-            val fm = text.fontMetrics
-            c.drawText("${s.dealsLeft}", bx, by - (fm.ascent + fm.descent) / 2, text)
+            text.getFontMetrics(fm)
+            if (dealsTextFor != s.dealsLeft) { dealsTextFor = s.dealsLeft; dealsText = s.dealsLeft.toString() }
+            c.drawText(dealsText, bx, by - (fm.ascent + fm.descent) / 2, text)
         }
     }
 
@@ -741,5 +783,37 @@ class SpiderWorld(val layout: SpiderLayout) {
         }
     }
 
-    val busy: Boolean get() = sprites.values.any { it.moving } || winCards.isNotEmpty() || fx.busy
+    // ------------------------------------------------------------------ frame pacing
+
+    override fun isBusy(now: Long): Boolean {
+        if (dragCol >= 0) return true // the dragged stack eases after the finger, and the guides pulse
+        for (i in all.indices) {
+            val sp = all[i]
+            // moving includes a card still waiting on its start delay; prevUp/shakeAt are cleared by drawCard
+            if (sp.moving || sp.prevUp != null || sp.shakeAt > 0) return true
+        }
+        val s = state
+        if (s != null) {
+            if (sweepCol >= 0 && !reduceMotion) return true // drawSweep clears it after its run
+            // a full hint slides a ghost card; drawHint clears it after its life, which needs one more frame
+            val h = hint
+            if (h != null && h != SpiderHint.None && !hintSoft) return true
+            if (h != null && h != SpiderHint.None && now - hintAt > 2600) return true
+        }
+        return winCards.isNotEmpty() || fx.isActive(now)
+    }
+
+    override fun idleFrameMs(now: Long): Long {
+        val s = state ?: return 0L
+        // soft hint: a slow pulsing glow (the expiry frame is covered by isBusy)
+        val h = hint
+        if (h != null && h != SpiderHint.None && hintSoft) return 33L
+        // tap selection: the valid target columns pulse green
+        val sel = selected
+        if (sel != null && sel.first in 0..9 && sel.second <= s.columns[sel.first].lastIndex) {
+            val valid = selectionTargets(s, sel)
+            for (col in 0 until 10) if (col != sel.first && valid[col]) return 33L
+        }
+        return 0L
+    }
 }

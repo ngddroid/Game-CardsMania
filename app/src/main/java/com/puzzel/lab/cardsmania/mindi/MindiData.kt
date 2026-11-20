@@ -1,14 +1,21 @@
 package com.puzzel.lab.cardsmania.mindi
 
+import androidx.annotation.StringRes
+import com.puzzel.lab.cardsmania.R
 import com.puzzel.lab.cardsmania.engine.model.Difficulty
+import com.puzzel.lab.cardsmania.i18n.Strings
 import kotlinx.serialization.Serializable
 
 /** How the trump suit is decided in a Mindi hand. */
 @Serializable
-enum class MindiTrumpMode(val title: String, val short: String, val description: String) {
-    HIDE("Hide Trump", "Hide", "A secret card sets trump. It's revealed the first time someone can't follow suit."),
-    CUT("Cut Trump", "Cut", "No trump at first. The first card played off-suit becomes trump."),
-    OPEN("Open Trump", "Open", "Trump is shown before the deal. Easiest for beginners."),
+enum class MindiTrumpMode(@StringRes val titleRes: Int, @StringRes val shortRes: Int, @StringRes val descriptionRes: Int) {
+    HIDE(R.string.data_mindi_trump_hide_title, R.string.data_mindi_trump_hide_short, R.string.data_mindi_trump_hide_desc),
+    CUT(R.string.data_mindi_trump_cut_title, R.string.data_mindi_trump_cut_short, R.string.data_mindi_trump_cut_desc),
+    OPEN(R.string.data_mindi_trump_open_title, R.string.data_mindi_trump_open_short, R.string.data_mindi_trump_open_desc);
+
+    val title: String get() = Strings.get(titleRes)
+    val short: String get() = Strings.get(shortRes)
+    val description: String get() = Strings.get(descriptionRes)
 }
 
 /** Options for a Mindi match (also the saved "last setup"). */

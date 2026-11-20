@@ -49,10 +49,14 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.puzzel.lab.cardsmania.LocalApp
+import com.puzzel.lab.cardsmania.R
+import com.puzzel.lab.cardsmania.i18n.Strings
 import com.puzzel.lab.cardsmania.audio.Sfx
 import com.puzzel.lab.cardsmania.data.ModeInfo
 import com.puzzel.lab.cardsmania.net.FoundRoom
@@ -104,12 +108,12 @@ fun JoinRoomScreen(onBack: () -> Unit, onJoined: () -> Unit) {
 
     RoyalBackground(rays = false) {
         Column(Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding()) {
-            ScreenTitleBar("Join a Room", onBack)
+            ScreenTitleBar(stringResource(R.string.mp_join_room), onBack)
             Column(
                 Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
-                SectionHeader("Rooms on your Wi-Fi")
+                SectionHeader(stringResource(R.string.mp_rooms_on_wifi))
                 if (rooms.isEmpty()) {
                     Radar()
                 } else {
@@ -117,7 +121,7 @@ fun JoinRoomScreen(onBack: () -> Unit, onJoined: () -> Unit) {
                 }
 
                 GlassPanel(Modifier.fillMaxWidth()) {
-                    SectionHeader("Have a room code?")
+                    SectionHeader(stringResource(R.string.mp_have_code))
                     Spacer(Modifier.height(10.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         BasicTextField(
@@ -135,7 +139,7 @@ fun JoinRoomScreen(onBack: () -> Unit, onJoined: () -> Unit) {
                             keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Characters, imeAction = ImeAction.Go, autoCorrectEnabled = false),
                             keyboardActions = KeyboardActions(onGo = {
                                 focus.clearFocus()
-                                RoomCode.decode(code)?.let { (ip, port) -> join(ip, port, "code") } ?: run { error = "That code doesn't look right." }
+                                RoomCode.decode(code)?.let { (ip, port) -> join(ip, port, "code") } ?: run { error = Strings.get(R.string.mp_bad_code) }
                             }),
                             modifier = Modifier.weight(1f).clip(RoundedCornerShape(14.dp)).background(Color(0x33000000))
                                 .border(1.5.dp, CM.Gold.copy(alpha = 0.6f), RoundedCornerShape(14.dp)).padding(vertical = 12.dp, horizontal = 8.dp),
@@ -147,22 +151,22 @@ fun JoinRoomScreen(onBack: () -> Unit, onJoined: () -> Unit) {
                             }
                         )
                         Spacer(Modifier.width(10.dp))
-                        GameButton("Join", {
+                        GameButton(stringResource(R.string.mp_join), {
                             focus.clearFocus()
                             val d = RoomCode.decode(code)
                             if (d == null) {
-                                error = "That code doesn't look right."
+                                error = Strings.get(R.string.mp_bad_code)
                                 app.sound.play(Sfx.ERROR)
                             } else join(d.first, d.second, "code")
                         }, style = ButtonStyle.GREEN, height = 48.dp, fontSize = 16.sp, modifier = Modifier.width(92.dp), enabled = joining == null)
                     }
-                    Text("The code is shown on the host's room screen.", color = CM.TextDim, fontSize = 12.sp, modifier = Modifier.padding(top = 8.dp))
+                    Text(stringResource(R.string.mp_code_hint), color = CM.TextDim, fontSize = 12.sp, modifier = Modifier.padding(top = 8.dp))
                 }
                 if (joining == "code") {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         CircularProgressIndicator(color = CM.Gold, strokeWidth = 3.dp, modifier = Modifier.size(20.dp))
                         Spacer(Modifier.width(10.dp))
-                        Text("Joining…", color = CM.Text, fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.mp_joining), color = CM.Text, fontWeight = FontWeight.Bold)
                     }
                 }
                 error?.let { Text(it, color = Color(0xFFFF8A8A), fontWeight = FontWeight.Bold, fontSize = 13.sp) }
@@ -191,27 +195,32 @@ private fun RoomCard(r: FoundRoom, joining: Boolean, onJoin: () -> Unit) {
         AvatarBadge(com.puzzel.lab.cardsmania.data.PlayerAvatars.get(room?.hostAvatar ?: 0), size = 50.dp, ringColor = CM.Gold)
         Spacer(Modifier.width(12.dp))
         Column(Modifier.weight(1f)) {
-            Text("${room?.hostName ?: r.name}'s room", color = Color.White, fontWeight = FontWeight.Black, fontSize = 16.sp, maxLines = 1)
+            Text(stringResource(R.string.mp_hosts_room, room?.hostName ?: r.name), color = Color.White, fontWeight = FontWeight.Black, fontSize = 16.sp, maxLines = 1)
             if (room != null) {
-                if (room.isMindi) Text("Mindi · ${room.seats} players · ${room.mindi.trumpMode.title}", color = Color(0xFF3DDC84), fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                if (room.isMindi) Text(stringResource(R.string.mp_mindi_room_line, room.seats, room.mindi.trumpMode.title), color = Color(0xFF3DDC84), fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                else if (room.isBhabhi) Text(stringResource(R.string.mp_bhabhi_room_line, room.seats), color = Color(0xFFFF6FB5), fontWeight = FontWeight.Bold, fontSize = 13.sp)
                 else Text(ModeInfo.title(room.mode), color = ModeInfo.colors(room.mode)[0], fontWeight = FontWeight.Bold, fontSize = 13.sp)
                 Text(
                     when {
-                        room.inGame -> "Game in progress · rejoin if you were playing"
-                        room.openSeats <= 0 -> "Room full"
-                        else -> "${room.players} player(s) · ${room.openSeats} seat(s) open"
+                        room.inGame -> stringResource(R.string.mp_in_progress)
+                        room.openSeats <= 0 -> stringResource(R.string.mp_room_full)
+                        else -> stringResource(
+                            R.string.mp_room_line,
+                            pluralStringResource(R.plurals.mp_players_count, room.players, room.players),
+                            pluralStringResource(R.plurals.mp_seats_open_count, room.openSeats, room.openSeats),
+                        )
                     },
                     color = CM.TextDim, fontSize = 12.sp
                 )
             } else {
-                Text("Checking room…", color = CM.TextDim, fontSize = 12.sp)
+                Text(stringResource(R.string.mp_checking_room), color = CM.TextDim, fontSize = 12.sp)
             }
         }
         if (joining) {
             CircularProgressIndicator(color = CM.Gold, strokeWidth = 3.dp, modifier = Modifier.size(28.dp))
         } else {
             GameButton(
-                if (room?.inGame == true) "Rejoin" else "Join", onJoin,
+                if (room?.inGame == true) stringResource(R.string.mp_rejoin) else stringResource(R.string.mp_join), onJoin,
                 style = if (full) ButtonStyle.GLASS else if (room?.inGame == true) ButtonStyle.PURPLE else ButtonStyle.GREEN,
                 enabled = !full, height = 44.dp, fontSize = 15.sp, modifier = Modifier.width(92.dp),
             )
@@ -234,10 +243,10 @@ private fun Radar() {
                 drawCircle(CM.Gold, radius = 6.dp.toPx())
             }
         }
-        Text("Looking for rooms…", color = CM.GoldLight, fontWeight = FontWeight.Black, fontSize = 16.sp)
+        Text(stringResource(R.string.mp_looking), color = CM.GoldLight, fontWeight = FontWeight.Black, fontSize = 16.sp)
         Spacer(Modifier.height(4.dp))
         Text(
-            "Make sure the host has opened a room and you're on the same Wi-Fi.",
+            stringResource(R.string.mp_looking_hint),
             color = CM.TextDim, fontSize = 12.sp, textAlign = TextAlign.Center, modifier = Modifier.padding(horizontal = 24.dp)
         )
     }

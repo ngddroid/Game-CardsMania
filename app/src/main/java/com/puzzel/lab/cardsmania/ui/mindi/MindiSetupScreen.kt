@@ -43,14 +43,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.puzzel.lab.cardsmania.LocalApp
+import com.puzzel.lab.cardsmania.R
 import com.puzzel.lab.cardsmania.audio.Sfx
 import com.puzzel.lab.cardsmania.data.DifficultyInfo
 import com.puzzel.lab.cardsmania.engine.model.Difficulty
+import com.puzzel.lab.cardsmania.i18n.Strings
 import com.puzzel.lab.cardsmania.mindi.MindiSetup
 import com.puzzel.lab.cardsmania.mindi.MindiTrumpMode
 import com.puzzel.lab.cardsmania.ui.components.ButtonStyle
@@ -95,24 +99,25 @@ fun MindiSetupScreen(onBack: () -> Unit, onStart: (MindiLaunch) -> Unit) {
 
     RoyalBackground(rays = false) {
         Column(Modifier.fillMaxSize().statusBarsPadding()) {
-            ScreenTitleBar("Mindi", onBack)
+            ScreenTitleBar(stringResource(R.string.mindi_title), onBack)
             Column(
                 Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
                 MindiHero()
                 if (hasSave) {
-                    BannerRow("Continue match", "Pick up your saved Mindi game", Brush.horizontalGradient(listOf(Color(0xCC0A8A55), Color(0xAA044D2F)))) {
+                    BannerRow(stringResource(R.string.mindi_continue_title), stringResource(R.string.mindi_continue_desc), Brush.horizontalGradient(listOf(Color(0xCC0A8A55), Color(0xAA044D2F)))) {
                         start(MindiLaunch(resume = true))
                     }
                 }
                 BannerRow(
-                    "Daily Challenge", "One hand vs Hard bots · " + if (dailyStars > 0) "best ${"★".repeat(dailyStars)}" else "3 stars to earn",
+                    stringResource(R.string.mindi_daily_title),
+                    if (dailyStars > 0) stringResource(R.string.mindi_daily_desc_best, "★".repeat(dailyStars)) else stringResource(R.string.mindi_daily_desc_new),
                     Brush.horizontalGradient(listOf(Color(0xCC8E0F3A), Color(0xCC2A0E5C))), icon = Icons.Rounded.CalendarMonth, stars = dailyStars,
                 ) { start(MindiLaunch(setup = MindiViewModel.dailySetup(), daily = MindiViewModel.today())) }
 
                 GlassPanel(Modifier.fillMaxWidth()) {
-                    SectionHeader("Players")
+                    SectionHeader(stringResource(R.string.mindi_players))
                     Spacer(Modifier.height(10.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                         listOf(4, 6, 8).forEach { n ->
@@ -125,49 +130,49 @@ fun MindiSetupScreen(onBack: () -> Unit, onStart: (MindiLaunch) -> Unit) {
                     Text(mindiTableLine(setup), color = CM.TextDim, fontSize = 12.sp, fontWeight = FontWeight.Bold)
                     if (setup.players >= 6) {
                         Spacer(Modifier.height(8.dp))
-                        ToggleRow("Double deck", "104 cards and 8 tens — 5 tens win the hand", setup.doubleDeck) { setup = setup.copy(doubleDeck = it) }
+                        ToggleRow(stringResource(R.string.mindi_double_deck), stringResource(R.string.mindi_double_deck_desc), setup.doubleDeck) { setup = setup.copy(doubleDeck = it) }
                     }
                 }
 
                 GlassPanel(Modifier.fillMaxWidth()) {
-                    SectionHeader("Trump")
+                    SectionHeader(stringResource(R.string.mindi_trump_section))
                     Spacer(Modifier.height(10.dp))
                     MindiTrumpMode.entries.forEach { m ->
                         TrumpModeCard(m, setup.trumpMode == m) { setup = setup.copy(trumpMode = m) }
                         Spacer(Modifier.height(8.dp))
                     }
                     if (setup.trumpMode == MindiTrumpMode.HIDE) {
-                        ToggleRow("Must trump after reveal", "Whoever reveals the trump must play one if they can", setup.mustTrumpAfterReveal) {
+                        ToggleRow(stringResource(R.string.mindi_must_trump), stringResource(R.string.mindi_must_trump_desc), setup.mustTrumpAfterReveal) {
                             setup = setup.copy(mustTrumpAfterReveal = it)
                         }
                     }
                 }
 
                 GlassPanel(Modifier.fillMaxWidth()) {
-                    SectionHeader("Match")
+                    SectionHeader(stringResource(R.string.mindi_match))
                     Spacer(Modifier.height(10.dp))
-                    Text("Points to win", color = CM.TextDim, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.mindi_points_to_win), color = CM.TextDim, fontSize = 12.sp, fontWeight = FontWeight.Bold)
                     Spacer(Modifier.height(6.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                         listOf(1, 3, 5, 7, 10).forEach { t ->
-                            ChoiceChip(if (t == 1) "1 hand" else "$t", setup.target == t, { setup = setup.copy(target = t) }, Modifier.weight(1f))
+                            ChoiceChip(if (t == 1) stringResource(R.string.mindi_one_hand) else "$t", setup.target == t, { setup = setup.copy(target = t) }, Modifier.weight(1f))
                         }
                     }
-                    Text("Win = 1 point · Mendikot = 2 · Whitewash = 3", color = CM.TextMuted, fontSize = 11.sp, modifier = Modifier.padding(top = 4.dp))
+                    Text(stringResource(R.string.mindi_points_info), color = CM.TextMuted, fontSize = 11.sp, modifier = Modifier.padding(top = 4.dp))
                     Spacer(Modifier.height(12.dp))
-                    Text("Bots", color = CM.TextDim, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.mindi_bots), color = CM.TextDim, fontSize = 12.sp, fontWeight = FontWeight.Bold)
                     Spacer(Modifier.height(6.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                         Difficulty.entries.forEach { d ->
-                            ChoiceChip(if (d == Difficulty.GENIUS) "Expert" else DifficultyInfo.label(d), setup.difficulty == d, { setup = setup.copy(difficulty = d) }, Modifier.weight(1f), color = DifficultyInfo.color(d))
+                            ChoiceChip(if (d == Difficulty.GENIUS) stringResource(R.string.mindi_expert) else DifficultyInfo.label(d), setup.difficulty == d, { setup = setup.copy(difficulty = d) }, Modifier.weight(1f), color = DifficultyInfo.color(d))
                         }
                     }
                     Spacer(Modifier.height(12.dp))
-                    Text("Turn timer", color = CM.TextDim, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.mindi_turn_timer), color = CM.TextDim, fontSize = 12.sp, fontWeight = FontWeight.Bold)
                     Spacer(Modifier.height(6.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                         listOf(0, 10, 20, 30).forEach { t ->
-                            ChoiceChip(if (t == 0) "Off" else "${t}s", setup.turnTimer == t, { setup = setup.copy(turnTimer = t) }, Modifier.weight(1f))
+                            ChoiceChip(if (t == 0) stringResource(R.string.mindi_timer_off) else stringResource(R.string.mindi_timer_secs, t), setup.turnTimer == t, { setup = setup.copy(turnTimer = t) }, Modifier.weight(1f))
                         }
                     }
                 }
@@ -178,7 +183,7 @@ fun MindiSetupScreen(onBack: () -> Unit, onStart: (MindiLaunch) -> Unit) {
                     .navigationBarsPadding().padding(horizontal = 16.dp, vertical = 12.dp)
             ) {
                 GameButton(
-                    "DEAL CARDS", { start(MindiLaunch(setup = setup)) }, style = ButtonStyle.GOLD, icon = Icons.Rounded.PlayArrow,
+                    stringResource(R.string.mindi_deal_cards), { start(MindiLaunch(setup = setup)) }, style = ButtonStyle.GOLD, icon = Icons.Rounded.PlayArrow,
                     height = 60.dp, fontSize = 21.sp, modifier = Modifier.fillMaxWidth(), sound = Sfx.SHUFFLE, enabled = loaded,
                 )
             }
@@ -206,8 +211,8 @@ private fun MindiHero() {
             }
         }
         Column(Modifier.align(Alignment.BottomCenter).padding(bottom = 10.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-            OutlinedTitle("Capture the 10s!", fontSize = 24.sp)
-            Text("Team up with your partner · win 3 of the 4 mindis", color = Color.White.copy(alpha = 0.9f), fontSize = 12.sp, fontWeight = FontWeight.Bold)
+            OutlinedTitle(stringResource(R.string.mindi_hero_title), fontSize = 24.sp)
+            Text(stringResource(R.string.mindi_hero_desc), color = Color.White.copy(alpha = 0.9f), fontSize = 12.sp, fontWeight = FontWeight.Bold)
         }
     }
 }
@@ -258,8 +263,8 @@ internal fun SeatOption(n: Int, selected: Boolean, modifier: Modifier, enabled: 
                 drawCircle(Color.White, size.minDimension * 0.075f, p, style = Stroke(1.5.dp.toPx()))
             }
         }
-        Text("$n players", color = Color.White, fontWeight = FontWeight.Black, fontSize = 14.sp)
-        Text(if (n == 4) "2 vs 2" else if (n == 6) "3 vs 3" else "4 vs 4", color = CM.TextDim, fontSize = 11.sp)
+        Text(pluralStringResource(R.plurals.mindi_n_players, n, n), color = Color.White, fontWeight = FontWeight.Black, fontSize = 14.sp)
+        Text(when (n) { 4 -> 2; 6 -> 3; else -> 4 }.let { stringResource(R.string.mindi_vs, it, it) }, color = CM.TextDim, fontSize = 11.sp)
     }
 }
 
@@ -285,7 +290,7 @@ internal fun TrumpModeCard(m: MindiTrumpMode, selected: Boolean, onClick: () -> 
                 if (m == MindiTrumpMode.HIDE) {
                     Spacer(Modifier.width(6.dp))
                     Box(Modifier.clip(RoundedCornerShape(50)).background(CM.Gold).padding(horizontal = 6.dp, vertical = 1.dp)) {
-                        Text("CLASSIC", color = Color(0xFF3A1F00), fontSize = 9.sp, fontWeight = FontWeight.Black)
+                        Text(stringResource(R.string.mindi_classic), color = Color(0xFF3A1F00), fontSize = 9.sp, fontWeight = FontWeight.Black)
                     }
                 }
             }
@@ -332,15 +337,15 @@ internal fun MindiGameTile(selected: Boolean, modifier: Modifier = Modifier, onC
         }
         Spacer(Modifier.width(10.dp))
         Column(Modifier.weight(1f)) {
-            Text("MINDI", color = Color.White, fontWeight = FontWeight.Black, fontSize = 17.sp)
-            Text("Team trick game · capture the 10s · 4, 6 or 8 players", color = Color.White.copy(alpha = 0.85f), fontSize = 12.sp, fontWeight = FontWeight.Bold)
+            Text(stringResource(R.string.mindi_tile_title), color = Color.White, fontWeight = FontWeight.Black, fontSize = 17.sp)
+            Text(stringResource(R.string.mindi_tile_desc), color = Color.White.copy(alpha = 0.85f), fontSize = 12.sp, fontWeight = FontWeight.Bold)
         }
     }
 }
 
 /** One-line description of a Mindi table size. */
 internal fun mindiTableLine(setup: MindiSetup): String = when (setup.players) {
-    4 -> "2 vs 2 · partners sit opposite · 52 cards, 13 each"
-    6 -> "3 vs 3 · alternate seats · " + if (setup.doubleDeck) "double deck, 17 each" else "the 2s are removed, 8 each"
-    else -> "4 vs 4 · alternate seats · " + if (setup.doubleDeck) "double deck, 13 each" else "the 2s are removed, 6 each"
+    4 -> Strings.get(R.string.mindi_table_4)
+    6 -> Strings.get(if (setup.doubleDeck) R.string.mindi_table_6_double else R.string.mindi_table_6)
+    else -> Strings.get(if (setup.doubleDeck) R.string.mindi_table_8_double else R.string.mindi_table_8)
 }

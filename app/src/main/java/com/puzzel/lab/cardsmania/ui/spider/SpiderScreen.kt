@@ -9,6 +9,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.systemGestureExclusion
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.layout.Arrangement
@@ -45,13 +46,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.withFrameMillis
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
@@ -63,6 +63,8 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.LocalViewConfiguration
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -71,14 +73,17 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.puzzel.lab.cardsmania.LocalApp
+import com.puzzel.lab.cardsmania.R
 import com.puzzel.lab.cardsmania.audio.Sfx
 import com.puzzel.lab.cardsmania.spider.SpiderRules
 import com.puzzel.lab.cardsmania.ui.components.ButtonStyle
 import com.puzzel.lab.cardsmania.ui.components.GameButton
 import com.puzzel.lab.cardsmania.ui.components.RoundIconButton
+import com.puzzel.lab.cardsmania.ui.game.FrameDriver
+import com.puzzel.lab.cardsmania.ui.game.rememberFrameTick
+import com.puzzel.lab.cardsmania.ui.game.wakeOnTouch
 import com.puzzel.lab.cardsmania.ui.theme.CM
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
 import kotlin.math.abs
 
 @Composable
@@ -133,7 +138,7 @@ fun SpiderScreen(daily: String?, onExit: () -> Unit) {
             exit = fadeOut(),
         ) {
             GameButton(
-                "AUTO FINISH", vm::autoFinish, style = ButtonStyle.GREEN, icon = Icons.Rounded.AutoAwesome,
+                stringResource(R.string.spider_auto_finish), vm::autoFinish, style = ButtonStyle.GREEN, icon = Icons.Rounded.AutoAwesome,
                 height = 50.dp, fontSize = 17.sp, modifier = Modifier.width(220.dp),
             )
         }
@@ -157,24 +162,33 @@ private fun SpiderTable(vm: SpiderViewModel, world: SpiderWorld, ui: SpiderUi) {
         2 -> 0.7f
         else -> 1f
     }
-    LaunchedEffect(world, vm) { vm.frames.collect { f -> if (f != null) world.apply(f) } }
-    LaunchedEffect(world, vm) { vm.hints.collect { world.showHint(it) } }
-    LaunchedEffect(world, vm) { vm.shakes.collect { (col, idx) -> world.shake(col, idx) } }
+    val driver = remember { FrameDriver() }
+    LaunchedEffect(world, vm) { vm.frames.collect { f -> if (f != null) { world.apply(f); driver.wake() } } }
+    LaunchedEffect(world, vm) { vm.hints.collect { world.showHint(it); driver.wake() } }
+    LaunchedEffect(world, vm) { vm.shakes.collect { (col, idx) -> world.shake(col, idx); driver.wake() } }
     LaunchedEffect(world, vm) {
         vm.cues.collect { cue ->
             when (cue) {
-                SpiderCue.StockBlocked -> world.stockBlocked()
                 is SpiderCue.SoftHint -> world.showHint(cue.hint, soft = true)
             }
+            driver.wake()
         }
     }
     world.selected = ui.selected
-    var tick by remember { mutableLongStateOf(0L) }
-    LaunchedEffect(Unit) { while (isActive) withFrameMillis { tick = it } }
+    // the fields above are set during composition: redraw once whenever one of them changes
+    LaunchedEffect(world, world.background, world.cardBack, world.fourColor, world.reduceMotion, world.speed, world.selected) {
+        driver.wake()
+    }
+    val tick by rememberFrameTick(driver, world)
     val slop = LocalViewConfiguration.current.touchSlop
 
     Canvas(
-        Modifier.fillMaxSize().pointerInput(world, vm) {
+        Modifier.fillMaxSize()
+            // the first and last columns sit on the screen edges: keep the system Back swipe from stealing card drags
+            .systemGestureExclusion { tableEdge(world.layout, left = true) }
+            .systemGestureExclusion { tableEdge(world.layout, left = false) }
+            .wakeOnTouch(driver)
+            .pointerInput(world, vm) {
             awaitEachGesture {
                 val down = awaitFirstDown(requireUnconsumed = false)
                 val x0 = down.position.x
@@ -251,24 +265,24 @@ private fun SpiderTopBar(ui: SpiderUi, onBack: () -> Unit, onRules: () -> Unit) 
             .padding(horizontal = 6.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        RoundIconButton(Icons.AutoMirrored.Rounded.ArrowBack, onBack, size = 40.dp, contentDescription = "Back")
+        RoundIconButton(Icons.AutoMirrored.Rounded.ArrowBack, onBack, size = 40.dp, contentDescription = stringResource(R.string.spider_cd_back))
         Spacer(Modifier.width(8.dp))
         Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
-            val label = buildString {
-                append("SPIDER")
-                if (s != null) append(" · ${s.suits} SUIT" + if (s.suits > 1) "S" else "")
-                if (ui.daily != null) append(" · DAILY")
-            }
+            val label = listOfNotNull(
+                stringResource(R.string.spider_hud_title),
+                s?.let { pluralStringResource(R.plurals.spider_hud_suits, it.suits, it.suits) },
+                if (ui.daily != null) stringResource(R.string.spider_hud_daily) else null,
+            ).joinToString(" · ")
             Text(label, color = CM.GoldLight, fontWeight = FontWeight.Black, fontSize = 13.sp, letterSpacing = 1.sp)
             Spacer(Modifier.height(3.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                if (ui.prefs.showTimer) StatChip("Time", SpiderRules.formatTime(ui.elapsedMs))
-                StatChip("Moves", "${s?.moves ?: 0}")
-                StatChip("Score", "${s?.score ?: 500}")
+                if (ui.prefs.showTimer) StatChip(stringResource(R.string.spider_stat_time), SpiderRules.formatTime(ui.elapsedMs))
+                StatChip(stringResource(R.string.spider_stat_moves), "${s?.moves ?: 0}")
+                StatChip(stringResource(R.string.spider_stat_score), "${s?.score ?: 500}")
             }
         }
         Spacer(Modifier.width(8.dp))
-        RoundIconButton(Icons.Rounded.HelpOutline, onRules, size = 40.dp, contentDescription = "How to play")
+        RoundIconButton(Icons.Rounded.HelpOutline, onRules, size = 40.dp, contentDescription = stringResource(R.string.spider_cd_how_to_play))
     }
 }
 
@@ -305,11 +319,11 @@ private fun SpiderBottomBar(
             .padding(vertical = 6.dp),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
-        BarButton(Icons.Rounded.AddCircle, "New", onNew)
-        BarButton(Icons.Rounded.CalendarMonth, "Daily", onDaily, badge = ui.profile.spider.dailySolved[com.puzzel.lab.cardsmania.data.GameFactory.today()] == null)
-        BarButton(Icons.Rounded.Palette, "Theme", onLook)
-        BarButton(Icons.Rounded.Lightbulb, "Hint", onHint, tint = CM.GoldLight)
-        BarButton(Icons.AutoMirrored.Rounded.Undo, "Undo", onUndo, enabled = ui.canUndo)
+        BarButton(Icons.Rounded.AddCircle, stringResource(R.string.spider_bar_new), onNew)
+        BarButton(Icons.Rounded.CalendarMonth, stringResource(R.string.spider_daily), onDaily, badge = ui.profile.spider.dailySolved[com.puzzel.lab.cardsmania.data.GameFactory.today()] == null)
+        BarButton(Icons.Rounded.Palette, stringResource(R.string.spider_bar_theme), onLook)
+        BarButton(Icons.Rounded.Lightbulb, stringResource(R.string.spider_bar_hint), onHint, tint = CM.GoldLight)
+        BarButton(Icons.AutoMirrored.Rounded.Undo, stringResource(R.string.spider_undo), onUndo, enabled = ui.canUndo)
     }
 }
 
@@ -352,3 +366,16 @@ private fun Toast(ui: SpiderUi, modifier: Modifier) {
 
 @Suppress("unused")
 private fun unusedStats(): ImageVector = Icons.Rounded.Insights
+
+/**
+ * The strip of the table over the first or last column. With swipe navigation, a drag that starts this close to the
+ * screen edge would otherwise become the system Back gesture and leave the game. Only the card area is excluded, so
+ * the edge swipe still works next to the top and bottom bars. (Android's 200dp limit on exclusions doesn't apply
+ * while the navigation bar is hidden, which it is in this app.)
+ */
+private fun tableEdge(l: SpiderLayout, left: Boolean): Rect {
+    val w = l.margin + l.cardW + l.gap
+    val top = l.tableauTop - 8f * l.density
+    val bottom = l.tableauBottom
+    return if (left) Rect(0f, top, w, bottom) else Rect(l.width - w, top, l.width, bottom)
+}

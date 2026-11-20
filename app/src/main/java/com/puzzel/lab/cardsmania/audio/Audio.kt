@@ -129,10 +129,7 @@ class MusicPlayer(private val context: Context) {
                 night = create(R.raw.music_night)
                 dayMix = if (track == Track.DAY) 1f else 0f
                 applyVolumes()
-                if (!paused) {
-                    day?.start()
-                    night?.start()
-                }
+                syncDayNight()
             }
         }
     }
@@ -147,8 +144,31 @@ class MusicPlayer(private val context: Context) {
             for (i in 1..steps) {
                 dayMix = start + (target - start) * i / steps
                 applyVolumes()
+                syncDayNight()
                 delay(50)
             }
+        }
+    }
+
+    /**
+     * Day and Night are the same length and stay in step, but only the one you can hear is decoded: both run only
+     * while cross-fading. A track that starts joins at the other one's position.
+     */
+    private fun syncDayNight() {
+        if (paused) return
+        val d = day ?: return
+        val n = night ?: return
+        runCatching {
+            if (dayMix > 0f && !d.isPlaying) {
+                if (n.isPlaying) d.seekTo(n.currentPosition)
+                d.start()
+            }
+            if (dayMix < 1f && !n.isPlaying) {
+                if (d.isPlaying) n.seekTo(d.currentPosition)
+                n.start()
+            }
+            if (dayMix <= 0f && d.isPlaying) d.pause()
+            if (dayMix >= 1f && n.isPlaying) n.pause()
         }
     }
 
@@ -171,7 +191,7 @@ class MusicPlayer(private val context: Context) {
     fun resume() {
         paused = false
         runCatching { menu?.start() }
-        runCatching { day?.start(); night?.start() }
+        syncDayNight()
     }
 
     private fun stopAll() {

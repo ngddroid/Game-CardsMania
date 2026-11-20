@@ -22,12 +22,14 @@ class SpiderLayoutTest {
     @Test
     fun cardsAreWiderAndFaceUpGapGrowsWhenThereIsRoom() {
         val l = layout()
-        assertTrue("cards wider than the old 64 px", l.cardW > 66f)
+        // 10 columns fill the width inside the 10dp side margins: (720 - 2*20 - 9*6) / 10 = 62.6 px
+        assertEquals(62.6f, l.cardW, 0.01f)
+        assertTrue("cards stay a usable size", l.cardW > 60f)
         val s = SpiderEngine.newGame(1, 3)
         // a fresh deal fits easily: the face-up gap uses the maximum
         assertEquals(l.maxUpGap, l.upGap(s, 0), 0.01f)
         assertEquals(l.tableauTop, l.cardTop(s, 0, 0), 0.01f)
-        // the visible strip of a face-up card is now ~0.45 of a card (about 22-26 dp)
+        // the visible strip of a face-up card is ~0.48 of a card (about 21-24 dp)
         assertTrue(l.maxUpGap / 2f >= 21f)
     }
 

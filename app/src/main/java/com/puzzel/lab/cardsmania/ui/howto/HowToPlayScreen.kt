@@ -39,16 +39,20 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.annotation.StringRes
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.puzzel.lab.cardsmania.LocalApp
+import com.puzzel.lab.cardsmania.R
 import com.puzzel.lab.cardsmania.audio.Sfx
 import com.puzzel.lab.cardsmania.data.ModeInfo
 import com.puzzel.lab.cardsmania.engine.model.DeckFactory
 import com.puzzel.lab.cardsmania.engine.model.Face
 import com.puzzel.lab.cardsmania.engine.model.GameMode
 import com.puzzel.lab.cardsmania.engine.model.Kind
+import com.puzzel.lab.cardsmania.i18n.Strings
 import com.puzzel.lab.cardsmania.ui.components.ChoiceChip
 import com.puzzel.lab.cardsmania.ui.components.GlassPanel
 import com.puzzel.lab.cardsmania.ui.components.OutlinedTitle
@@ -65,56 +69,14 @@ import com.puzzel.lab.cardsmania.ui.render.CardBack
 import com.puzzel.lab.cardsmania.ui.theme.CM
 import kotlinx.coroutines.launch
 
-private data class RuleSection(val title: String, val bullets: List<String>)
+private data class RuleSection(@StringRes val titleRes: Int, val bullets: List<Int>)
 
-private val basics = RuleSection(
-    "The Basics",
-    listOf(
-        "Goal: be the first player to get rid of every card in your hand.",
-        "Setup: everyone is dealt the same number of cards (7 by default — choose 5, 7 or 10 before the match). One card is flipped face up to start the discard pile.",
-        "Your turn: play one card that matches the top card by color, by number, or by symbol. Wild cards fit on anything.",
-        "Can't play? Draw a card. If it fits you may play it right away; otherwise your turn ends.",
-        "MANIA! — when you're about to drop to your last card, tap the MANIA! button. Forget, and a sharp-eyed rival can catch you: you draw 2.",
-        "You can catch rivals too: when a bot forgets, tap Catch! above its seat.",
-        "Scoring: the round winner scores the cards left in everyone else's hand — numbers are worth their value, action cards 10–30, Wild cards 40–100. Play one round or race to a target score.",
-    )
-)
+private val basics = RuleSection(R.string.mania_howto_basics_title, listOf(R.string.mania_howto_basics_1, R.string.mania_howto_basics_2, R.string.mania_howto_basics_3, R.string.mania_howto_basics_4, R.string.mania_howto_basics_5, R.string.mania_howto_basics_6, R.string.mania_howto_basics_7))
 
 private fun modeRules(mode: GameMode): RuleSection = when (mode) {
-    GameMode.CLASSIC -> RuleSection(
-        "Classic Mania",
-        listOf(
-            "108 cards in four colors: Red, Blue, Green and Yellow. Every color also has its own symbol for color-blind players.",
-            "Skip skips the next player, Reverse flips the direction and Draw Two makes the next player draw two and miss a turn.",
-            "With only two players, Reverse acts like Skip — you go again.",
-            "Wild Draw Four is only allowed when you hold no card of the current color. The next player may challenge: catch a bluff and you draw 4 instead — but a wrong challenge costs them 6.",
-            "Optional house rules: Stacking, Jump-In, Seven-Zero swaps, Draw to Match, Forced Play, Combo Drop and Mania Power-ups.",
-        )
-    )
-    GameMode.CHAOS -> RuleSection(
-        "Merciless Mania",
-        listOf(
-            "168 cards loaded with heavy hitters — expect big swings!",
-            "Draw to Match: if you can't play, keep drawing until you find a card that fits.",
-            "Stacking: answer a draw card with one of equal or higher value to pass the growing total on. Can't stack? Take the whole pile and lose your turn.",
-            "Wild Reverse Draw Four reverses direction and adds 4 to the stack.",
-            "Seven: swap hands with any rival. Zero: every hand slides one seat along in the direction of play.",
-            "Discard All also throws away every other card of its color in your hand. Skip Everyone skips all rivals — play again!",
-            "Wild Color Storm: the next player names a color, then reveals cards until it shows up, keeping all of them.",
-            "Knockout rule: hold 25 cards or more and you're out. The last player standing wins too.",
-        )
-    )
-    GameMode.ECLIPSE -> RuleSection(
-        "Flip Mania",
-        listOf(
-            "112 two-sided cards. The match begins on the Light side.",
-            "You can see the hidden side of your rivals' cards — but never the other side of your own. Use it!",
-            "Flip card: the whole table flips. Hands, the draw pile and the discard pile all turn to the Dark side (or back to the Light side).",
-            "Light side: gentler cards like Draw One, Skip and Wild Draw Two. Dark side hits harder: Draw Five, Skip Everyone and Wild Draw Color.",
-            "Wild Draw Color: pick a color — the next player draws until they find it.",
-            "Every match pairs Light and Dark faces differently, so no two games play alike.",
-        )
-    )
+    GameMode.CLASSIC -> RuleSection(R.string.mania_howto_classic_title, listOf(R.string.mania_howto_classic_1, R.string.mania_howto_classic_2, R.string.mania_howto_classic_3, R.string.mania_howto_classic_4, R.string.mania_howto_classic_5))
+    GameMode.CHAOS -> RuleSection(R.string.mania_howto_merciless_title, listOf(R.string.mania_howto_merciless_1, R.string.mania_howto_merciless_2, R.string.mania_howto_merciless_3, R.string.mania_howto_merciless_4, R.string.mania_howto_merciless_5, R.string.mania_howto_merciless_6, R.string.mania_howto_merciless_7, R.string.mania_howto_merciless_8))
+    GameMode.ECLIPSE -> RuleSection(R.string.mania_howto_flip_title, listOf(R.string.mania_howto_flip_1, R.string.mania_howto_flip_2, R.string.mania_howto_flip_3, R.string.mania_howto_flip_4, R.string.mania_howto_flip_5, R.string.mania_howto_flip_6))
 }
 
 /** A group of related faces shown together in the gallery. */
@@ -131,10 +93,10 @@ private fun groupsFor(faces: List<Face>, mode: GameMode): List<FaceGroup> {
             val min = list.minOf { it.value }
             val bySuit = list.groupBy { it.suit }.values.toList()
             val picks = bySuit.mapIndexed { i, l -> l[(i * 3 + 1).coerceAtMost(l.lastIndex)] }
-            FaceGroup("Number Cards $min–9", "Match by color or by number.", "Worth their face value", picks.take(4))
+            FaceGroup(Strings.get(R.string.mania_howto_number_cards, min), Strings.get(R.string.mania_howto_number_desc), Strings.get(R.string.mania_howto_face_value), picks.take(4))
         } else {
             val f = list.first()
-            FaceGroup(f.title, f.description, "Worth ${f.points(mode)} points", list.take(4))
+            FaceGroup(f.title, f.description, Strings.get(R.string.mania_howto_worth_points, f.points(mode)), list.take(4))
         }
     }
 }
@@ -153,8 +115,8 @@ fun HowToPlayScreen(initialMode: GameMode?, onBack: () -> Unit) {
             GameMode.CLASSIC -> listOf(null to groupsFor(DeckFactory.classicFaces(), mode))
             GameMode.CHAOS -> listOf(null to groupsFor(DeckFactory.chaosFaces(), mode))
             GameMode.ECLIPSE -> listOf(
-                "Light Side" to groupsFor(DeckFactory.eclipseSunFaces(), mode),
-                "Dark Side" to groupsFor(DeckFactory.eclipseMoonFaces(), mode),
+                Strings.get(R.string.mania_howto_light_side) to groupsFor(DeckFactory.eclipseSunFaces(), mode),
+                Strings.get(R.string.mania_howto_dark_side) to groupsFor(DeckFactory.eclipseMoonFaces(), mode),
             )
         }
     }
@@ -165,7 +127,7 @@ fun HowToPlayScreen(initialMode: GameMode?, onBack: () -> Unit) {
                 .fillMaxSize()
                 .statusBarsPadding()
         ) {
-            ScreenTitleBar("How to Play", onBack)
+            ScreenTitleBar(stringResource(R.string.mania_how_to_play), onBack)
             Row(
                 Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = 16.dp, vertical = 4.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -176,17 +138,21 @@ fun HowToPlayScreen(initialMode: GameMode?, onBack: () -> Unit) {
                         scope.launch { listState.scrollToItem(0) }
                     }, color = if (i == modeIdx && m != GameMode.CLASSIC) ModeInfo.colors(m)[1] else CM.Gold)
                 }
-                ChoiceChip("Spider", modeIdx == GameMode.entries.size, {
+                ChoiceChip(stringResource(R.string.mania_howto_chip_spider), modeIdx == GameMode.entries.size, {
                     modeIdx = GameMode.entries.size
                     scope.launch { listState.scrollToItem(0) }
                 }, color = Color(0xFF0E6B3A))
-                ChoiceChip("Mindi", modeIdx == GameMode.entries.size + 1, {
+                ChoiceChip(stringResource(R.string.mania_howto_chip_mindi), modeIdx == GameMode.entries.size + 1, {
                     modeIdx = GameMode.entries.size + 1
                     scope.launch { listState.scrollToItem(0) }
                 }, color = Color(0xFFC0392B))
+                ChoiceChip(stringResource(R.string.mania_howto_chip_bhabhi), modeIdx == GameMode.entries.size + 2, {
+                    modeIdx = GameMode.entries.size + 2
+                    scope.launch { listState.scrollToItem(0) }
+                }, color = Color(0xFFB0206A))
             }
             if (extra) {
-                ExtraGameRules(if (modeIdx == GameMode.entries.size) ExtraGame.SPIDER else ExtraGame.MINDI)
+                ExtraGameRules(ExtraGame.entries[(modeIdx - GameMode.entries.size).coerceIn(0, ExtraGame.entries.lastIndex)])
                 return@Column
             }
             LazyColumn(
@@ -202,11 +168,11 @@ fun HowToPlayScreen(initialMode: GameMode?, onBack: () -> Unit) {
                     item(key = "gallery-$mode-$side") {
                         Column {
                             Spacer(Modifier.height(6.dp))
-                            SectionHeader(if (side == null) "Card Gallery" else "Card Gallery · $side")
-                            Text("Tap a card to flip it.", color = CM.TextMuted, fontSize = 12.sp, modifier = Modifier.padding(start = 20.dp, top = 2.dp))
+                            SectionHeader(if (side == null) stringResource(R.string.mania_howto_gallery) else stringResource(R.string.mania_howto_gallery_side, side))
+                            Text(stringResource(R.string.mania_howto_tap_flip), color = CM.TextMuted, fontSize = 12.sp, modifier = Modifier.padding(start = 20.dp, top = 2.dp))
                         }
                     }
-                    items(groups, key = { "g-$mode-$side-${it.title}" }) { g -> GalleryRow(g, cardBack) }
+                    items(groups, key = { "g-$mode-$side-${it.faces.first()}" }) { g -> GalleryRow(g, cardBack) }
                 }
                 item(key = "spacer") { Spacer(Modifier.navigationBarsPadding()) }
             }
@@ -238,9 +204,9 @@ private fun ModeHero(mode: GameMode) {
 @Composable
 private fun RulesPanel(section: RuleSection, accent: Color) {
     GlassPanel(Modifier.fillMaxWidth(), padding = 16.dp) {
-        Text(section.title.uppercase(), color = CM.GoldLight, fontSize = 15.sp, fontWeight = FontWeight.Black, letterSpacing = 1.sp)
+        Text(stringResource(section.titleRes).uppercase(), color = CM.GoldLight, fontSize = 15.sp, fontWeight = FontWeight.Black, letterSpacing = 1.sp)
         Spacer(Modifier.height(8.dp))
-        section.bullets.forEach { GemBullet(it, accent) }
+        section.bullets.forEach { GemBullet(stringResource(it), accent) }
     }
 }
 
@@ -305,104 +271,64 @@ private fun GalleryRow(g: FaceGroup, cardBack: CardBack) {
     }
 }
 
-// ------------------------------------------------------------------------------------------- Spider & Mindi
+// ------------------------------------------------------------------------------------------- Spider, Mindi & Bhabhi
 
-private enum class ExtraGame { SPIDER, MINDI }
+private enum class ExtraGame { SPIDER, MINDI, BHABHI }
 
 private val spiderRules = listOf(
-    RuleSection(
-        "Goal",
-        listOf(
-            "Build 8 complete runs from King down to Ace, each in a single suit. A finished run leaves the table on its own.",
-            "Clear every run to win. Score starts at 500: each move or undo costs 1 point, each finished run earns 100.",
-        )
-    ),
-    RuleSection(
-        "The table",
-        listOf(
-            "104 cards in 10 columns. The first four columns get 6 cards, the other six get 5; only the bottom card is face up.",
-            "The remaining 50 cards wait in the stock (top right) and come out 10 at a time — one onto every column.",
-            "Choose 1 suit (easy), 2 suits (medium) or 4 suits (hard).",
-        )
-    ),
-    RuleSection(
-        "Moving cards",
-        listOf(
-            "Put any face-up card on a card exactly one rank higher, in any suit — a 7 goes on any 8.",
-            "A group of cards moves together only when it runs down in order and is all one suit.",
-            "Any card or same-suit run can go into an empty column.",
-            "When a face-down card is uncovered it turns over automatically.",
-            "Tap a card to send it to the best spot, or drag it where you want it.",
-        )
-    ),
-    RuleSection(
-        "Dealing, hints & undo",
-        listOf(
-            "Tap the stock to deal. Every column needs at least one card first.",
-            "Hint shows a good move (tap again for another). Undo is unlimited.",
-            "Daily Challenge: one winnable deal per day, the same for every player.",
-        )
-    ),
+    RuleSection(R.string.mania_howto_spider_goal_title, listOf(R.string.mania_howto_spider_goal_1, R.string.mania_howto_spider_goal_2)),
+    RuleSection(R.string.mania_howto_spider_table_title, listOf(R.string.mania_howto_spider_table_1, R.string.mania_howto_spider_table_2, R.string.mania_howto_spider_table_3)),
+    RuleSection(R.string.mania_howto_spider_moving_title, listOf(R.string.mania_howto_spider_moving_1, R.string.mania_howto_spider_moving_2, R.string.mania_howto_spider_moving_3, R.string.mania_howto_spider_moving_4, R.string.mania_howto_spider_moving_5)),
+    RuleSection(R.string.mania_howto_spider_deal_title, listOf(R.string.mania_howto_spider_deal_1, R.string.mania_howto_spider_deal_2, R.string.mania_howto_spider_deal_3)),
 )
 
 private val mindiRules = listOf(
-    RuleSection(
-        "Teams & deal",
-        listOf(
-            "Mindi is a team trick-taking game. With 4 players, partners sit opposite each other (2 vs 2).",
-            "Big tables: 6 players (3 vs 3) or 8 players (4 vs 4), seated alternately, with the four 2s removed (48 cards). A double deck is also possible.",
-            "The whole deck is dealt out. The player after the dealer leads the first trick.",
-        )
-    ),
-    RuleSection(
-        "Playing a trick",
-        listOf(
-            "Everyone plays one card. You must follow the suit that was led if you can; otherwise play any card.",
-            "The highest trump wins the trick. With no trump in it, the highest card of the suit led wins (A high, 2 low).",
-            "The winner of a trick leads the next one.",
-        )
-    ),
-    RuleSection(
-        "Choosing trump",
-        listOf(
-            "Hide Trump: one player secretly sets aside a card; its suit is trump. It's revealed the first time anyone can't follow suit — from then on that suit is trump.",
-            "Cut Trump: there's no trump at first. The first card played by someone who can't follow suit decides trump for the rest of the hand.",
-            "Open Trump: trump is shown before play — the easiest way to learn.",
-        )
-    ),
-    RuleSection(
-        "The 10s win the hand",
-        listOf(
-            "Only the four 10s (the \"mindis\") count. The team that captures 3 or 4 of them wins the hand.",
-            "If the 10s are split 2–2, the team with more tricks wins.",
-            "Mendikot: capturing all four 10s. Whitewash: winning every single trick.",
-            "Points: a normal win is 1, a Mendikot 2, a whitewash 3. First team to the target (5 by default) wins the match.",
-            "The losing team deals the next hand.",
-        )
-    ),
+    RuleSection(R.string.mania_howto_mindi_teams_title, listOf(R.string.mania_howto_mindi_teams_1, R.string.mania_howto_mindi_teams_2, R.string.mania_howto_mindi_teams_3)),
+    RuleSection(R.string.mania_howto_mindi_trick_title, listOf(R.string.mania_howto_mindi_trick_1, R.string.mania_howto_mindi_trick_2, R.string.mania_howto_mindi_trick_3)),
+    RuleSection(R.string.mania_howto_mindi_trump_title, listOf(R.string.mania_howto_mindi_trump_1, R.string.mania_howto_mindi_trump_2, R.string.mania_howto_mindi_trump_3)),
+    RuleSection(R.string.mania_howto_mindi_tens_title, listOf(R.string.mania_howto_mindi_tens_1, R.string.mania_howto_mindi_tens_2, R.string.mania_howto_mindi_tens_3, R.string.mania_howto_mindi_tens_4, R.string.mania_howto_mindi_tens_5)),
+)
+
+private val bhabhiRules = listOf(
+    RuleSection(R.string.mania_howto_bhabhi_goal_title, listOf(R.string.mania_howto_bhabhi_goal_1, R.string.mania_howto_bhabhi_goal_2)),
+    RuleSection(R.string.mania_howto_bhabhi_deal_title, listOf(R.string.mania_howto_bhabhi_deal_1, R.string.mania_howto_bhabhi_deal_2, R.string.mania_howto_bhabhi_deal_3)),
+    RuleSection(R.string.mania_howto_bhabhi_trick_title, listOf(R.string.mania_howto_bhabhi_trick_1, R.string.mania_howto_bhabhi_trick_2, R.string.mania_howto_bhabhi_trick_3, R.string.mania_howto_bhabhi_trick_4)),
+    RuleSection(R.string.mania_howto_bhabhi_out_title, listOf(R.string.mania_howto_bhabhi_out_1, R.string.mania_howto_bhabhi_out_2, R.string.mania_howto_bhabhi_out_3)),
+    RuleSection(R.string.mania_howto_bhabhi_tips_title, listOf(R.string.mania_howto_bhabhi_tips_1, R.string.mania_howto_bhabhi_tips_2, R.string.mania_howto_bhabhi_tips_3, R.string.mania_howto_bhabhi_tips_4)),
 )
 
 @Composable
 private fun ExtraGameRules(game: ExtraGame) {
-    val sections = if (game == ExtraGame.SPIDER) spiderRules else mindiRules
-    val accent = if (game == ExtraGame.SPIDER) Color(0xFF3FBF6E) else Color(0xFFFFB13B)
+    val sections = when (game) {
+        ExtraGame.SPIDER -> spiderRules
+        ExtraGame.MINDI -> mindiRules
+        ExtraGame.BHABHI -> bhabhiRules
+    }
+    val accent = when (game) {
+        ExtraGame.SPIDER -> Color(0xFF3FBF6E)
+        ExtraGame.MINDI -> Color(0xFFFFB13B)
+        ExtraGame.BHABHI -> Color(0xFFFF6FB5)
+    }
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 10.dp, bottom = 24.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         item(key = "hero-$game") { ExtraHero(game) }
-        sections.forEach { s -> item(key = "s-$game-${s.title}") { RulesPanel(s, accent) } }
+        sections.forEach { s -> item(key = "s-$game-${s.titleRes}") { RulesPanel(s, accent) } }
         item(key = "examples-$game") {
             GlassPanel(Modifier.fillMaxWidth(), padding = 14.dp) {
-                Text("EXAMPLES", color = CM.GoldLight, fontSize = 15.sp, fontWeight = FontWeight.Black, letterSpacing = 1.sp)
+                Text(stringResource(R.string.mania_howto_examples), color = CM.GoldLight, fontSize = 15.sp, fontWeight = FontWeight.Black, letterSpacing = 1.sp)
                 Spacer(Modifier.height(8.dp))
                 if (game == ExtraGame.SPIDER) {
-                    ExampleRow(listOf(13 to 0, 12 to 0, 11 to 0, 10 to 0), "A same-suit run (K-Q-J-10) moves as one group.")
-                    ExampleRow(listOf(8 to 0, 7 to 1), "A 7 of hearts can go on an 8 of spades — but they can't move together.")
+                    ExampleRow(listOf(13 to 0, 12 to 0, 11 to 0, 10 to 0), stringResource(R.string.mania_howto_ex_spider_1))
+                    ExampleRow(listOf(8 to 0, 7 to 1), stringResource(R.string.mania_howto_ex_spider_2))
+                } else if (game == ExtraGame.BHABHI) {
+                    ExampleRow(listOf(5 to 1, 9 to 1, 12 to 1), stringResource(R.string.mania_howto_ex_bhabhi_1))
+                    ExampleRow(listOf(5 to 1, 12 to 1, 13 to 3), stringResource(R.string.mania_howto_ex_bhabhi_2))
                 } else {
-                    ExampleRow(listOf(10 to 0, 10 to 1, 10 to 2, 10 to 3), "The four 10s. Capture 3 or more with your partner to win the hand.")
-                    ExampleRow(listOf(5 to 1, 12 to 1, 3 to 0), "Hearts were led; a player out of hearts can play a trump (here spades) to win.")
+                    ExampleRow(listOf(10 to 0, 10 to 1, 10 to 2, 10 to 3), stringResource(R.string.mania_howto_ex_mindi_1))
+                    ExampleRow(listOf(5 to 1, 12 to 1, 3 to 0), stringResource(R.string.mania_howto_ex_mindi_2))
                 }
             }
         }
@@ -413,7 +339,12 @@ private fun ExtraGameRules(game: ExtraGame) {
 @Composable
 private fun ExtraHero(game: ExtraGame) {
     val spider = game == ExtraGame.SPIDER
-    val colors = if (spider) listOf(Color(0xFF3FBF6E), Color(0xFF0E6B3A)) else listOf(Color(0xFFFFB13B), Color(0xFFC0392B))
+    val bhabhi = game == ExtraGame.BHABHI
+    val colors = when (game) {
+        ExtraGame.SPIDER -> listOf(Color(0xFF3FBF6E), Color(0xFF0E6B3A))
+        ExtraGame.MINDI -> listOf(Color(0xFFFFB13B), Color(0xFFC0392B))
+        ExtraGame.BHABHI -> listOf(Color(0xFFFF6FB5), Color(0xFFB0206A))
+    }
     val shape = RoundedCornerShape(24.dp)
     Column(
         Modifier
@@ -424,14 +355,14 @@ private fun ExtraHero(game: ExtraGame) {
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        OutlinedTitle(if (spider) "Spider Solitaire" else "Mindi", fontSize = 28.sp, outlineWidth = 10f)
+        OutlinedTitle(if (spider) stringResource(R.string.mania_howto_spider_name) else if (bhabhi) stringResource(R.string.mania_howto_bhabhi_name) else stringResource(R.string.mania_howto_mindi_name), fontSize = 28.sp, outlineWidth = 10f)
         Spacer(Modifier.height(4.dp))
         Text(
-            if (spider) "Patience classic: build King-to-Ace runs." else "Partner up and capture the 10s.",
+            if (spider) stringResource(R.string.mania_howto_spider_tagline) else if (bhabhi) stringResource(R.string.mania_howto_bhabhi_tagline) else stringResource(R.string.mania_howto_mindi_tagline),
             color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold,
         )
         Spacer(Modifier.height(8.dp))
-        Pill(if (spider) "Solo · 1, 2 or 4 suits" else "4, 6 or 8 players · teams", Color(0x66000000))
+        Pill(if (spider) stringResource(R.string.mania_howto_spider_pill) else if (bhabhi) stringResource(R.string.mania_howto_bhabhi_pill) else stringResource(R.string.mania_howto_mindi_pill), Color(0x66000000))
     }
 }
 

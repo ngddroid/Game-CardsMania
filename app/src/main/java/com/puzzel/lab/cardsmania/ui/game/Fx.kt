@@ -55,12 +55,24 @@ class Fx(private val density: Float) {
 
     val gemColors = intArrayOf(0xFFE0245E.toInt(), 0xFF1E7BFF.toInt(), 0xFF19C37D.toInt(), 0xFFFFB000.toInt(), 0xFFFFE89A.toInt(), 0xFF8B5CF6.toInt())
 
-    fun shakeOffset(now: Long): Pair<Float, Float> {
-        if (reduceMotion || now - shakeStart > shakeDur) return 0f to 0f
+    /** Screen-shake offset for this frame, set by [updateShake] (no allocation per frame). */
+    var shakeX = 0f
+        private set
+    var shakeY = 0f
+        private set
+
+    fun updateShake(now: Long) {
+        if (reduceMotion || now - shakeStart > shakeDur) { shakeX = 0f; shakeY = 0f; return }
         val k = 1f - (now - shakeStart).toFloat() / shakeDur
         val a = shakeAmp * k * density
-        return (rnd.nextFloat() * 2 - 1) * a to (rnd.nextFloat() * 2 - 1) * a
+        shakeX = (rnd.nextFloat() * 2 - 1) * a
+        shakeY = (rnd.nextFloat() * 2 - 1) * a
     }
+
+    /** True while any particle, text pop, ring, flash, bolt or shake is still on screen. */
+    fun isActive(now: Long): Boolean =
+        particles.isNotEmpty() || pops.isNotEmpty() || rings.isNotEmpty() || flashes.isNotEmpty() || bolts.isNotEmpty() ||
+            (!reduceMotion && now - shakeStart <= shakeDur)
 
     fun shake(amp: Float, dur: Long, now: Long) {
         shakeStart = now

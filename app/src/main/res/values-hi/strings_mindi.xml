@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Mindi setup -->
+    <string name="mindi_title">मिंडी</string>
+    <string name="mindi_continue_title">मैच जारी रखें</string>
+    <string name="mindi_continue_desc">अपना सेव किया मिंडी गेम वहीं से खेलें</string>
+    <string name="mindi_daily_title">डेली चैलेंज</string>
+    <string name="mindi_daily_desc_best">कठिन बॉट्स के साथ एक राउंड · बेस्ट %1$s</string>
+    <string name="mindi_daily_desc_new">कठिन बॉट्स के साथ एक राउंड · 3 स्टार जीतें</string>
+    <string name="mindi_players">खिलाड़ी</string>
+    <string name="mindi_double_deck">डबल डेक</string>
+    <string name="mindi_double_deck_desc">104 पत्ते और 8 दहले — 5 दहले वाली टीम राउंड जीतती है</string>
+    <string name="mindi_trump_section">ट्रम्प</string>
+    <string name="mindi_must_trump">खुलने के बाद ट्रम्प ज़रूरी</string>
+    <string name="mindi_must_trump_desc">जो ट्रम्प खुलवाए, उसके पास हो तो उसे ट्रम्प ही चलना होगा</string>
+    <string name="mindi_match">मैच</string>
+    <string name="mindi_points_to_win">जीतने के लिए पॉइंट</string>
+    <string name="mindi_one_hand">1 राउंड</string>
+    <string name="mindi_points_info">जीत = 1 पॉइंट · मेंडीकोट = 2 · व्हाइटवॉश = 3</string>
+    <string name="mindi_bots">बॉट</string>
+    <string name="mindi_expert">एक्सपर्ट</string>
+    <string name="mindi_turn_timer">बारी का टाइमर</string>
+    <string name="mindi_timer_off">बंद</string>
+    <string name="mindi_timer_secs">%1$d से.</string>
+    <string name="mindi_deal_cards">पत्ते बाँटें</string>
+    <string name="mindi_hero_title">दहले पकड़ो!</string>
+    <string name="mindi_hero_desc">साथी के साथ टीम बनाओ · 4 में से 3 मिंडी जीतो</string>
+    <plurals name="mindi_n_players">
+        <item quantity="one">%d खिलाड़ी</item>
+        <item quantity="other">%d खिलाड़ी</item>
+    </plurals>
+    <string name="mindi_vs">%1$d बनाम %2$d</string>
+    <string name="mindi_classic">क्लासिक</string>
+    <string name="mindi_tile_title">मिंडी</string>
+    <string name="mindi_tile_desc">टीम वाला चाल गेम · दहले पकड़ो · 4, 6 या 8 खिलाड़ी</string>
+    <string name="mindi_table_4">2 बनाम 2 · साथी आमने-सामने · 52 पत्ते, हर किसी को 13</string>
+    <string name="mindi_table_6">3 बनाम 3 · बारी-बारी से सीटें · दुक्के हटा दिए, हर किसी को 8</string>
+    <string name="mindi_table_6_double">3 बनाम 3 · बारी-बारी से सीटें · डबल डेक, हर किसी को 17</string>
+    <string name="mindi_table_8">4 बनाम 4 · बारी-बारी से सीटें · दुक्के हटा दिए, हर किसी को 6</string>
+    <string name="mindi_table_8_double">4 बनाम 4 · बारी-बारी से सीटें · डबल डेक, हर किसी को 13</string>
+
+    <!-- table HUD -->
+    <string name="mindi_shuffling">पत्ते फेंटे जा रहे हैं…</string>
+    <string name="mindi_cd_pause">रोकें</string>
+    <string name="mindi_hud_title">मिंडी · %1$s</string>
+    <string name="mindi_hud_daily">डेली</string>
+    <string name="mindi_hud_line_single">राउंड %1$d · सिर्फ़ एक राउंड · %2$d खिलाड़ी</string>
+    <string name="mindi_hud_line_target">राउंड %1$d · पहले %2$d तक · %3$d खिलाड़ी</string>
+    <string name="mindi_your_team">आपकी टीम</string>
+    <string name="mindi_rivals">विरोधी</string>
+    <string name="mindi_tricks_label">चाल</string>
+    <string name="mindi_trump_label">ट्रम्प</string>
+    <string name="mindi_trump_yours">आपका</string>
+    <string name="mindi_trump_hidden">छुपा</string>
+    <string name="mindi_trump_not_cut">अभी कटा नहीं</string>
+    <string name="mindi_trump_choosing">चुन रहे हैं</string>
+    <string name="mindi_cd_online_player">ऑनलाइन खिलाड़ी</string>
+    <string name="mindi_bot_badge">बॉट</string>
+    <string name="mindi_dealer_badge">डी</string>
+    <string name="mindi_partner_name">%1$s (सा)</string>
+    <string name="mindi_cd_hint">संकेत</string>
+    <string name="mindi_cd_last_trick">पिछली चाल</string>
+    <string name="mindi_cd_emote">इमोट</string>
+    <string name="mindi_status_hide_confirm">इस पत्ते को ट्रम्प बनाकर छुपाने के लिए फिर टैप करें</string>
+    <string name="mindi_status_hide_pick">छुपाने के लिए एक पत्ता चुनें — उसका सूट ट्रम्प बनेगा</string>
+    <string name="mindi_status_tap_again">चलने के लिए फिर टैप करें या ऊपर स्वाइप करें</string>
+    <string name="mindi_status_your_lead">आपकी शुरुआत!</string>
+    <string name="mindi_status_your_turn">आपकी बारी</string>
+    <string name="mindi_status_thinking">%1$s सोच रहा है…</string>
+    <string name="mindi_player">खिलाड़ी</string>
+    <string name="mindi_suit_spades">हुकुम</string>
+    <string name="mindi_suit_hearts">पान</string>
+    <string name="mindi_suit_diamonds">ईंट</string>
+    <string name="mindi_suit_clubs">चिड़ी</string>
+
+    <!-- canvas pop-ups -->
+    <string name="mindi_pop_trump">ट्रम्प</string>
+    <string name="mindi_pop_secret_trump">छुपा ट्रम्प</string>
+    <string name="mindi_pop_trump_revealed">ट्रम्प खुल गया!</string>
+    <string name="mindi_pop_cut">कट! नया ट्रम्प</string>
+    <string name="mindi_pop_trump_play">ट्रम्प!</string>
+    <string name="mindi_pop_mindi">मिंडी!</string>
+    <string name="mindi_pop_mindi_n">मिंडी ×%1$d!</string>
+    <string name="mindi_pop_mendikot">मेंडीकोट!</string>
+    <string name="mindi_pop_whitewash">व्हाइटवॉश!</string>
+    <string name="mindi_trump_marker">ट</string>
+
+    <!-- overlays -->
+    <string name="mindi_last_trick">पिछली चाल</string>
+    <string name="mindi_no_trick_yet">अभी तक कोई चाल नहीं चली गई।</string>
+    <string name="mindi_won_it">%1$s ने जीती</string>
+    <string name="mindi_close">बंद करें</string>
+    <string name="mindi_kind_normal">राउंड जीता</string>
+    <string name="mindi_kind_mendikot">मेंडीकोट! चारों दहले</string>
+    <string name="mindi_kind_whitewash">व्हाइटवॉश! हर चाल</string>
+    <string name="mindi_your_team_wins">आपकी टीम जीती!</string>
+    <string name="mindi_rivals_win">विरोधियों ने राउंड जीता</string>
+    <plurals name="mindi_result_points">
+        <item quantity="one">%1$s  ·  +%2$d पॉइंट</item>
+        <item quantity="other">%1$s  ·  +%2$d पॉइंट</item>
+    </plurals>
+    <string name="mindi_tens_tricks">%1$d दहले · %2$d चाल</string>
+    <string name="mindi_sb_title">स्कोरबोर्ड</string>
+    <string name="mindi_sb_hand">राउंड</string>
+    <string name="mindi_sb_winner">विजेता</string>
+    <string name="mindi_sb_tens">दहले</string>
+    <string name="mindi_sb_tricks">चाल</string>
+    <string name="mindi_sb_pts">पॉइंट</string>
+    <string name="mindi_sb_you">आप</string>
+    <string name="mindi_sb_rivals">विरोधी</string>
+    <string name="mindi_next_dealer">अगला बाँटने वाला: %1$s (हारने वाली टीम बाँटती है)</string>
+    <string name="mindi_next_hand">अगला राउंड</string>
+    <string name="mindi_victory">जीत!</string>
+    <string name="mindi_good_game">बढ़िया खेल!</string>
+    <string name="mindi_final_score">फ़ाइनल स्कोर  %1$d – %2$d</string>
+    <string name="mindi_daily_stars_info">डेली: ★ जीत · ★★ 3+ दहले · ★★★ 9+ चाल या मेंडीकोट</string>
+    <string name="mindi_xp">+%1$d XP</string>
+    <string name="mindi_achievement">उपलब्धि: %1$s</string>
+    <string name="mindi_leave">छोड़ें</string>
+    <string name="mindi_home">होम</string>
+    <string name="mindi_room">रूम</string>
+    <string name="mindi_rematch">रीमैच</string>
+    <string name="mindi_play_again">फिर से खेलें</string>
+    <string name="mindi_end_game_q">गेम ख़त्म करें?</string>
+    <string name="mindi_leave_game_q">गेम छोड़ें?</string>
+    <string name="mindi_menu">मेन्यू</string>
+    <string name="mindi_paused">रुका हुआ</string>
+    <string name="mindi_end_host_desc">इससे मैच ख़त्म हो जाएगा और सबके लिए रूम बंद हो जाएगा।</string>
+    <string name="mindi_leave_desc">इस मैच के बाकी हिस्से में आपकी जगह एक बॉट खेलेगा।</string>
+    <string name="mindi_stay">रुकें</string>
+    <string name="mindi_net_running">यह मेन्यू खुला रहने पर भी मल्टीप्लेयर मैच चलता रहता है।</string>
+    <string name="mindi_back_to_game">गेम पर वापस</string>
+    <string name="mindi_resume">जारी रखें</string>
+    <string name="mindi_how_to_play">कैसे खेलें</string>
+    <string name="mindi_saved_note">आपका मैच सेव है — बाद में मिंडी से जारी रखें।</string>
+    <string name="mindi_end_game">गेम ख़त्म करें</string>
+    <string name="mindi_leave_game">गेम छोड़ें</string>
+    <string name="mindi_quit_home">होम पर जाएँ</string>
+    <string name="mindi_waiting_host">होस्ट का इंतज़ार…</string>
+
+    <!-- view model -->
+    <string name="mindi_you">आप</string>
+    <string name="mindi_room_closed">रूम बंद हो गया है।</string>
+    <string name="mindi_not_in_room">आप अब किसी रूम में नहीं हैं।</string>
+    <string name="mindi_toast_follow_suit">सूट मिलाएँ: %1$s का पत्ता चलें</string>
+    <string name="mindi_toast_must_trump">आपको ट्रम्प का पत्ता चलना होगा</string>
+</resources>

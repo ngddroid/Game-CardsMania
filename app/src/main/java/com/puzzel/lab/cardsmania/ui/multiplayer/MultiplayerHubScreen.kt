@@ -1,5 +1,6 @@
 package com.puzzel.lab.cardsmania.ui.multiplayer
 
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.LinearEasing
@@ -53,11 +54,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.puzzel.lab.cardsmania.LocalApp
+import com.puzzel.lab.cardsmania.R
+import com.puzzel.lab.cardsmania.i18n.Strings
 import com.puzzel.lab.cardsmania.audio.Sfx
 import com.puzzel.lab.cardsmania.net.NetworkInfo
 import com.puzzel.lab.cardsmania.ui.components.GlassPanel
@@ -82,7 +86,7 @@ fun MultiplayerHubScreen(onBack: () -> Unit, onHosted: () -> Unit, onJoin: () ->
 
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { ok ->
         permitted = ok
-        if (ok) pendingAction?.invoke() else error = "Cards Mania needs permission to find phones on your Wi-Fi."
+        if (ok) pendingAction?.invoke() else error = Strings.get(R.string.mp_err_permission)
         pendingAction = null
     }
 
@@ -103,22 +107,22 @@ fun MultiplayerHubScreen(onBack: () -> Unit, onHosted: () -> Unit, onJoin: () ->
 
     RoyalBackground {
         Column(Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding()) {
-            ScreenTitleBar("Multiplayer", onBack)
+            ScreenTitleBar(stringResource(R.string.mp_title), onBack)
             Column(
                 Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(14.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 WifiHero()
-                OutlinedTitle("Play with friends", fontSize = 28.sp)
+                OutlinedTitle(stringResource(R.string.mp_play_with_friends), fontSize = 28.sp)
                 Text(
-                    "Everyone joins the same Wi-Fi. One phone hosts a room, the others join it — no internet needed.",
+                    stringResource(R.string.mp_hub_intro),
                     color = CM.Text, fontSize = 14.sp, textAlign = TextAlign.Center, modifier = Modifier.padding(horizontal = 8.dp)
                 )
                 WifiStatus(link)
                 ChoiceCard(
-                    title = "Host a Room",
-                    subtitle = "You choose the mode, seats and bots",
+                    title = stringResource(R.string.mp_host_room),
+                    subtitle = stringResource(R.string.mp_host_room_sub),
                     icon = Icons.Rounded.Router,
                     colors = listOf(Color(0xFFFFC93C), Color(0xFFE08A00)),
                     textColor = Color(0xFF3A1F00),
@@ -139,8 +143,8 @@ fun MultiplayerHubScreen(onBack: () -> Unit, onHosted: () -> Unit, onJoin: () ->
                     }
                 }
                 ChoiceCard(
-                    title = "Join a Room",
-                    subtitle = "Find a room nearby or enter its code",
+                    title = stringResource(R.string.mp_join_room),
+                    subtitle = stringResource(R.string.mp_join_room_sub),
                     icon = Icons.Rounded.Groups,
                     colors = listOf(Color(0xFF6FB6FF), Color(0xFF1E6FE8)),
                     textColor = Color.White,
@@ -154,18 +158,18 @@ fun MultiplayerHubScreen(onBack: () -> Unit, onHosted: () -> Unit, onJoin: () ->
                 }
                 if (!permitted && LocalNetworkPermission.needed) {
                     Text(
-                        "Android will ask to let Cards Mania find devices on your network. It's only used to connect phones in the same room.",
+                        stringResource(R.string.mp_permission_note),
                         color = CM.TextDim, fontSize = 12.sp, textAlign = TextAlign.Center
                     )
                 }
                 GlassPanel(Modifier.fillMaxWidth()) {
-                    Text("HOW IT WORKS", color = CM.GoldLight, fontWeight = FontWeight.Black, fontSize = 13.sp)
+                    Text(stringResource(R.string.mp_how_it_works), color = CM.GoldLight, fontWeight = FontWeight.Black, fontSize = 13.sp)
                     Spacer(Modifier.height(8.dp))
                     listOf(
-                        "1. Connect every phone to the same Wi-Fi (or to one phone's hotspot).",
-                        "2. One player taps Host a Room and picks the mode, seats and bots.",
-                        "3. Friends tap Join a Room and pick the room — or type its code.",
-                        "4. The host taps Start. Up to 6 players, mixed with bots.",
+                        stringResource(R.string.mp_step_1),
+                        stringResource(R.string.mp_step_2),
+                        stringResource(R.string.mp_step_3),
+                        stringResource(R.string.mp_step_4),
                     ).forEach {
                         Text(it, color = CM.Text, fontSize = 13.sp, modifier = Modifier.padding(vertical = 3.dp))
                     }
@@ -207,10 +211,10 @@ private fun WifiStatus(link: NetworkInfo.Link) {
         Spacer(Modifier.width(8.dp))
         Text(
             when (link) {
-                NetworkInfo.Link.WIFI -> "Connected to Wi-Fi"
-                NetworkInfo.Link.ETHERNET -> "Connected to a local network"
-                NetworkInfo.Link.HOTSPOT -> "Hotspot is on — friends can join it"
-                NetworkInfo.Link.NONE -> "Not on Wi-Fi — connect to play together"
+                NetworkInfo.Link.WIFI -> stringResource(R.string.mp_link_wifi)
+                NetworkInfo.Link.ETHERNET -> stringResource(R.string.mp_link_ethernet)
+                NetworkInfo.Link.HOTSPOT -> stringResource(R.string.mp_link_hotspot)
+                NetworkInfo.Link.NONE -> stringResource(R.string.mp_link_none)
             },
             color = Color.White, fontWeight = FontWeight.Bold, fontSize = 13.sp
         )
@@ -228,10 +232,10 @@ private fun ChoiceCard(
     onClick: () -> Unit,
 ) {
     val app = LocalApp.current
-    val pulse = rememberPulse(1400)
+    val pulse by rememberPulse(1400)
     val shape = RoundedCornerShape(24.dp)
     Row(
-        Modifier.fillMaxWidth().scale(1f + 0.01f * pulse)
+        Modifier.fillMaxWidth().graphicsLayer { scaleX = 1f + 0.01f * pulse; scaleY = scaleX }
             .clip(shape)
             .background(Brush.linearGradient(colors))
             .border(2.dp, Color.White.copy(alpha = 0.6f), shape)

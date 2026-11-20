@@ -1,9 +1,11 @@
 package com.puzzel.lab.cardsmania.ui.spider
 
+import com.puzzel.lab.cardsmania.data.SaveFiles
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.puzzel.lab.cardsmania.CardsManiaApp
+import com.puzzel.lab.cardsmania.R
 import com.puzzel.lab.cardsmania.audio.Sfx
 import com.puzzel.lab.cardsmania.audio.Track
 import com.puzzel.lab.cardsmania.data.Achievement
@@ -11,6 +13,7 @@ import com.puzzel.lab.cardsmania.data.Achievements
 import com.puzzel.lab.cardsmania.data.AppJson
 import com.puzzel.lab.cardsmania.data.Profile
 import com.puzzel.lab.cardsmania.data.Settings
+import com.puzzel.lab.cardsmania.i18n.Strings
 import com.puzzel.lab.cardsmania.spider.SpiderEngine
 import com.puzzel.lab.cardsmania.spider.SpiderEvent
 import com.puzzel.lab.cardsmania.spider.SpiderHint
@@ -36,9 +39,51 @@ import java.io.File
 
 enum class SpiderDialog { NEW_GAME, DAILY, LOOK, RULES, STUCK, STATS }
 
+// ------------------------------------------------------------------ localized move errors
+// SpiderEngine.moveError / pickError stay English (unit tests assert them); these mirror their logic for the toasts.
+
+private fun spiderRankText(r: Int): String = when (r) {
+    1 -> Strings.get(R.string.spider_rank_ace)
+    11 -> Strings.get(R.string.spider_rank_jack)
+    12 -> Strings.get(R.string.spider_rank_queen)
+    13 -> Strings.get(R.string.spider_rank_king)
+    else -> r.toString()
+}
+
+/** English needs "an" before Ace and 8; other languages use the same text for all three forms. */
+private fun spiderNeedsAn(r: Int) = r == 1 || r == 8
+
+/** Localized version of [SpiderEngine.moveError]: a short reason why [m] is not allowed (null if it is allowed). */
+fun spiderMoveErrorText(s: SpiderState, m: SpiderMove): String? {
+    if (SpiderEngine.canMove(s, m)) return null
+    val notAllowed = { Strings.get(R.string.spider_err_not_allowed) }
+    val src = s.columns.getOrNull(m.from) ?: return notAllowed()
+    val card = src.getOrNull(m.index) ?: return notAllowed()
+    if (!card.up) return Strings.get(R.string.spider_err_face_down)
+    if (!SpiderEngine.canPickUp(s, m.from, m.index)) return Strings.get(R.string.spider_err_same_suit)
+    val dest = s.columns.getOrNull(m.to) ?: return notAllowed()
+    if (m.to == m.from) return null
+    if (dest.isEmpty()) return null
+    if (card.rank == 13) return Strings.get(R.string.spider_err_king)
+    val need = card.rank + 1
+    val res = when {
+        spiderNeedsAn(card.rank) -> R.string.spider_err_goes_on_an_first
+        spiderNeedsAn(need) -> R.string.spider_err_goes_on_an_second
+        else -> R.string.spider_err_goes_on
+    }
+    return Strings.get(res, spiderRankText(card.rank), spiderRankText(need))
+}
+
+/** Localized version of [SpiderEngine.pickError]. */
+fun spiderPickErrorText(s: SpiderState, col: Int, index: Int): String? {
+    val card = s.columns.getOrNull(col)?.getOrNull(index) ?: return null
+    if (!card.up) return Strings.get(R.string.spider_err_face_down)
+    if (!SpiderEngine.canPickUp(s, col, index)) return Strings.get(R.string.spider_err_same_suit)
+    return null
+}
+
 /** One-off visual cues for the table. */
 sealed interface SpiderCue {
-    data object StockBlocked : SpiderCue
     data class SoftHint(val hint: SpiderHint) : SpiderCue
 }
 
@@ -127,8 +172,8 @@ class SpiderViewModel(app: Application) : AndroidViewModel(app) {
                 startDaily(dailyDate)
                 return@launch
             }
-            val saved = withContext(Dispatchers.IO) {
-                runCatching { AppJson.decodeFromString(SpiderSave.serializer(), saveFile.readText()) }.getOrNull()
+            val saved = SaveFiles.read(saveFile)?.let { text ->
+                withContext(Dispatchers.Default) { runCatching { AppJson.decodeFromString(SpiderSave.serializer(), text) }.getOrNull() }
             }
             if (saved != null && !saved.state.won) {
                 state = saved.state
@@ -212,13 +257,13 @@ class SpiderViewModel(app: Application) : AndroidViewModel(app) {
             selectTap(s, col, index)
             return
         }
-        SpiderEngine.pickError(s, col, index)?.let {
+        spiderPickErrorText(s, col, index)?.let {
             invalid(col, index, it)
             return
         }
         val dests = SpiderEngine.destinations(s, col, index)
         if (dests.isEmpty()) {
-            invalid(col, index, "No place for these cards yet")
+            invalid(col, index, Strings.get(R.string.spider_toast_no_place))
             return
         }
         val card = s.columns[col][index]
@@ -264,11 +309,11 @@ class SpiderViewModel(app: Application) : AndroidViewModel(app) {
                 return
             }
             select(null)
-            invalid(sel.first, sel.second, SpiderEngine.moveError(s, m))
+            invalid(sel.first, sel.second, spiderMoveErrorText(s, m))
             return
         }
         if (index < 0) return
-        SpiderEngine.pickError(s, col, index)?.let {
+        spiderPickErrorText(s, col, index)?.let {
             invalid(col, index, it)
             return
         }
@@ -299,7 +344,7 @@ class SpiderViewModel(app: Application) : AndroidViewModel(app) {
         touch()
         val m = SpiderMove(col, index, toCol)
         if (!SpiderEngine.canMove(s, m)) {
-            invalid(col, index, SpiderEngine.moveError(s, m))
+            invalid(col, index, spiderMoveErrorText(s, m))
             return false
         }
         cycle = null
@@ -310,8 +355,8 @@ class SpiderViewModel(app: Application) : AndroidViewModel(app) {
     /** A drag released where nothing can take it ([nearCol] = closest column, or -1). */
     fun invalidDrop(col: Int, index: Int, nearCol: Int) {
         val s = state ?: return
-        val reason = if (nearCol >= 0) SpiderEngine.moveError(s, SpiderMove(col, index, nearCol)) else null
-        invalid(col, index, reason ?: "Drop the cards on a column")
+        val reason = if (nearCol >= 0) spiderMoveErrorText(s, SpiderMove(col, index, nearCol)) else null
+        invalid(col, index, reason ?: Strings.get(R.string.spider_toast_drop_on_column))
     }
 
     fun canPickUp(col: Int, index: Int): Boolean = state?.let { SpiderEngine.canPickUp(it, col, index) } == true
@@ -342,13 +387,7 @@ class SpiderViewModel(app: Application) : AndroidViewModel(app) {
         if (locked()) return
         if (s.stock.isEmpty()) return
         touch()
-        if (!SpiderEngine.canDeal(s)) {
-            c.sound.play(Sfx.ERROR, 0.5f)
-            c.haptics.light()
-            _cues.tryEmit(SpiderCue.StockBlocked)
-            toast("Fill every empty column before dealing")
-            return
-        }
+        // empty columns don't block the deal: they get a card like every other column
         val r = SpiderEngine.deal(s) ?: return
         pushHistory(s)
         lastFirstId = -1
@@ -367,7 +406,7 @@ class SpiderViewModel(app: Application) : AndroidViewModel(app) {
         val s = state ?: return
         if (locked() || s.won) return
         val prev = history.removeLastOrNull() ?: run {
-            toast("Nothing to undo")
+            toast(Strings.get(R.string.spider_toast_nothing_to_undo))
             return
         }
         // undo is free to use, but counts as a move (standard scoring)
@@ -532,7 +571,7 @@ class SpiderViewModel(app: Application) : AndroidViewModel(app) {
         val date = daily
         lockedUntil = Long.MAX_VALUE
         viewModelScope.launch {
-            withContext(Dispatchers.IO) { runCatching { saveFile.delete() } }
+            SaveFiles.delete(saveFile)
             var result: SpiderWin? = null
             c.profile.update { p ->
                 val st = p.spider.stat(s.suits)
@@ -640,9 +679,7 @@ class SpiderViewModel(app: Application) : AndroidViewModel(app) {
         val s = state ?: return
         if (s.won) return
         val save = SpiderSave(s, history.toList().takeLast(150), elapsed, daily, counted)
-        c.scope.launch(Dispatchers.IO) {
-            runCatching { saveFile.writeText(AppJson.encodeToString(SpiderSave.serializer(), save)) }
-        }
+        SaveFiles.write(saveFile) { AppJson.encodeToString(SpiderSave.serializer(), save) }
     }
 
     override fun onCleared() {

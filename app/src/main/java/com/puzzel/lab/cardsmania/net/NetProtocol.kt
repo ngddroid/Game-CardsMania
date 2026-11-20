@@ -1,5 +1,11 @@
 package com.puzzel.lab.cardsmania.net
 
+import com.puzzel.lab.cardsmania.bhabhi.BCard
+import com.puzzel.lab.cardsmania.bhabhi.BhabhiAction
+import com.puzzel.lab.cardsmania.bhabhi.BhabhiEvent
+import com.puzzel.lab.cardsmania.bhabhi.BhabhiSeat
+import com.puzzel.lab.cardsmania.bhabhi.BhabhiSetup
+import com.puzzel.lab.cardsmania.bhabhi.BhabhiState
 import com.puzzel.lab.cardsmania.engine.Action
 import com.puzzel.lab.cardsmania.engine.GameEvent
 import com.puzzel.lab.cardsmania.engine.model.Card
@@ -24,8 +30,8 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
 object Net {
-    /** v2: Mindi rooms. */
-    const val PROTOCOL = 2
+    /** v2: Mindi rooms. v3: Bhabhi rooms. */
+    const val PROTOCOL = 3
     const val SERVICE_TYPE = "_cardsmania._tcp"
     const val PORT_BASE = 47820
     const val PORT_COUNT = 16
@@ -57,7 +63,7 @@ data class RoomGuest(
 
 /** Which game a room plays. */
 @Serializable
-enum class RoomGame { MANIA, MINDI }
+enum class RoomGame { MANIA, MINDI, BHABHI }
 
 /** Everything a lobby shows. The host owns it; guests receive copies. */
 @Serializable
@@ -77,17 +83,22 @@ data class RoomState(
     val guests: List<RoomGuest> = emptyList(),
     val inGame: Boolean = false,
     val protocol: Int = Net.PROTOCOL,
-    /** MANIA uses [mode]/[rules]/...; MINDI uses [mindi] (its seat count is always [seats]). */
+    /**
+     * MANIA uses [mode]/[rules]/...; MINDI uses [mindi] and BHABHI uses [bhabhi] (their seat count is always [seats]).
+     */
     val game: RoomGame = RoomGame.MANIA,
     val mindi: MindiSetup = MindiSetup(),
+    val bhabhi: BhabhiSetup = BhabhiSetup(),
 ) {
     val isMindi: Boolean get() = game == RoomGame.MINDI
+    val isBhabhi: Boolean get() = game == RoomGame.BHABHI
+    val isMania: Boolean get() = game == RoomGame.MANIA
     /** Most seats this game allows. */
-    val maxSeats: Int get() = if (isMindi) 8 else 6
+    val maxSeats: Int get() = if (isMania) 6 else 8
     /** Seats still waiting for a player (filled by bots if nobody joins). */
     val openSeats: Int get() = (seats - 1 - bots - guests.size).coerceAtLeast(0)
     val maxBots: Int get() = (seats - 1 - guests.size).coerceAtLeast(0)
-    val minSeats: Int get() = maxOf(2, 1 + guests.size + bots)
+    val minSeats: Int get() = maxOf(if (isBhabhi) 3 else 2, 1 + guests.size + bots)
     val players: Int get() = 1 + guests.size
 }
 
@@ -96,6 +107,9 @@ data class NetStep(val event: GameEvent, val state: GameState)
 
 @Serializable
 data class MindiNetStep(val event: MindiEvent, val state: MindiState)
+
+@Serializable
+data class BhabhiNetStep(val event: BhabhiEvent, val state: BhabhiState)
 
 @Serializable
 sealed interface NetMsg {
@@ -111,6 +125,9 @@ sealed interface NetMsg {
 
     @Serializable @SerialName("mact")
     data class MindiAct(val action: MindiAction) : NetMsg
+
+    @Serializable @SerialName("bact")
+    data class BhabhiAct(val action: BhabhiAction) : NetMsg
 
     @Serializable @SerialName("leave")
     data object Leave : NetMsg
@@ -144,6 +161,17 @@ sealed interface NetMsg {
 
     @Serializable @SerialName("msteps")
     data class MindiSteps(val steps: List<MindiNetStep>) : NetMsg
+
+    /** A Bhabhi game starts; [yourSeat] is the guest's seat. */
+    @Serializable @SerialName("bstart")
+    data class BhabhiStart(val yourSeat: Int, val setup: BhabhiSetup, val seats: List<BhabhiSeat>, val speed: Int) : NetMsg
+
+    /** Re-join in the middle of a Bhabhi game: the current (redacted) state. */
+    @Serializable @SerialName("bsync")
+    data class BhabhiSync(val yourSeat: Int, val setup: BhabhiSetup, val seats: List<BhabhiSeat>, val speed: Int, val state: BhabhiState) : NetMsg
+
+    @Serializable @SerialName("bsteps")
+    data class BhabhiSteps(val steps: List<BhabhiNetStep>) : NetMsg
 
     @Serializable @SerialName("bad")
     data class ActionRejected(val reason: String) : NetMsg
@@ -200,6 +228,39 @@ object MindiRedact {
         return out
     }
 
+}
+
+/** Re-target a Bhabhi action at [seat] (the host never trusts the seat a guest claims). */
+fun BhabhiAction.withSeat(seat: Int): BhabhiAction = when (this) {
+    is BhabhiAction.Play -> copy(seat = seat)
+}
+
+/**
+ * What a Bhabhi player at [viewer] may see: other hands become blank placeholders (same count, no rank/suit) and
+ * the seed is cleared so the deal can't be reconstructed. Everything else in the state is public: cards that were
+ * played, thrown away or picked up (`known`), and the suits each seat showed it lacks. Events only carry cards that
+ * everyone saw on the table, so they pass through unchanged.
+ */
+object BhabhiRedact {
+    const val PLACEHOLDER_BASE = 900_000
+
+    fun isPlaceholder(c: BCard) = c.suit == -1
+
+    fun state(s: BhabhiState, viewer: Int): BhabhiState = s.copy(
+        seed = 0L,
+        hands = s.hands.mapIndexed { seat, hand ->
+            if (seat == viewer) hand else hand.mapIndexed { i, _ -> BCard(PLACEHOLDER_BASE + seat * 1000 + i, 0, -1) }
+        },
+    )
+
+    fun step(event: BhabhiEvent, s: BhabhiState, viewer: Int) = BhabhiNetStep(event, state(s, viewer))
+
+    /** Sanity helper for tests: every real card a viewer can see in another seat's hand. */
+    fun leaks(s: BhabhiState, viewer: Int): List<BCard> {
+        val out = ArrayList<BCard>()
+        s.hands.forEachIndexed { seat, hand -> if (seat != viewer) out += hand.filter { !isPlaceholder(it) } }
+        return out
+    }
 }
 
 /** Re-target an action at [id] (the host never trusts the seat a guest claims). */

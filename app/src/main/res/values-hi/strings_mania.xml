@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ===================== Mania table (GameScreen) ===================== -->
+    <string name="mania_shuffling">पत्ते फेंटे जा रहे हैं…</string>
+    <string name="mania_cd_pause">रोकें</string>
+    <string name="mania_cd_how_to_play">कैसे खेलें</string>
+    <string name="mania_hud_round_target">राउंड %1$d · टारगेट %2$d</string>
+    <string name="mania_single_round">सिर्फ़ एक राउंड</string>
+    <string name="mania_first_to">टारगेट %1$d</string>
+    <string name="mania_light_side">लाइट साइड</string>
+    <string name="mania_dark_side">डार्क साइड</string>
+    <string name="mania_hud_knockout">25 = आउट</string>
+    <string name="mania_seat_out">आउट</string>
+    <string name="mania_cd_online_player">ऑनलाइन खिलाड़ी</string>
+    <string name="mania_seat_bot">बॉट</string>
+    <string name="mania_catch">पकड़ो!</string>
+    <string name="mania_swap">बदलो</string>
+    <string name="mania_status_out">आप आउट हो गए — अब बाकी खिलाड़ियों की टक्कर देखिए!</string>
+    <string name="mania_status_stack_or_take">+कार्ड डालकर स्टैक करें या डेक दबाकर %1$d कार्ड लें</string>
+    <plurals name="mania_status_take_cards">
+        <item quantity="one">डेक दबाकर %d कार्ड लें</item>
+        <item quantity="other">डेक दबाकर %d कार्ड लें</item>
+    </plurals>
+    <string name="mania_status_no_match">कोई मैच नहीं — डेक दबाकर कार्ड उठाएँ</string>
+    <string name="mania_status_tap_again">चलने के लिए फिर से दबाएँ या ऊपर स्वाइप करें</string>
+    <string name="mania_status_your_turn">आपकी बारी!</string>
+    <string name="mania_status_drawn">उठाया हुआ कार्ड चलें या रख लें</string>
+    <string name="mania_status_choose_swap">किसके साथ पत्ते बदलने हैं, चुनें</string>
+    <string name="mania_status_choosing_color">%1$s रंग चुन रहे हैं…</string>
+    <string name="mania_status_deciding">%1$s सोच रहे हैं कि क्या करें…</string>
+    <string name="mania_status_picking_swap">%1$s पत्ते बदलने के लिए किसी को चुन रहे हैं…</string>
+    <string name="mania_status_jump_in">अपना मैचिंग कार्ड डालकर जंप-इन करें!</string>
+    <string name="mania_status_thinking">%1$s सोच रहे हैं…</string>
+    <string name="mania_cd_sort">क्रम से लगाएँ</string>
+    <string name="mania_cd_hint">संकेत</string>
+    <string name="mania_cd_emote">इमोट</string>
+    <string name="mania_cd_peek">झाँकें</string>
+    <string name="mania_cd_shield">शील्ड</string>
+    <string name="mania_keep">रखें</string>
+    <string name="mania_peek_title">अगले कार्ड</string>
+    <string name="mania_peek_sub">डेक के सबसे ऊपर के कार्ड, उठाने के क्रम में</string>
+
+    <!-- Banners (GameViewModel) -->
+    <string name="mania_banner_draw">कार्ड उठाओ!</string>
+    <string name="mania_banner_round">राउंड %1$d</string>
+    <string name="mania_banner_lets_play">चलो खेलें!</string>
+    <string name="mania_banner_jump_in">जंप इन!</string>
+
+    <!-- Pop-up texts on the table (SpriteWorld) -->
+    <string name="mania_fx_skip">स्किप!</string>
+    <string name="mania_fx_reverse">रिवर्स!</string>
+    <string name="mania_fx_skip_all">सब स्किप!</string>
+    <string name="mania_fx_discard_all">सब फेंको!</string>
+    <string name="mania_fx_reverse_four">रिवर्स +4</string>
+    <string name="mania_fx_color_storm">कलर स्टॉर्म!</string>
+    <string name="mania_fx_draw_color">ड्रॉ कलर!</string>
+    <string name="mania_fx_combo">कॉम्बो x%1$d!</string>
+    <string name="mania_fx_skipped">स्किप हुआ</string>
+    <string name="mania_fx_swap">अदला-बदली!</string>
+    <string name="mania_fx_rotate">घुमाओ!</string>
+    <string name="mania_fx_overload">ओवरलोड!</string>
+    <string name="mania_fx_dark_side">डार्क साइड!</string>
+    <string name="mania_fx_light_side">लाइट साइड!</string>
+    <string name="mania_fx_caught">पकड़े गए!</string>
+    <string name="mania_fx_busted">ब्लफ़ पकड़ा!</string>
+    <string name="mania_fx_failed">नाकाम!</string>
+    <string name="mania_fx_shield">शील्ड!</string>
+    <string name="mania_fx_reshuffle">फिर से फेंटे</string>
+    <string name="mania_fx_pass">पास</string>
+
+    <!-- ===================== Overlays (GameOverlays) ===================== -->
+    <string name="mania_color_name_title">रंग बोलो!</string>
+    <string name="mania_color_choose_title">रंग चुनें</string>
+    <string name="mania_color_storm_desc">वाइल्ड कलर स्टॉर्म! यह रंग आने तक कार्ड खुलते रहेंगे — और सारे आपको रखने होंगे।</string>
+    <string name="mania_challenge_title">वाइल्ड ड्रॉ %1$d!</string>
+    <string name="mania_challenge_body">%1$s ने आप पर वाइल्ड +%2$d चला। चैलेंज करें?\n\nअगर उनके पास इस रंग का कार्ड था, तो %2$d कार्ड उन्हें उठाने होंगे। अगर उन्होंने सही खेला था, तो आपको %3$d कार्ड उठाने होंगे।</string>
+    <string name="mania_challenge_accept">+%1$d मंज़ूर</string>
+    <string name="mania_challenge_button">चैलेंज!</string>
+    <string name="mania_pause_end_q">गेम खत्म करें?</string>
+    <string name="mania_pause_leave_q">गेम छोड़ें?</string>
+    <string name="mania_pause_menu">मेन्यू</string>
+    <string name="mania_pause_paused">रुका हुआ</string>
+    <string name="mania_pause_host_warn">इससे गेम खत्म हो जाएगा और सबके लिए रूम बंद हो जाएगा।</string>
+    <string name="mania_pause_net_warn">बाकी गेम में आपकी जगह एक बॉट खेलेगा।</string>
+    <string name="mania_pause_saved">आपका गेम सेव है — होम से कभी भी आगे खेलें।</string>
+    <string name="mania_pause_net_note">यह मेन्यू खुला रहने पर भी मल्टीप्लेयर गेम चलता रहता है।</string>
+    <string name="mania_leave">छोड़ें</string>
+    <string name="mania_stay">रुकें</string>
+    <string name="mania_back_to_game">गेम पर लौटें</string>
+    <string name="mania_resume">जारी रखें</string>
+    <string name="mania_how_to_play">कैसे खेलें</string>
+    <string name="mania_music">म्यूज़िक</string>
+    <string name="mania_sfx">साउंड इफ़ेक्ट</string>
+    <string name="mania_haptics">वाइब्रेशन</string>
+    <string name="mania_end_game">गेम खत्म करें</string>
+    <string name="mania_leave_game">गेम छोड़ें</string>
+    <string name="mania_quit_home">होम पर जाएँ</string>
+    <string name="mania_round_won">राउंड जीत लिया!</string>
+    <string name="mania_round_winner">%1$s ने राउंड जीता</string>
+    <plurals name="mania_round_points">
+        <item quantity="one">+%d पॉइंट</item>
+        <item quantity="other">+%d पॉइंट</item>
+    </plurals>
+    <string name="mania_name_you">%1$s (आप)</string>
+    <string name="mania_overloaded">ओवरलोड</string>
+    <plurals name="mania_cards_left">
+        <item quantity="one">%d कार्ड बचा</item>
+        <item quantity="other">%d कार्ड बचे</item>
+    </plurals>
+    <plurals name="mania_cards">
+        <item quantity="one">%d कार्ड</item>
+        <item quantity="other">%d कार्ड</item>
+    </plurals>
+    <string name="mania_first_to_wins">जो पहले %1$d तक पहुँचे, वही मैच जीते</string>
+    <string name="mania_next_round">अगला राउंड</string>
+    <string name="mania_victory">जीत गए!</string>
+    <string name="mania_player_wins">%1$s जीत गए!</string>
+    <string name="mania_last_standing">आख़िर तक टिके रहे!</string>
+    <string name="mania_emptied_first">आपने सबसे पहले सारे कार्ड खत्म किए।</string>
+    <string name="mania_finished_place">आप #%1$d नंबर पर रहे। बस थोड़ा सा रह गया!</string>
+    <string name="mania_coins">सिक्के</string>
+    <string name="mania_level_short">लेवल %1$d</string>
+    <string name="mania_level_up">लेवल अप! आप लेवल %1$d पर पहुँच गए</string>
+    <string name="mania_achievement">उपलब्धि: %1$s</string>
+    <string name="mania_win">जीत</string>
+    <string name="mania_home">होम</string>
+    <string name="mania_room">रूम</string>
+    <string name="mania_rematch">रीमैच</string>
+    <string name="mania_play_again">फिर से खेलें</string>
+    <string name="mania_waiting_host">होस्ट का इंतज़ार…</string>
+    <string name="mania_game_over">गेम खत्म</string>
+    <string name="mania_ok">ठीक है</string>
+    <string name="mania_end_room_closed">रूम बंद हो गया है।</string>
+    <string name="mania_end_not_in_room">अब आप किसी रूम में नहीं हैं।</string>
+    <string name="mania_end_host_left">होस्ट ने गेम छोड़ दिया।</string>
+    <string name="mania_end_host_closed">होस्ट ने रूम बंद कर दिया।</string>
+    <string name="mania_end_removed">आपको रूम से हटा दिया गया।</string>
+    <string name="mania_end_lost_connection">होस्ट से कनेक्शन टूट गया।</string>
+
+    <!-- ===================== Game setup ===================== -->
+    <string name="mania_setup_title">गेम सेटअप</string>
+    <string name="mania_setup_choose_mode">अपना मोड चुनें</string>
+    <string name="mania_setup_players">खिलाड़ी</string>
+    <string name="mania_setup_all_bots">सभी बॉट</string>
+    <string name="mania_setup_cards">कार्ड</string>
+    <string name="mania_setup_starting_hand">शुरुआती पत्ते</string>
+    <string name="mania_setup_deck">डेक</string>
+    <string name="mania_setup_standard">स्टैंडर्ड</string>
+    <string name="mania_setup_double_deck">डबल डेक</string>
+    <string name="mania_setup_tip_double">टिप: डबल डेक से बड़ी मर्सिलेस टेबल पर खेल अच्छे से चलता है।</string>
+    <string name="mania_setup_match_length">मैच कितना लंबा</string>
+    <string name="mania_setup_speed">गेम की स्पीड</string>
+    <string name="mania_speed_relaxed">आराम से</string>
+    <string name="mania_speed_normal">सामान्य</string>
+    <string name="mania_speed_fast">तेज़</string>
+    <string name="mania_start_game">गेम शुरू करें</string>
+    <string name="mania_setup_bot_hint">%1$s · बदलने के लिए अवतार दबाएँ</string>
+    <string name="mania_rules_title">हाउस रूल्स</string>
+    <string name="mania_cd_reset_rules">नियम रीसेट करें</string>
+    <string name="mania_rules_merciless_note">मर्सिलेस में हमेशा चालू: स्टैकिंग, सात से अदला-बदली और ज़ीरो से पत्ते घुमाना, मैच मिलने तक कार्ड उठाना, और 25 कार्ड पर आउट का नियम।</string>
+    <string name="mania_rule_stacking">स्टैकिंग</string>
+    <string name="mania_rule_stacking_desc">+कार्ड का जवाब बराबर या बड़े +कार्ड से दें और कुल गिनती आगे बढ़ा दें।</string>
+    <string name="mania_rule_seven_zero">सात और ज़ीरो</string>
+    <string name="mania_rule_seven_desc">7 चलकर अपनी पसंद के किसी विरोधी से पत्ते बदलें।</string>
+    <string name="mania_rule_seven_zero_desc">7 से किसी विरोधी से पत्ते बदलें; 0 से सबके पत्ते आगे खिसक जाते हैं।</string>
+    <string name="mania_rule_draw_match">मैच तक उठाओ</string>
+    <string name="mania_rule_draw_match_desc">जब तक चलने लायक कार्ड न मिले, उठाते रहें।</string>
+    <string name="mania_rule_challenge">चैलेंज</string>
+    <string name="mania_rule_challenge_four_desc">वाइल्ड ड्रॉ फ़ोर को चैलेंज किया जा सकता है। स्टैकिंग चालू हो तो बंद।</string>
+    <string name="mania_rule_challenge_two_desc">वाइल्ड ड्रॉ टू को चैलेंज किया जा सकता है। स्टैकिंग चालू हो तो बंद।</string>
+    <string name="mania_rule_jump_in">जंप-इन</string>
+    <string name="mania_rule_jump_in_desc">ऊपर वाले कार्ड जैसा बिलकुल वही कार्ड है? बिना बारी के चल दें!</string>
+    <string name="mania_rule_forced">फ़ोर्स्ड प्ले</string>
+    <string name="mania_rule_forced_desc">उठाया हुआ कार्ड चल सकता है तो चलना ही होगा।</string>
+    <string name="mania_rule_combo">कॉम्बो ड्रॉप</string>
+    <string name="mania_rule_combo_desc">एक ही नंबर के कई कार्ड एक साथ चलें।</string>
+    <string name="mania_rule_powerups">मेनिया पावर-अप</string>
+    <string name="mania_rule_powerups_desc">एक्शन कार्ड से मीटर भरता है, जिससे झाँकने और शील्ड के टोकन मिलते हैं।</string>
+    <string name="mania_badge_new">नया</string>
+
+    <!-- ===================== How to Play ===================== -->
+    <string name="mania_howto_chip_spider">स्पाइडर</string>
+    <string name="mania_howto_chip_mindi">मिंडी</string>
+    <string name="mania_howto_chip_bhabhi">भाभी</string>
+    <string name="mania_howto_light_side">लाइट साइड</string>
+    <string name="mania_howto_dark_side">डार्क साइड</string>
+    <string name="mania_howto_gallery">कार्ड गैलरी</string>
+    <string name="mania_howto_gallery_side">कार्ड गैलरी · %1$s</string>
+    <string name="mania_howto_tap_flip">कार्ड पलटने के लिए उस पर दबाएँ।</string>
+    <string name="mania_howto_number_cards">नंबर कार्ड %1$d–9</string>
+    <string name="mania_howto_number_desc">रंग या नंबर से मिलाएँ।</string>
+    <string name="mania_howto_face_value">जितना नंबर, उतने पॉइंट</string>
+    <string name="mania_howto_worth_points">%1$d पॉइंट का</string>
+
+    <string name="mania_howto_basics_title">बुनियादी बातें</string>
+    <string name="mania_howto_basics_1">लक्ष्य: अपने सारे कार्ड सबसे पहले खत्म करने वाले खिलाड़ी बनें।</string>
+    <string name="mania_howto_basics_2">सेटअप: सबको बराबर कार्ड बाँटे जाते हैं (आम तौर पर 7 — मैच से पहले 5, 7 या 10 चुनें)। फेंकने का ढेर शुरू करने के लिए एक कार्ड सीधा खोला जाता है।</string>
+    <string name="mania_howto_basics_3">आपकी बारी: ऊपर वाले कार्ड से रंग, नंबर या निशान मिलाकर एक कार्ड चलें। वाइल्ड कार्ड किसी पर भी चल जाते हैं।</string>
+    <string name="mania_howto_basics_4">चल नहीं सकते? एक कार्ड उठाएँ। अगर वह मैच करे तो तुरंत चल सकते हैं; वरना आपकी बारी खत्म।</string>
+    <string name="mania_howto_basics_5">MANIA! — जब आपके पास बस आख़िरी कार्ड बचने वाला हो, तो MANIA! बटन दबाएँ। भूल गए और किसी चौकन्ने विरोधी ने पकड़ लिया, तो आपको 2 कार्ड उठाने होंगे।</string>
+    <string name="mania_howto_basics_6">आप भी विरोधियों को पकड़ सकते हैं: जब कोई बॉट भूल जाए, तो उसकी सीट के ऊपर पकड़ो! दबाएँ।</string>
+    <string name="mania_howto_basics_7">स्कोरिंग: राउंड जीतने वाले को बाकी सबके बचे हुए कार्ड के पॉइंट मिलते हैं — नंबर कार्ड अपने नंबर जितने, एक्शन कार्ड 10–30, वाइल्ड कार्ड 40–100। एक राउंड खेलें या टारगेट स्कोर तक की रेस लगाएँ।</string>
+
+    <string name="mania_howto_classic_title">क्लासिक मेनिया</string>
+    <string name="mania_howto_classic_1">चार रंगों में 108 कार्ड: लाल, नीला, हरा और पीला। कलर-ब्लाइंड खिलाड़ियों के लिए हर रंग का अपना निशान भी है।</string>
+    <string name="mania_howto_classic_2">स्किप अगले खिलाड़ी की बारी छोड़ देता है, रिवर्स दिशा पलट देता है और ड्रॉ टू से अगला खिलाड़ी दो कार्ड उठाता है और उसकी बारी छूट जाती है।</string>
+    <string name="mania_howto_classic_3">सिर्फ़ दो खिलाड़ी हों तो रिवर्स स्किप जैसा काम करता है — आपकी फिर से बारी।</string>
+    <string name="mania_howto_classic_4">वाइल्ड ड्रॉ फ़ोर तभी चल सकते हैं जब आपके पास मौजूदा रंग का कोई कार्ड न हो। अगला खिलाड़ी चैलेंज कर सकता है: ब्लफ़ पकड़ा गया तो 4 कार्ड आप उठाएँगे — पर गलत चैलेंज पर उसे 6 उठाने पड़ेंगे।</string>
+    <string name="mania_howto_classic_5">चाहें तो हाउस रूल्स जोड़ें: स्टैकिंग, जंप-इन, सात-ज़ीरो अदला-बदली, मैच तक उठाओ, फ़ोर्स्ड प्ले, कॉम्बो ड्रॉप और मेनिया पावर-अप।</string>
+
+    <string name="mania_howto_merciless_title">मर्सिलेस मेनिया</string>
+    <string name="mania_howto_merciless_1">168 कार्ड, ज़बरदस्त हमलों से भरे — बड़े उलटफेर के लिए तैयार रहें!</string>
+    <string name="mania_howto_merciless_2">मैच तक उठाओ: चल नहीं सकते तो तब तक कार्ड उठाते रहें जब तक चलने लायक कार्ड न मिल जाए।</string>
+    <string name="mania_howto_merciless_3">स्टैकिंग: ड्रॉ कार्ड का जवाब बराबर या बड़े ड्रॉ कार्ड से दें और बढ़ती गिनती आगे बढ़ा दें। स्टैक नहीं कर सकते? पूरा ढेर उठाएँ और आपकी बारी गई।</string>
+    <string name="mania_howto_merciless_4">वाइल्ड रिवर्स ड्रॉ फ़ोर दिशा पलटता है और स्टैक में 4 जोड़ता है।</string>
+    <string name="mania_howto_merciless_5">सात: किसी भी विरोधी से पत्ते बदलें। ज़ीरो: सबके पत्ते खेल की दिशा में एक सीट आगे खिसक जाते हैं।</string>
+    <string name="mania_howto_merciless_6">डिस्कार्ड ऑल के साथ आपके हाथ के उसी रंग के बाकी सारे कार्ड भी निकल जाते हैं। स्किप एवरीवन सभी विरोधियों को स्किप करता है — फिर से चलें!</string>
+    <string name="mania_howto_merciless_7">वाइल्ड कलर स्टॉर्म: अगला खिलाड़ी एक रंग बोलता है, फिर वह रंग आने तक कार्ड खोलता है और सारे कार्ड रखता है।</string>
+    <string name="mania_howto_merciless_8">नॉकआउट नियम: 25 या ज़्यादा कार्ड हुए तो आप आउट। आख़िर तक टिका रहने वाला खिलाड़ी भी जीतता है।</string>
+
+    <string name="mania_howto_flip_title">फ्लिप मेनिया</string>
+    <string name="mania_howto_flip_1">112 दो-तरफ़ा कार्ड। मैच लाइट साइड से शुरू होता है।</string>
+    <string name="mania_howto_flip_2">आप विरोधियों के कार्ड की छिपी साइड देख सकते हैं — पर अपने कार्ड की दूसरी साइड कभी नहीं। इसका फ़ायदा उठाएँ!</string>
+    <string name="mania_howto_flip_3">फ्लिप कार्ड: पूरी टेबल पलट जाती है। हाथ के पत्ते, उठाने का ढेर और फेंकने का ढेर सब डार्क साइड पर आ जाते हैं (या वापस लाइट साइड पर)।</string>
+    <string name="mania_howto_flip_4">लाइट साइड: हल्के कार्ड जैसे ड्रॉ वन, स्किप और वाइल्ड ड्रॉ टू। डार्क साइड ज़्यादा ज़ोर से मारती है: ड्रॉ फ़ाइव, स्किप एवरीवन और वाइल्ड ड्रॉ कलर।</string>
+    <string name="mania_howto_flip_5">वाइल्ड ड्रॉ कलर: एक रंग चुनें — अगला खिलाड़ी वह रंग मिलने तक कार्ड उठाता रहता है।</string>
+    <string name="mania_howto_flip_6">हर मैच में लाइट और डार्क साइड की जोड़ियाँ अलग बनती हैं, इसलिए कोई भी दो गेम एक जैसे नहीं होते।</string>
+
+    <!-- Spider -->
+    <string name="mania_howto_spider_name">स्पाइडर सॉलिटेयर</string>
+    <string name="mania_howto_spider_tagline">पेशेंस का क्लासिक खेल: बादशाह से इक्के तक की लाइन बनाएँ।</string>
+    <string name="mania_howto_spider_pill">अकेले · 1, 2 या 4 सूट</string>
+    <string name="mania_howto_spider_goal_title">लक्ष्य</string>
+    <string name="mania_howto_spider_goal_1">बादशाह से इक्के तक 8 पूरी लाइनें बनाएँ, हर लाइन एक ही सूट की। पूरी हुई लाइन अपने आप टेबल से हट जाती है।</string>
+    <string name="mania_howto_spider_goal_2">सारी लाइनें पूरी करके जीतें। स्कोर 500 से शुरू होता है: हर मूव या अनडू पर 1 पॉइंट कटता है, हर पूरी लाइन पर 100 मिलते हैं।</string>
+    <string name="mania_howto_spider_table_title">टेबल</string>
+    <string name="mania_howto_spider_table_1">10 कॉलम में 104 पत्ते। पहले चार कॉलम में 6 पत्ते, बाकी छह में 5; सिर्फ़ सबसे नीचे वाला पत्ता खुला होता है।</string>
+    <string name="mania_howto_spider_table_2">बचे हुए 50 पत्ते स्टॉक (ऊपर दाईं ओर) में रहते हैं और 10-10 करके निकलते हैं — हर कॉलम पर एक।</string>
+    <string name="mania_howto_spider_table_3">1 सूट (आसान), 2 सूट (मीडियम) या 4 सूट (कठिन) चुनें।</string>
+    <string name="mania_howto_spider_moving_title">पत्ते हिलाना</string>
+    <string name="mania_howto_spider_moving_1">कोई भी खुला पत्ता उससे ठीक एक बड़े पत्ते पर रखें, किसी भी सूट का — 7 किसी भी 8 पर जा सकता है।</string>
+    <string name="mania_howto_spider_moving_2">पत्तों का ग्रुप एक साथ तभी हिलता है जब वह क्रम से नीचे जाता हो और सब एक ही सूट के हों।</string>
+    <string name="mania_howto_spider_moving_3">खाली कॉलम में कोई भी पत्ता या एक सूट की लाइन रखी जा सकती है।</string>
+    <string name="mania_howto_spider_moving_4">उल्टा पत्ता खुलते ही अपने आप सीधा हो जाता है।</string>
+    <string name="mania_howto_spider_moving_5">पत्ते को सबसे अच्छी जगह भेजने के लिए दबाएँ, या खींचकर जहाँ चाहें वहाँ रखें।</string>
+    <string name="mania_howto_spider_deal_title">बाँटना, संकेत और अनडू</string>
+    <string name="mania_howto_spider_deal_1">हर कॉलम पर एक पत्ता बाँटने के लिए स्टॉक दबाएँ। खाली कॉलम को भी पत्ता मिलता है।</string>
+    <string name="mania_howto_spider_deal_2">संकेत एक अच्छा मूव दिखाता है (दूसरे के लिए फिर दबाएँ)। अनडू जितनी बार चाहें।</string>
+    <string name="mania_howto_spider_deal_3">डेली चैलेंज: रोज़ एक जीतने लायक डील, हर खिलाड़ी के लिए एक जैसी।</string>
+    <string name="mania_howto_ex_spider_1">एक ही सूट की लाइन (K-Q-J-10) एक ग्रुप में हिलती है।</string>
+    <string name="mania_howto_ex_spider_2">पान का 7 हुकुम के 8 पर जा सकता है — पर दोनों साथ में नहीं हिल सकते।</string>
+
+    <!-- Mindi -->
+    <string name="mania_howto_mindi_name">मिंडी</string>
+    <string name="mania_howto_mindi_tagline">साथी के साथ मिलकर 10 के पत्ते जीतें।</string>
+    <string name="mania_howto_mindi_pill">4, 6 या 8 खिलाड़ी · टीम</string>
+    <string name="mania_howto_mindi_teams_title">टीम और बँटाई</string>
+    <string name="mania_howto_mindi_teams_1">मिंडी टीम वाला चाल जीतने का खेल है। 4 खिलाड़ियों में साथी आमने-सामने बैठते हैं (2 बनाम 2)।</string>
+    <string name="mania_howto_mindi_teams_2">बड़ी टेबल: 6 खिलाड़ी (3 बनाम 3) या 8 खिलाड़ी (4 बनाम 4), बारी-बारी से बैठते हैं, और चारों 2 निकाल दिए जाते हैं (48 पत्ते)। डबल डेक भी चल सकता है।</string>
+    <string name="mania_howto_mindi_teams_3">पूरी गड्डी बाँट दी जाती है। बाँटने वाले के बाद वाला खिलाड़ी पहली चाल शुरू करता है।</string>
+    <string name="mania_howto_mindi_trick_title">चाल खेलना</string>
+    <string name="mania_howto_mindi_trick_1">हर कोई एक पत्ता चलता है। हो सके तो पहले चले गए सूट का ही पत्ता चलना होगा; वरना कोई भी पत्ता चलें।</string>
+    <string name="mania_howto_mindi_trick_2">सबसे बड़ा ट्रम्प चाल जीतता है। अगर ट्रम्प न हो, तो चले गए सूट का सबसे बड़ा पत्ता जीतता है (इक्का सबसे बड़ा, 2 सबसे छोटा)।</string>
+    <string name="mania_howto_mindi_trick_3">चाल जीतने वाला अगली चाल शुरू करता है।</string>
+    <string name="mania_howto_mindi_trump_title">ट्रम्प चुनना</string>
+    <string name="mania_howto_mindi_trump_1">हाइड ट्रम्प: एक खिलाड़ी चुपके से एक पत्ता अलग रख देता है; उसका सूट ट्रम्प है। जब पहली बार कोई सूट नहीं मिला पाता, तब यह खुलता है — उसके बाद वही सूट ट्रम्प रहता है।</string>
+    <string name="mania_howto_mindi_trump_2">कट ट्रम्प: शुरू में कोई ट्रम्प नहीं होता। जो खिलाड़ी सबसे पहले सूट नहीं मिला पाता, उसका चला पत्ता बाकी राउंड के लिए ट्रम्प तय करता है।</string>
+    <string name="mania_howto_mindi_trump_3">ओपन ट्रम्प: ट्रम्प खेल से पहले ही दिखा दिया जाता है — सीखने का सबसे आसान तरीका।</string>
+    <string name="mania_howto_mindi_tens_title">10 के पत्ते राउंड जिताते हैं</string>
+    <string name="mania_howto_mindi_tens_1">सिर्फ़ चार 10 (\"मिंडी\") गिने जाते हैं। जो टीम इनमें से 3 या 4 जीतती है, वह राउंड जीतती है।</string>
+    <string name="mania_howto_mindi_tens_2">अगर 10 के पत्ते 2–2 बँट जाएँ, तो ज़्यादा चालें जीतने वाली टीम जीतती है।</string>
+    <string name="mania_howto_mindi_tens_3">मेंडीकोट: चारों 10 जीतना। व्हाइटवॉश: हर एक चाल जीतना।</string>
+    <string name="mania_howto_mindi_tens_4">पॉइंट: आम जीत 1, मेंडीकोट 2, व्हाइटवॉश 3। जो टीम पहले टारगेट (आम तौर पर 5) तक पहुँचे, वह मैच जीतती है।</string>
+    <string name="mania_howto_mindi_tens_5">हारने वाली टीम अगला राउंड बाँटती है।</string>
+    <string name="mania_howto_ex_mindi_1">चारों 10। अपने साथी के साथ 3 या ज़्यादा जीतें और राउंड आपका।</string>
+    <string name="mania_howto_ex_mindi_2">पान चला गया; जिसके पास पान नहीं है, वह ट्रम्प (यहाँ हुकुम) चलकर जीत सकता है।</string>
+
+    <!-- Bhabhi -->
+    <string name="mania_howto_bhabhi_name">भाभी</string>
+    <string name="mania_howto_bhabhi_tagline">अपने पत्ते खत्म करें — आख़िर में पत्ते पकड़े रहने वाले मत बनिए।</string>
+    <string name="mania_howto_bhabhi_pill">3 से 8 खिलाड़ी · हर कोई अपने लिए</string>
+    <string name="mania_howto_bhabhi_goal_title">लक्ष्य</string>
+    <string name="mania_howto_bhabhi_goal_1">अपने सारे पत्ते निकाल दें। हाथ खाली होते ही आप सुरक्षित हैं।</string>
+    <string name="mania_howto_bhabhi_goal_2">आख़िर तक पत्ते पकड़े रहने वाला खिलाड़ी भाभी बनता है और गेम हार जाता है। बाकी सबकी रैंक इस पर तय होती है कि वे कब बाहर निकले।</string>
+    <string name="mania_howto_bhabhi_deal_title">बँटाई</string>
+    <string name="mania_howto_bhabhi_deal_1">3 से 8 खिलाड़ी 52 पत्तों की एक गड्डी से खेलते हैं। इक्का सबसे बड़ा, 2 सबसे छोटा।</string>
+    <string name="mania_howto_bhabhi_deal_2">सारे पत्ते एक-एक करके बाँटे जाते हैं, इसलिए कुछ खिलाड़ियों को एक पत्ता ज़्यादा मिल सकता है।</string>
+    <string name="mania_howto_bhabhi_deal_3">जिसके पास A♠ होता है, वह उसी से पहली चाल शुरू करता है।</string>
+    <string name="mania_howto_bhabhi_trick_title">चाल खेलना</string>
+    <string name="mania_howto_bhabhi_trick_1">बारी-बारी से खेल आगे बढ़ता है। हो सके तो पहले चले गए सूट का ही पत्ता चलना होगा।</string>
+    <string name="mania_howto_bhabhi_trick_2">अगर सबने वही सूट चला, तो चाल फेंक दी जाती है और वे पत्ते कोई नहीं रखता। उस सूट का सबसे बड़ा पत्ता चलने वाला अगली चाल शुरू करता है।</string>
+    <string name="mania_howto_bhabhi_trick_3">अगर आपके पास वह सूट नहीं है, तो कोई और पत्ता चलें: यही ठुल्ला है। चाल वहीं रुक जाती है, और जिसने उस सूट का सबसे बड़ा पत्ता चला था, उसे उस चाल के सारे पत्ते उठाने पड़ते हैं।</string>
+    <string name="mania_howto_bhabhi_trick_4">जिसने पत्ते उठाए, वही अगली चाल शुरू करता है।</string>
+    <string name="mania_howto_bhabhi_out_title">बाहर निकलना</string>
+    <string name="mania_howto_bhabhi_out_1">आख़िरी पत्ता चलते ही आप बाहर — बशर्ते वह ऐसी चाल में न गिरे जो आपको ही उठानी पड़े।</string>
+    <string name="mania_howto_bhabhi_out_2">अगर सबसे बड़े पत्ते वाले के पास पत्ते नहीं बचे, तो पत्तों वाला अगला खिलाड़ी चाल शुरू करता है।</string>
+    <string name="mania_howto_bhabhi_out_3">अगर बचे हुए सभी खिलाड़ियों के पत्ते एक ही चाल में खत्म हों, तो उस चाल का सबसे बड़ा पत्ता चलने वाला भाभी बनता है।</string>
+    <string name="mania_howto_bhabhi_tips_title">हाउस रूल और टिप्स</string>
+    <string name="mania_howto_bhabhi_tips_1">सेफ़ पहला राउंड (आम तौर पर चालू): हुकुम की पहली चाल पर ठुल्ला नहीं — जिनके पास हुकुम नहीं है, वे कोई भी पत्ता फेंक देते हैं।</string>
+    <string name="mania_howto_bhabhi_tips_2">जब चालें फेंकी जा रही हों तब अपने बड़े पत्ते निकाल दें, और छोटे पत्ते तब के लिए रखें जब कट होने की संभावना हो।</string>
+    <string name="mania_howto_bhabhi_tips_3">जब आपके पास कोई सूट खत्म हो जाए, तो ठुल्ला लगाकर अपना सबसे बड़ा पत्ता चाल जीत रहे खिलाड़ी पर डाल दें।</string>
+    <string name="mania_howto_bhabhi_tips_4">ध्यान रखें किसके पास कौन-सा सूट खत्म है: वही सूट चलना ठुल्ले को न्योता देना है।</string>
+    <string name="mania_howto_ex_bhabhi_1">सबने पान चला: चाल फेंक दी गई और बेगम वाला अगली चाल शुरू करेगा।</string>
+    <string name="mania_howto_ex_bhabhi_2">पान नहीं था, तो चिड़ी से काट दिया — ठुल्ला! बेगम वाले को तीनों पत्ते उठाने पड़ेंगे।</string>
+
+    <string name="mania_howto_examples">उदाहरण</string>
+</resources>

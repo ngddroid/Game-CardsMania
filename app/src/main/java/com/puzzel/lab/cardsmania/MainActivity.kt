@@ -29,7 +29,32 @@ object Immersive {
     }
 }
 
+/**
+ * Runs the app at 60 Hz on 90/120 Hz phones. Card animations look the same at 60 frames a second, and drawing half
+ * as many frames saves battery and keeps budget phones cool.
+ */
+object FrameRate {
+    fun capAt60(activity: android.app.Activity) {
+        val display = if (android.os.Build.VERSION.SDK_INT >= 30) activity.display
+        else @Suppress("DEPRECATION") activity.windowManager.defaultDisplay
+        display ?: return
+        val now = display.mode
+        val mode = display.supportedModes
+            .filter { it.physicalWidth == now.physicalWidth && it.physicalHeight == now.physicalHeight && it.refreshRate in 55f..65f }
+            .minByOrNull { kotlin.math.abs(it.refreshRate - 60f) } ?: return
+        activity.window.attributes = activity.window.attributes.also {
+            it.preferredDisplayModeId = mode.modeId
+            it.preferredRefreshRate = mode.refreshRate
+        }
+    }
+}
+
 class MainActivity : ComponentActivity() {
+    override fun attachBaseContext(newBase: android.content.Context) {
+        // the chosen app language (English, Hindi or Gujarati) for every stringResource() on screen
+        super.attachBaseContext(com.puzzel.lab.cardsmania.i18n.LocaleManager.wrap(newBase))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
@@ -38,6 +63,7 @@ class MainActivity : ComponentActivity() {
             navigationBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT),
         )
         Immersive.apply(window)
+        FrameRate.capAt60(this)
         val container = (application as CardsManiaApp).container
         setContent {
             CompositionLocalProvider(LocalApp provides container) {

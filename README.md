@@ -1,6 +1,6 @@
 # Cards Mania — Developer Guide
 
-Cards Mania is an Android card-game collection written in Kotlin with Jetpack Compose. It contains **five games**:
+Cards Mania is an Android card-game collection written in Kotlin with Jetpack Compose. It contains **six games**:
 
 | Game | Players | Code name | Rules code | Screen code |
 |---|---|---|---|---|
@@ -9,6 +9,7 @@ Cards Mania is an Android card-game collection written in Kotlin with Jetpack Co
 | Flip Mania | 2–6 | `GameMode.ECLIPSE` | `engine/` | `ui/game/` |
 | Spider Solitaire | 1 | — | `spider/` | `ui/spider/` |
 | Mindi (team trick game) | 4, 6 or 8, bots or Wi-Fi friends | — | `mindi/` | `ui/mindi/` |
+| Bhabhi (last one holding cards loses) | 3–8, bots | — | `bhabhi/` | `ui/bhabhi/` |
 
 Everything works offline. Multiplayer uses only the local Wi-Fi network (no servers, no internet). All card art,
 tables and icons are drawn in code; the only bundled assets are sounds, two fonts and two legal pages.
@@ -19,7 +20,7 @@ Read §1–§5 first; after that, jump to the section for the part you're workin
 > Design history: [`docs/BUILD_PLAN.md`](docs/BUILD_PLAN.md) (original design, full Mania rules, naming and IP rules),
 > [`docs/MULTIPLAYER_PLAN.md`](docs/MULTIPLAYER_PLAN.md) (Wi-Fi multiplayer) and
 > [`docs/PHASE3_PLAN.md`](docs/PHASE3_PLAN.md) (Spider fixes, Mindi, game-style UI).
-
+ 
 ---
 
 ## Contents
@@ -33,14 +34,15 @@ Read §1–§5 first; after that, jump to the section for the part you're workin
 7. [Mania games (Classic / Merciless / Flip)](#7-mania-games-classic--merciless--flip)
 8. [Spider Solitaire](#8-spider-solitaire)
 9. [Mindi](#9-mindi)
-10. [Wi-Fi multiplayer](#10-wi-fi-multiplayer)
-11. [Saved data, profile and rewards](#11-saved-data-profile-and-rewards)
-12. [UI system: theme, fonts, design kit, full screen, back button](#12-ui-system-theme-fonts-design-kit-full-screen-back-button)
-13. [Audio, icons and other assets](#13-audio-icons-and-other-assets)
-14. [Tests](#14-tests)
-15. [How to make common changes](#15-how-to-make-common-changes)
-16. [Gotchas we already ran into](#16-gotchas-we-already-ran-into)
-17. [Known gaps / TODO before release](#17-known-gaps--todo-before-release)
+10. [Bhabhi](#10-bhabhi)
+11. [Wi-Fi multiplayer](#11-wi-fi-multiplayer)
+12. [Saved data, profile and rewards](#12-saved-data-profile-and-rewards)
+13. [UI system: theme, fonts, design kit, full screen, back button](#13-ui-system-theme-fonts-design-kit-full-screen-back-button)
+14. [Audio, icons and other assets](#14-audio-icons-and-other-assets)
+15. [Tests](#15-tests)
+16. [How to make common changes](#16-how-to-make-common-changes)
+17. [Gotchas we already ran into](#17-gotchas-we-already-ran-into)
+18. [Known gaps / TODO before release](#18-known-gaps--todo-before-release)
 
 ---
 
@@ -70,7 +72,7 @@ Build, test and install:
 adb install -r app/build/outputs/apk/debug/app-debug.apk
 ```
 
-* Test reports: `app/build/test-results/testDebugUnitTest/*.xml` (62 tests in 8 suites, §14).
+* Test reports: `app/build/test-results/testDebugUnitTest/*.xml` (87 tests in 10 suites, §15).
 * With several devices connected, pick one with `adb -s <serial>` (`adb devices` lists them).
 * Release signing is **not** configured yet; add a `signingConfig` before publishing.
 
@@ -138,9 +140,12 @@ anywhere: code, assets, store listing or screenshots. See `docs/BUILD_PLAN.md` �
           all shared services live in AppContainer (CardsManiaApp.kt)
 ```
 
+Bhabhi has the same shape: `ui/bhabhi/` (`BhabhiScreen` → Canvas → `BhabhiWorld`, `BhabhiViewModel`) on top of
+`bhabhi/` (`BhabhiEngine`, `BhabhiBot`, `BhabhiSearch`), where one `BhabhiAction` returns a `List<BStep>`.
+
 Five principles hold everywhere:
 
-1. **Rules live in pure Kotlin.** `engine/`, `spider/`, `mindi/` (and most of `net/`) have no Android imports, so they
+1. **Rules live in pure Kotlin.** `engine/`, `spider/`, `mindi/`, `bhabhi/` (and most of `net/`) have no Android imports, so they
    run and are tested on a plain JVM. The UI never decides what is legal; it asks the engine.
 2. **Engines report *what happened*, not just the result.** Every move returns a list of events, each paired with the
    full state right after it. The ViewModel plays these one by one as animations. This is also what gets sent to
@@ -162,7 +167,7 @@ Five principles hold everywhere:
 1. `CardsManiaApp.onCreate` builds the `AppContainer`. It starts listening to settings (volumes, haptics) and pauses
    music when the app goes to the background.
 2. `MainActivity.onCreate` installs the system splash, enables edge-to-edge drawing, **hides the navigation bar**
-   (`Immersive.apply`, §12.4) and shows `AppNavHost` inside `CardsManiaTheme`.
+   (`Immersive.apply`, §13.4) and shows `AppNavHost` inside `CardsManiaTheme`.
 3. `SplashScreen` plays its animation, pre-renders card bitmaps in the background and starts the menu music. Then it
    goes to **Onboarding** (first run), **Profile setup** (no profile yet) or the **Lobby**.
 
@@ -183,6 +188,7 @@ setup?mode=…    spider?daily=…   mindi_setup    mp_hub         settings     
 | Route | Screen | Opened from |
 |---|---|---|
 | `splash` | `ui/splash/SplashScreen` | app start |
+| `language?first=` | `ui/language/LanguageScreen` (English / हिन्दी / ગુજરાતી) | first launch, right after the splash (`first=true`, no back); Settings → Language |
 | `onboarding` | `ui/onboarding/OnboardingScreen` (4 pages, no skip button) | first run |
 | `profile_setup` | `ui/onboarding/ProfileSetupScreen` | after onboarding |
 | `main` | `ui/home/MainScreen` with `HomeTab`, `EventsTab`, `CollectionTab`, `ProfileTab` | lobby |
@@ -191,6 +197,8 @@ setup?mode=…    spider?daily=…   mindi_setup    mp_hub         settings     
 | `spider?daily=` | `ui/spider/SpiderScreen` | Spider tile; Events → Spider daily (passes today's date) |
 | `mindi_setup` | `ui/mindi/MindiSetupScreen` | Mindi tile |
 | `mindi` | `ui/mindi/MindiScreen` | Mindi setup, Events → Mindi daily, multiplayer |
+| `bhabhi_setup` | `ui/bhabhi/BhabhiSetupScreen` | Bhabhi tile |
+| `bhabhi` | `ui/bhabhi/BhabhiScreen` | Bhabhi setup (new game or Continue) |
 | `mp_hub`, `mp_host`, `mp_join`, `mp_lobby` | `ui/multiplayer/*` | Multiplayer tile |
 | `settings`, `legal/{doc}`, `howto?mode=` | `ui/settings`, `ui/legal`, `ui/howto` | lobby top bar, pause menus |
 
@@ -201,10 +209,11 @@ Game configs are too big for route arguments, so they are handed over through `A
 * **Mania:** set `app.pendingLaunch = GameLaunch(config, resume, daily, net)`, then navigate to `game`.
   `GameScreen` reads it once and clears it. `config == null` with `resume = true` loads the saved game.
 * **Mindi:** set `app.pendingMindi = MindiLaunch(setup, resume, daily, net)`, then navigate to `mindi`.
+* **Bhabhi:** set `app.pendingBhabhi = BhabhiLaunch(setup, resume)`, then navigate to `bhabhi`.
 * **Spider:** needs only the optional daily date, which travels in the route (`spider?daily=2026-11-09`).
 
-**Play Again / Rematch** never reuses the old ViewModel. `GameScreen` bumps a `gameKey`, and the `mindi` route bumps
-`mindiKey`; the new key gives a new `viewModel(key = …)` and a fresh table (see §16, gotchas 7 and 8).
+**Play Again / Rematch** never reuses the old ViewModel. `GameScreen` bumps a `gameKey`, and the `mindi` and `bhabhi`
+routes bump `mindiKey` / `bhabhiKey`; the new key gives a new `viewModel(key = …)` and a fresh table (see §17, gotchas 7 and 8).
 
 ---
 
@@ -231,22 +240,41 @@ finger lifts on a card
                            └─ remote seat  → wait for their action (30 s limit)
 ```
 
-| Piece | Mania | Spider | Mindi |
-|---|---|---|---|
-| Rules | `engine/GameEngine` (mutable state, `copyDeep()` snapshots) | `spider/SpiderEngine` (immutable `SpiderState`) | `mindi/MindiEngine` (immutable `MindiState`) |
-| One move returns | `List<Step>` (`GameEvent` + `GameState`) | `SpiderResult` (new state + `SpiderEvent`s) | `List<MStep>` (`MindiEvent` + `MindiState`) |
-| Controller | `ui/game/GameViewModel` | `ui/spider/SpiderViewModel` | `ui/mindi/MindiViewModel` |
-| What the canvas receives | `Frame` via `frame` / `fx` flows | `SpiderFrame(state, events, kind)` | `MStep` via the `steps` flow |
-| Sprite world | `SpriteWorld` + `TableLayout` + `Fx` | `SpiderWorld` + `SpiderLayout` | `MindiWorld` + `MindiLayout` (reuses `Fx`) |
-| Bots | `engine/ai/BotAI`, `MonteCarlo` | — (hints: `SpiderEngine.hints`) | `mindi/MindiBot`, `MindiSearch` |
-| Saved game | `filesDir/saved_game.json` | `filesDir/spider_save.json` | `filesDir/mindi_save.json` |
+| Piece | Mania | Spider | Mindi | Bhabhi |
+|---|---|---|---|---|
+| Rules | `engine/GameEngine` (mutable state, `copyDeep()` snapshots) | `spider/SpiderEngine` (immutable `SpiderState`) | `mindi/MindiEngine` (immutable `MindiState`) | `bhabhi/BhabhiEngine` (immutable `BhabhiState`) |
+| One move returns | `List<Step>` (`GameEvent` + `GameState`) | `SpiderResult` (new state + `SpiderEvent`s) | `List<MStep>` (`MindiEvent` + `MindiState`) | `List<BStep>` (`BhabhiEvent` + `BhabhiState`) |
+| Controller | `ui/game/GameViewModel` | `ui/spider/SpiderViewModel` | `ui/mindi/MindiViewModel` | `ui/bhabhi/BhabhiViewModel` |
+| What the canvas receives | `Frame` via `frame` / `fx` flows | `SpiderFrame(state, events, kind)` | `MStep` via the `steps` flow | `BStep` via the `steps` flow |
+| Sprite world | `SpriteWorld` + `TableLayout` + `Fx` | `SpiderWorld` + `SpiderLayout` | `MindiWorld` + `MindiLayout` (reuses `Fx`) | `BhabhiWorld` + `BhabhiLayout` (reuses `Fx`) |
+| Bots | `engine/ai/BotAI`, `MonteCarlo` | — (hints: `SpiderEngine.hints`) | `mindi/MindiBot`, `MindiSearch` | `bhabhi/BhabhiBot`, `BhabhiSearch` |
+| Saved game | `filesDir/saved_game.json` | `filesDir/spider_save.json` | `filesDir/mindi_save.json` | `filesDir/bhabhi_save.json` |
 
 **How the sprite worlds animate:** every visible card is a sprite with a current and a target position. When a new
 state arrives, the layout object computes where each card *should* be. The world starts a tween (a curved path with
 an ease-out, optional spin, delay and 3D flip via `android.graphics.Camera`) from where it is to where it should be.
-The canvas redraws every frame (`withFrameMillis`) by drawing cached bitmaps, so even a full table is cheap.
+The canvas draws cached bitmaps, so even a full table is cheap, and it **only redraws while something moves**
+(see "Performance rules" below).
 **Timing rule:** the ViewModel's per-event wait must be at least as long as the world's tween for that event, or the
 next step starts mid-animation.
+
+**Performance rules (keep them when you add a game or an effect):**
+* **Tables sleep when still.** Each world implements `AnimatedWorld` (`ui/game/FrameDriver.kt`): `isBusy(now)` is true
+  while a card moves (or waits on a delay), a drag eases, a flip runs or `fx.isActive(now)`; `idleFrameMs(now)` asks for
+  a slow pace (about 30 fps) only while a time-based decoration is visible (pulsing glows, the Mania direction ring).
+  The screen uses `rememberFrameTick(driver, world)` and calls `driver.wake()` after every change it makes to the world
+  (frames, cues, selection, settings); `Modifier.wakeOnTouch(driver)` covers touches. A forgotten wake is caught by a
+  500 ms safety net, so it shows up as a short lag before an animation, not a freeze. **Anything new that animates
+  with `now` must be counted in `isBusy` or `idleFrameMs`**, or it will freeze between frames.
+* **Nothing allocated per frame** in a world's `draw`/`update`: no `map {}`/`toHashSet()`/`Pair`/`Path()`/gradients/
+  strings; cache them by size or value. Card bitmaps are looked up without building key strings
+  (`CardArt` by `Face`/`CardBack`, `PlayingCardArt` by array index).
+* **Animated values are read in the draw phase.** `val pulse by rememberPulse()` (or any `animateFloat`) and read it
+  inside `graphicsLayer {}`, `drawBehind {}`/`drawWithCache {}` or a Canvas block, not in `Modifier.scale(..)`/`color = ..`,
+  which recompose the whole composable every frame.
+* **60 Hz.** `FrameRate.capAt60` (in `MainActivity.kt`) asks 90/120 Hz screens for their 60 Hz mode.
+* **Baseline profile.** `app/src/main/baseline-prof.txt` (wildcard rules for the app and kotlinx.serialization) is
+  compiled ahead of time at install, installed by `androidx.profileinstaller`.
 
 **Bots never cheat.** They only read what a human in that seat could know: their own hand, played cards, hand sizes,
 suits a player has shown they're out of (`voidMask` / `voids`), and in Flip mode the visible side of other players'
@@ -263,6 +291,7 @@ All Kotlin paths are under `app/src/main/java/com/puzzel/lab/cardsmania/`.
 | Path | What it does |
 |---|---|
 | `CardsManiaApp.kt` | `Application`, `AppContainer` (services + `pendingLaunch` / `pendingMindi`), `GameLaunch`, `LocalApp` |
+| `i18n/Language.kt` | `AppLanguage` (EN, HI, GU), `LocaleManager` (saved choice + locale wrapping), `Strings` (translated text outside Compose) |
 | `MainActivity.kt` | System splash, edge-to-edge, `Immersive` (hides the navigation bar), hosts `AppNavHost` |
 | `nav/AppNavHost.kt` | `Routes`, transitions, every screen's wiring and launch hand-off |
 
@@ -283,6 +312,9 @@ All Kotlin paths are under `app/src/main/java/com/puzzel/lab/cardsmania/`.
 | `mindi/MindiEngine.kt` | Mindi rules: `MCard`, `MindiState`, `MindiPhase`, `MindiEvent`, `MindiAction`, `MindiEngine` |
 | `mindi/MindiBot.kt` | Mindi bots (`MindiBot`, partner-aware) and Expert search (`MindiSearch`) |
 | `mindi/MindiData.kt` | `MindiTrumpMode`, `MindiSetup`, `MindiStats`, `MindiProfile`, `MindiSeat` |
+| `bhabhi/BhabhiEngine.kt` | Bhabhi rules: `BCard`, `BhabhiState`, `BhabhiPhase`, `BhabhiEvent`, `BhabhiAction`, `BhabhiEngine` |
+| `bhabhi/BhabhiBot.kt` | Bhabhi bots (`BhabhiBot`: cut-risk heuristics) and Expert search (`BhabhiSearch`) |
+| `bhabhi/BhabhiData.kt` | `BhabhiSetup`, `BhabhiStats`, `BhabhiProfile`, `BhabhiSeat` |
 
 ### Data, audio, network
 
@@ -292,7 +324,7 @@ All Kotlin paths are under `app/src/main/java/com/puzzel/lab/cardsmania/`.
 | `data/Catalog.kt` | Bot characters, avatars, `TableTheme`, `AvatarFrame`, `ModeInfo`, `DifficultyInfo`, all achievements, weekly missions |
 | `data/Progression.kt` | `GameFactory` (Mania configs, dates, daily), `DailyChallenge`, `MatchSummary`, `Progression` (rewards, gift chest, missions) |
 | `audio/Audio.kt` | `Sfx` ↔ `res/raw`, `SoundManager` (SoundPool), `MusicPlayer` (menu/day/night cross-fade), `Haptics` |
-| `net/NetProtocol.kt` | `Net` constants, `NetMsg`, `RoomState`, `RoomGame`, `Redact` (Mania), `MindiRedact`, `RoomCode` |
+| `net/NetProtocol.kt` | `Net` constants, `NetMsg`, `RoomState`, `RoomGame`, `Redact` (Mania), `MindiRedact`, `BhabhiRedact`, `RoomCode` |
 | `net/Connection.kt` | One TCP socket, one JSON message per line, write queue, heartbeat |
 | `net/RoomHost.kt` | Host server: guests, lobby, seats, kick, start (Mania/Mindi), per-guest redacted broadcasts |
 | `net/RoomClient.kt` | Guest: join, `room` / `status` flows, `game` channel, `starts` flow, `probe` |
@@ -305,7 +337,7 @@ All Kotlin paths are under `app/src/main/java/com/puzzel/lab/cardsmania/`.
 | Path | What it does |
 |---|---|
 | `ui/theme/` | `CM` palette, `Gems` (suit colors + names), fonts (`DisplayFamily` Lilita One, `BodyFamily` Nunito), `CardsManiaTheme` |
-| `ui/design/` | Game UI kit v2 (§12.3): `GameIcons`, `JewelPanel`, `RibbonHeader`, `StrokeText`, `TagPill`, `HudBar`, `GameDock`/`GameTabBar`, `GameBackdrop`, `shineSweep`, `ShuffleWipe`, `GameOverlayHost`, `RewardPopup` |
+| `ui/design/` | Game UI kit v2 (§13.3): `GameIcons`, `JewelPanel`, `RibbonHeader`, `StrokeText`, `TagPill`, `HudBar`, `GameDock`/`GameTabBar`, `GameBackdrop`, `shineSweep`, `ShuffleWipe`, `GameOverlayHost`, `RewardPopup` |
 | `ui/components/Components.kt` | `GameButton`, `RoundIconButton`, `OutlinedTitle`, `GlassPanel`, `RoyalBackground`, `AvatarBadge`, `CoinChip`, `LevelChip`, `ChoiceChip`, `GemSwitch`, `ScreenTitleBar` |
 | `ui/kit/Kit.kt` | `rememberProfile` / `rememberSettings` (cached), `staggerIn`, `pressable`, `FaceImage` / `BackImage`, `GemDialog`, `GemSlider`, `TreasureChest`, `CoinBurst`, `StarRow`, `Pill`, … |
 | `ui/render/CardArt.kt` | Mania card faces and backs drawn into cached bitmaps; `CardBack` (collectible backs) |
@@ -313,21 +345,29 @@ All Kotlin paths are under `app/src/main/java/com/puzzel/lab/cardsmania/`.
 | `ui/game/` | Mania table: `GameScreen`, `GameViewModel`, `TableCanvas`, `SpriteWorld`, `TableLayout`, `TableBackground`, `Fx`, `GameOverlays`, `MatchTracker`, `Timing` |
 | `ui/spider/` | Spider: `SpiderScreen`, `SpiderViewModel`, `SpiderWorld`, `SpiderLayout`, `SpiderDialogs`, `PlayingCardArt` (52-card faces, also used by Mindi and the lobby), `SpiderBackgrounds` |
 | `ui/mindi/` | Mindi: `MindiSetupScreen`, `MindiScreen`, `MindiViewModel`, `MindiWorld`, `MindiLayout`, `MindiOverlays` |
-| `ui/home/` | `MainScreen` (lobby shell, bottom dock, exit dialog), `HomeTab` (game tiles), `EventsTab`, `CollectionTab`, `ProfileTab` |
+| `ui/bhabhi/` | Bhabhi: `BhabhiSetupScreen`, `BhabhiScreen` (table, HUD, result, pause), `BhabhiViewModel`, `BhabhiWorld`, `BhabhiLayout` |
+| `ui/home/` | `MainScreen` (lobby shell, bottom dock, exit dialog), `HomeTab` (game sections, see below), `EventsTab`, `CollectionTab`, `ProfileTab` |
 | `ui/setup/GameSetupScreen.kt` | Mania setup; exports `ModeTile`, `HouseRulesPanel`, `RuleRow`, `Label` (reused by multiplayer) |
 | `ui/multiplayer/` | `MultiplayerHubScreen`, `HostRoomScreen`, `JoinRoomScreen`, `GuestLobbyScreen`, `MultiplayerCommon` |
-| `ui/splash`, `ui/onboarding`, `ui/settings`, `ui/legal`, `ui/howto` | Splash, onboarding + profile setup, settings, Terms/Privacy WebView, How to Play (all 5 games) |
+| `ui/splash`, `ui/onboarding`, `ui/settings`, `ui/legal`, `ui/howto` | Splash, onboarding + profile setup, settings, Terms/Privacy WebView, How to Play (all 6 games) |
+
+**The lobby (`HomeTab`)** groups the games into two tabs (`LobbySection`), switched with `SectionTabs`:
+**Card Mania** (Classic, Merciless and Flip Mania + Quick Play) and **Indian Card** (Mindi, Bhabhi and Spider
+Solitaire). The Multiplayer tile sits below both tabs under "Play with friends". The chosen tab is kept in
+`AppContainer.lobbySection` while the app runs. `WideGameTile` grows with its text, so large font settings never cut
+off the PLAY ribbon.
 
 ### Outside the Kotlin tree
 
 | Path | What it is |
 |---|---|
 | `app/src/main/res/font/` | `lilita_one.ttf`, `nunito.ttf` (SIL Open Font License; texts in `assets/licenses/`) |
-| `app/src/main/res/raw/` | 29 sound effects and 3 music loops (WAV), generated by `tools/gen_audio.py` |
+| `app/src/main/res/values*/strings_*.xml` | All on-screen text: English in `values/`, Hindi in `values-hi/`, Gujarati in `values-gu/` (§13.6) |
+| `app/src/main/res/raw/` | 29 sound effects and 3 music loops (FLAC; 3 tiny clips WAV), generated by `tools/gen_audio.py` |
 | `app/src/main/res/drawable/` | Vector app icon layers and splash icon (generated by `tools/gen_icon.py`) |
 | `app/src/main/assets/terms.html`, `privacy.html` | Legal pages (WebView, JavaScript off). **Contain placeholders** (`[Your Company]`, `[contact@yourcompany.com]`, `[Your Jurisdiction]`) |
 | `app/src/main/AndroidManifest.xml` | Portrait activity, splash theme, network + vibrate permissions |
-| `app/src/test/java/...` | All unit, simulation and multiplayer tests (§14) |
+| `app/src/test/java/...` | All unit, simulation and multiplayer tests (§15) |
 | `tools/` | `gen_audio.py`, `gen_icon.py`, `icon.svg`, `play_store_icon_512.png` |
 | `docs/` | Design documents |
 
@@ -390,7 +430,8 @@ GameScreen ── key(gameKey) ── GameContent
 
 * 104 cards (8 runs of 13) in 10 columns, 6/6/6/6/5/5/5/5/5/5 with the top card face up; 50 cards stay in the stock and
   are dealt 10 at a time.
-* Every column must hold a card before dealing, unless fewer than 10 cards are left on the table.
+* You can deal whenever the stock has cards. Empty columns don't block the deal: each one gets a face-up card like
+  every other column (`canDeal` only checks the stock).
 * Any face-up card goes on a card one rank higher (any suit). Groups move only as same-suit runs. A full K→A run of
   one suit leaves the table automatically.
 * Score = 500 − moves + 100 × finished runs (deals and undos count as moves).
@@ -402,7 +443,7 @@ GameScreen ── key(gameKey) ── GameContent
 | `runStart`, `canPickUp`, `canMove`, `canDeal` | Legality questions |
 | `destinations(state, from, index)` | All valid targets, best first (same suit → any valid card → empty column) |
 | `moveError`, `pickError` | Short player-facing reasons ("A 7 goes on an 8", …) |
-| `hints`, `nextHint`, `fillMove`, `stuck` | Hint system: scored moves → deal → fill an empty column → none |
+| `hints`, `nextHint`, `stuck` | Hint system: scored moves → deal → none (stuck = no useful move and an empty stock) |
 | `SpiderSolver.greedyWins`, `winnableSeed` | Find deals the hint system can win (all 1-suit games and every daily) |
 | `SpiderSolver.finishMoves` | Search for a full solution once every card is face up (Auto Finish) |
 
@@ -469,19 +510,77 @@ GameScreen ── key(gameKey) ── GameContent
   emote buttons, and overlays from `MindiOverlays` (last trick, hand podium + scoreboard, match result, pause).
 * **`MindiLayout`** places you at the bottom (`me`), other seats around an oval, trick cards nudged toward whoever
   played them, and your hand as a fan that shrinks cards for long hands so every rank corner stays visible.
-* **`MindiViewModel`** has three roles: LOCAL (you + bots), HOST and GUEST (§10.4). It pumps `MStep`s, runs bots,
+* **`MindiViewModel`** has three roles: LOCAL (you + bots), HOST and GUEST (§11.4). It pumps `MStep`s, runs bots,
   the turn timer, hints, save/resume (local only) and rewards (coins, XP, stats, achievements, daily stars).
 * **Daily Challenge:** one hand against Hard bots in Hide mode (`MindiViewModel.dailySetup()`), seed from the date;
   stars: ★ win, ★★ 3+ tens, ★★★ 9+ tricks or a Mendikot.
 
 ---
 
-## 10. Wi-Fi multiplayer
+## 10. Bhabhi
 
-Design notes: [`docs/MULTIPLAYER_PLAN.md`](docs/MULTIPLAYER_PLAN.md). Supports Mania (2–6 seats) and Mindi
-(4, 6 or 8 seats); empty seats are filled by bots.
+A traditional Indian shedding game (also called Thulla or Get Away). You against 2–7 bots, or friends on the same Wi-Fi (§11).
 
-### 10.1 How rooms work
+### 10.1 Rules (`bhabhi/BhabhiEngine.kt`)
+
+* One 52-card deck (Ace high), dealt out completely to 3–8 players (`normalize` clamps the count). Seats play in order
+  `seat + 1`; whoever holds the **A♠** opens the first trick with it.
+* You must follow the suit led if you can.
+  * **Everyone follows:** the trick is thrown away (`BhabhiEvent.Discarded`, cards go to `state.discarded`) and the
+    highest card of the led suit leads next.
+  * **Someone can't follow:** any other card is a **thulla** (`Played(thulla = true)`). The trick stops at once and
+    the highest card of the led suit picks up every card of that trick (`PickedUp`), then leads.
+* Emptying your hand gets you out (`Out(seat, place)`, `state.out` keeps the order). The last player holding cards is
+  the **Bhabhi** (`BhabhiPhase.GameOver(loser)`). If everyone left runs out on the same trick, whoever played its
+  highest card is the Bhabhi. If the next leader is already out, the next seat with cards leads (`nextActive`).
+* House rule `BhabhiSetup.safeFirstTrick` (on by default): no thulla on the opening spade trick; off-suit cards are
+  just thrown away.
+* Public information the bots may use lives in the state: `voids` (suits a seat showed it lacks), `known` (cards
+  everyone saw a seat pick up), `discarded`. `unseen(state, seat)` lists what a seat can't see.
+* Like the other engines, the last step of `apply` carries the final state (who leads next); `turn` is −1 while a
+  finished trick resolves and once the game is over.
+
+### 10.2 Bots (`bhabhi/BhabhiBot.kt`)
+
+* The danger is holding the highest card of a trick that gets cut. `cutRisk` estimates the chance that someone still
+  to play can't follow: certain if they showed a void; otherwise, for Hard, from the unseen cards (Normal assumes a
+  small fixed risk).
+* Following: dump the biggest card when the trick looks safe (or when playing last); when a cut looks likely, stay under
+  the current high card, or play the lowest card above it so someone later may still overtake.
+* Leading: the safest suit, preferring the shortest (running out of a suit enables your own thullas). Thulla/discard:
+  throw the highest card, preferring a short suit.
+* **Expert** (`Difficulty.GENIUS`) uses `BhabhiSearch`: deals the unseen cards at random (respecting voids and known
+  cards; `sampleWorld` never falls back to the real hands), plays each candidate card to the end of the game with the
+  Hard heuristic for everyone, and keeps the best average result (budget `budgetMs` = 160).
+* Measured over thousands of 4-player games (how often the seat ends up the Bhabhi; fair share 25%): Easy vs Easy 24%,
+  Normal vs Easy 7.5%, Hard vs Normal 11%, Expert (40 ms) vs Hard 11%.
+
+### 10.3 Screen (`ui/bhabhi/`)
+
+* **`BhabhiSetupScreen`:** hero, Continue game, players 3–8, the safe-first-round rule, bot level, turn timer. Saves
+  the setup in `Profile.bhabhi.setup`. Reuses `ToggleRow` from the Mindi setup.
+* **`BhabhiScreen`:** top bar (trick number, cards thrown away), a strip with the finishing order so far, seats with
+  card counts (medals once out, a red BHABHI tag at the end), status pill (follow / THULLA prompts), hint and emote
+  buttons, and a **FINISH** button once you are out (`fastForward`: the bots finish at 3× speed; offline only, since in a
+  Wi-Fi game friends are still playing). Result screen lists
+  the full finishing order; back = pause menu (or home after the game).
+* **`BhabhiLayout`** is Mindi's geometry plus room for a second hand row: hands grow after pickups, so `handSlots` uses
+  up to 16 cards per row and stacks rows.
+* **`BhabhiWorld`** animates the deal, plays, thrown-away tricks (gather, turn over, fade), pickups (fly to the taker,
+  or into your hand), getting out (medal burst) and the Bhabhi reveal.
+* **`BhabhiViewModel`** (local, or HOST/GUEST in a Wi-Fi room like Mindi, §11.4): pumps `BStep`s, bots, turn timer, hint (`BhabhiBot.hint`), save/resume
+  (`bhabhi_save.json`), rewards: coins by finishing place × bot multiplier (20 for the Bhabhi), XP, stats
+  (`BhabhiStats`), achievements `bhabhi_escape`, `bhabhi_first`, `bhabhi_thulla`, `bhabhi_clean`, `bhabhi_big`,
+  `bhabhi_expert`.
+
+---
+
+## 11. Wi-Fi multiplayer
+
+Design notes: [`docs/MULTIPLAYER_PLAN.md`](docs/MULTIPLAYER_PLAN.md). Supports Mania (2–6 seats), Mindi
+(4, 6 or 8 seats) and Bhabhi (3–8 seats); empty seats are filled by bots. Spider is single-device only.
+
+### 11.1 How rooms work
 
 ```
 Host phone                                           Guest phones
@@ -498,30 +597,32 @@ MultiplayerSession.hostRoom()                        MultiplayerSession.join(ip,
 
 | Direction | Messages |
 |---|---|
-| Guest → host | `Hello`, `Probe`, `Act` (Mania action), `MindiAct` (Mindi action), `Emote`, `Leave` |
-| Host → guest | `Welcome`, `Rejected`, `Lobby(RoomState)`, `Start` / `Sync` / `Steps` (Mania), `MindiStart` / `MindiSync` / `MindiSteps` (Mindi), `ActionRejected`, `Emote`, `Ended`, `Kicked` |
+| Guest → host | `Hello`, `Probe`, `Act` (Mania action), `MindiAct` (Mindi action), `BhabhiAct` (Bhabhi action), `Emote`, `Leave` |
+| Host → guest | `Welcome`, `Rejected`, `Lobby(RoomState)`, `Start` / `Sync` / `Steps` (Mania), `MindiStart` / `MindiSync` / `MindiSteps` (Mindi), `BhabhiStart` / `BhabhiSync` / `BhabhiSteps` (Bhabhi), `ActionRejected`, `Emote`, `Ended`, `Kicked` |
 | Both | `Ping` (heartbeat) |
 
-* **Settings** (`Net`): `PROTOCOL = 2`, ports 47820–47835, heartbeat 3 s, socket timeout 15 s, remote turn limit 30 s
+* **Settings** (`Net`): `PROTOCOL = 3` (v3 added Bhabhi rooms), ports 47820–47835, heartbeat 3 s, socket timeout 15 s, remote turn limit 30 s
   (then the host plays a safe move for that player). Mindi rooms can set their own turn timer.
 
-### 10.2 The host decides everything
+### 11.2 The host decides everything
 
 * Only the host runs the engine and the bots.
 * Guests send their move (`Act` / `MindiAct`). `RoomHost` **overwrites the seat** in it with the guest's real seat
   (`withPlayer` / `withSeat`), so nobody can play for someone else. The host's ViewModel validates and applies it, or
   replies `ActionRejected`.
 
-### 10.3 Each phone sees only what it should
+### 11.3 Each phone sees only what it should
 
 * Every step is redacted separately for each guest before sending:
   * **Mania** (`Redact`): other hands and the draw pile become placeholder faces (`Redact.HIDDEN`); in Flip mode the
     publicly visible side is kept.
   * **Mindi** (`MindiRedact`): other players' cards become placeholders (counts kept), the hidden trump is hidden
     unless the viewer owns it, and the random seed is zeroed.
-* Tests assert that nothing secret ever reaches a guest (§14).
+  * **Bhabhi** (`BhabhiRedact`): other players' cards become placeholders (counts kept) and the seed is zeroed. The
+    rest of the state is public (played, thrown-away and picked-up cards, voids), so hints work on a guest.
+* Tests assert that nothing secret ever reaches a guest (§15).
 
-### 10.4 Host and guest inside the ViewModels
+### 11.4 Host and guest inside the ViewModels
 
 * **HOST:** plays normally, but `enqueue()` also broadcasts each step (`broadcastSteps` / `broadcastMindi`). Remote
   seats' moves arrive through `RoomHost.actions` / `mindiActions`. A disconnected remote seat is played by a bot (BOT
@@ -533,7 +634,7 @@ MultiplayerSession.hostRoom()                        MultiplayerSession.join(ip,
   `Sync` / `MindiSync` snapshot. If the host leaves, everyone gets `Ended` ("The host left the game.").
 * Multiplayer games are never saved for Continue; rewards are still given on each phone at the end.
 
-### 10.5 Compatibility and permissions
+### 11.5 Compatibility and permissions
 
 * If you change `NetMsg`, `RoomState`, any engine event/action, or `GameState` / `MindiState` in a way old versions
   can't read, **increase `Net.PROTOCOL`**. Phones on different versions then get a polite "please update" instead of a
@@ -546,7 +647,7 @@ MultiplayerSession.hostRoom()                        MultiplayerSession.join(ip,
 
 ---
 
-## 11. Saved data, profile and rewards
+## 12. Saved data, profile and rewards
 
 | What | Where | Code |
 |---|---|---|
@@ -554,40 +655,47 @@ MultiplayerSession.hostRoom()                        MultiplayerSession.join(ip,
 | Profile: name, avatar, coins, XP, unlocks, equipped cosmetics, Mania stats, achievements, gift, missions, daily stars, history, last Mania setup | DataStore key `profile_json` (one JSON string) | `ProfileRepository.update { }` |
 | Spider progress and preferences | inside the profile: `Profile.spider` (`SpiderProfile`) | |
 | Mindi progress and last setup | inside the profile: `Profile.mindi` (`MindiProfile`) | |
+| Bhabhi stats and last setup | inside the profile: `Profile.bhabhi` (`BhabhiProfile`) | |
 | Mania game in progress | `filesDir/saved_game.json` | `SavedGameStore` |
 | Spider game in progress (incl. undo history) | `filesDir/spider_save.json` | `SpiderViewModel` |
 | Mindi match in progress | `filesDir/mindi_save.json` | `MindiViewModel` |
+| Bhabhi game in progress | `filesDir/bhabhi_save.json` | `BhabhiViewModel` |
 | Multiplayer device token | `filesDir/device_token` | `MultiplayerSession` |
 
-* **Adding fields:** every field in `Profile`, `SpiderProfile`, `MindiProfile` and `Settings` needs a default value.
+* **All game save files go through `data/SaveFiles.kt`:** writes, deletes and reads run one at a time in order (an older
+  position can't overwrite a newer one; a delete after a win can't be undone by a waiting write), and each write goes to
+  `<name>.tmp` and is renamed over the save, so a crash mid-write keeps the previous save.
+
+* **Adding fields:** every field in `Profile`, `SpiderProfile`, `MindiProfile`, `BhabhiProfile` and `Settings` needs a default value.
   `AppJson` uses `ignoreUnknownKeys = true`, so old saves keep loading.
 * **Rewards:**
   * Mania: `Progression.apply(profile, summary)` is the only place that changes coins, XP, stats, achievements, missions
     and daily stars after a match (`MatchTracker` builds the `MatchSummary`).
-  * Spider and Mindi apply their own rewards when a game ends (`SpiderViewModel.onWon`, `MindiViewModel.finishMatch`).
+  * Spider, Mindi and Bhabhi apply their own rewards when a game ends (`SpiderViewModel.onWon`,
+    `MindiViewModel.finishMatch`, `BhabhiViewModel.finishGame`).
 * **Level:** `Leveling.levelFor(xp)`; each level needs 200 + 100 × (level − 1) XP.
 * **Daily gift:** `Progression.giftReady` / `claimGift` (24 h cooldown, streak bonus).
 * **Reset progress** (Settings) clears the whole DataStore, including settings, and deletes the Mania saved game.
 
 ---
 
-## 12. UI system: theme, fonts, design kit, full screen, back button
+## 13. UI system: theme, fonts, design kit, full screen, back button
 
-### 12.1 Theme and fonts
+### 13.1 Theme and fonts
 
 * `ui/theme/Color.kt`: `CM` (royal purple + gold palette) and `Gems` (each suit's base/light/dark colors and display
   name).
 * `ui/theme/Type.kt`: `DisplayFamily` = **Lilita One** (titles, numbers, buttons; it has one weight, so always use
   `FontWeight.Normal`), `BodyFamily` = **Nunito** variable font (weights 400–900).
 
-### 12.2 Building blocks
+### 13.2 Building blocks
 
 * `ui/components/Components.kt`: the original components (`GameButton` with press lip and shine, `GlassPanel`,
   `OutlinedTitle`, `ChoiceChip`, `GemSwitch`, `ScreenTitleBar`, …). Most screens use these.
 * `ui/kit/Kit.kt`: helpers (`rememberProfile`, `staggerIn`, `pressable`) and widgets (`GemDialog`, `GemSlider`,
   `TreasureChest`, `StarRow`, …).
 
-### 12.3 Design kit v2 (`ui/design/`)
+### 13.3 Design kit v2 (`ui/design/`)
 
 | API | Use it for |
 |---|---|
@@ -604,51 +712,80 @@ MultiplayerSession.hostRoom()                        MultiplayerSession.join(ip,
 
 **Reduce motion** (Settings) is respected by the animated pieces; read it with `rememberSettings().value.reduceMotion`.
 
-### 12.4 Full screen
+### 13.4 Full screen
 
 `MainActivity` hides the system navigation bar with `Immersive.apply(window)` in `onCreate`, `onResume` and
 `onWindowFocusChanged`. `GemDialog` applies it to its own dialog window too. Swiping up from the bottom edge shows the
 bar briefly, and the back gesture keeps working. Screens still read `WindowInsets` for the status bar.
 
-### 12.5 Back button
+### 13.5 Back button
 
 | Screen | Back does |
 |---|---|
 | Lobby (`MainScreen`) | Other tab → Lobby tab; Lobby tab → "Leave Cards Mania?" dialog |
 | Onboarding | Previous page (the first page leaves the app) |
 | Settings, Setup, How to Play, Terms, Multiplayer hub/join, Mindi setup | Previous screen (navigation default) |
-| Mania / Mindi table | Closes an open popup (emotes, last trick) → opens/closes the pause menu; after the match → home |
+| Mania / Mindi / Bhabhi table | Closes an open popup (emotes, last trick) → opens/closes the pause menu; after the match → home |
 | Spider | Closes an open dialog, otherwise leaves (game saved); the win dialog's back goes home |
 | Host room / guest lobby | Asks before closing / leaving the room |
 | `GemDialog` | Dismisses it; non-dismissible dialogs can pass `onBack` |
 
 ---
 
-## 13. Audio, icons and other assets
+### 13.6 Languages (English, Hindi, Gujarati)
 
-* **Sounds:** the `Sfx` enum maps 1:1 to `res/raw/sfx_*.wav` and references `R.raw` directly, so code shrinking keeps
-  the files. Play with `app.sound.play(Sfx.X)`; `sound.snap()` picks a random card-snap.
-* **Music:** `MusicPlayer.play(Track.MENU | DAY | NIGHT)`. Day and Night run in sync and cross-fade when a Flip game
-  changes sides.
-* **Regenerating:** `python3 -I tools/gen_audio.py` (standard library only) rewrites the sounds;
+* **No hard-coded text.** Every string the player sees lives in `res/values/strings_<area>.xml` with the same keys in
+  `values-hi/` and `values-gu/`. Areas and key prefixes: `lang_` (language screen), `shell_` (lobby, menus, onboarding,
+  settings), `data_` (achievements, modes, cards, colors, themes), `mania_` (Mania table, setup, How to Play),
+  `spider_`, `mindi_`, `bhabhi_`, `mp_` (multiplayer).
+* **In a composable:** `stringResource(R.string.x, args…)` / `pluralStringResource(R.plurals.x, n, n)`.
+  **Anywhere else** (ViewModels, catalogs, canvas pop-ups, toasts): `Strings.get(R.string.x, args…)` /
+  `Strings.plural(…)`. Display names on models are getters, e.g. `Achievement.title`, `Face.title`, `Gems.name()`,
+  `ModeInfo.title()`, `MindiTrumpMode.title`, so callers stay simple.
+* **Rule engines stay English.** `GameEngine`, `SpiderEngine`, `MindiEngine`, `BhabhiEngine` keep their English
+  validation messages (the tests check them); the UI builds the translated message instead (e.g.
+  `spiderMoveErrorText`, `bhabhiSuitName`).
+* **How the language is applied:** `LocaleManager` keeps the choice in SharedPreferences (`locale_prefs`, read
+  synchronously). `MainActivity` and `CardsManiaApp` wrap their base context with it; changing it on the Language
+  screen calls `LocaleManager.apply` and `activity.recreate()`. Before any choice the phone's language is used if it's
+  Hindi or Gujarati, otherwise English.
+* **Adding text:** add the key to all three files of the area, then run `python3 tools/check_strings.py` (same keys,
+  same `%1$s` placeholders, escaped apostrophes). Kept in English on purpose: the name "Cards Mania", bot names,
+  "MANIA!", "XP", room codes, card rank letters, and messages that travel over the network are sent in the sender's
+  language. `terms.html` / `privacy.html` are still English only.
+* Fonts: Lilita One and Nunito have no Devanagari or Gujarati letters, so Android draws those with its built-in
+  fallback fonts.
+
+## 14. Audio, icons and other assets
+
+* **Sounds:** the `Sfx` enum maps 1:1 to `res/raw/sfx_*` and references `R.raw` directly, so code shrinking keeps
+  the files. They are lossless FLAC (half the size of WAV, gapless loops on every Android version); three clips
+  shorter than one FLAC block (`sfx_tap`, `sfx_toggle`, `sfx_stack_tick`) stay WAV. Convert new ones on a Mac with
+  `afconvert -f flac -d flac in.wav out.flac` and keep only one file per name. Play with `app.sound.play(Sfx.X)`; `sound.snap()` picks a random card-snap.
+* **Music:** `MusicPlayer.play(Track.MENU | DAY | NIGHT)`. Day and Night stay in step and cross-fade when a Flip game
+  changes sides; only the one you can hear is playing, the other joins at the same position for the fade.
+* **Regenerating:** `python3 -I tools/gen_audio.py` (standard library only) rewrites the sounds as WAV; convert them
+  to FLAC as above and delete each converted `.wav` (two files with one name break the build);
   `tools/gen_icon.py` rebuilds the icon from `tools/icon.svg`. Licensed files with the same names can replace them.
 * **Fonts:** `res/font/lilita_one.ttf` and `res/font/nunito.ttf`, SIL Open Font License; the license texts ship in
   `assets/licenses/` and are credited in `privacy.html` / `terms.html`.
 
 ---
 
-## 14. Tests
+## 15. Tests
 
-62 tests in 8 suites, all on the JVM (`./gradlew :app:testDebugUnitTest`).
+87 tests in 10 suites, all on the JVM (`./gradlew :app:testDebugUnitTest`).
 
 | Test class | Covers |
 |---|---|
 | `engine/EngineRulesTest` | Mania deck counts, matching, Skip/Reverse (2 players), draws, stacking, Reverse Draw Four, knockout and last-standing, 7-swap / 0-rotate, Discard All, Skip Everyone, Color Storm, Flip, challenges, MANIA! catch, scoring |
 | `engine/SimulationTest` | 2,700 bot-vs-bot Mania games with random house rules (cards conserved, no illegal moves, every game ends); Hard beats Easy; Genius plays legally |
 | `data/ProgressionTest` | Rewards, achievements, streaks, daily always the same for a date, gift cooldown, saving/loading a Mania game in every mode |
-| `spider/SpiderEngineTest` | 104-card decks, deal layout, move and group rules, run collection, scoring, deal needs filled columns, hints, 450 auto-played deals, daily deals always winnable |
+| `spider/SpiderEngineTest` | 104-card decks, deal layout, move and group rules, run collection, scoring, dealing also fills empty columns, hints, 450 auto-played deals, daily deals always winnable |
 | `spider/SpiderLayoutTest` | Spider spacing, forgiving hit-testing, auto-finish |
+| `spider/SpiderRulesChecklistTest` | One test per Spider rule (setup, single and group moves, empty column, flip, dealing, completed runs, winning, 1/2/4 suits, score), plus 120 whole games re-checking every rule after each move |
 | `mindi/MindiEngineTest` | Deck sizes for every table, follow suit, trumps, Hide reveal + must-trump, Cut trump, revealed-suit follows aren't trumps, scoring + dealer rotation, partner teamwork, 1,000+ bot matches, Hard beats Easy, Expert plays legally |
+| `bhabhi/BhabhiEngineTest` | Deal for 3–8 players, A♠ opens, follow suit, thrown-away tricks, thulla pickup (later players don't play), safe first round on/off, getting out and the Bhabhi, everyone out on the same trick, next leader when the high card's owner is out, save/load, 1,080 bot games with every rule re-checked, Hard beats Easy, Expert only guesses hidden cards |
 | `net/MultiplayerTest` | Room codes, message round-trips, Mania redaction, host + 2 guests over localhost playing full Mania matches, full room rejects a third guest |
 | `net/MindiMultiplayerTest` | Mindi message round-trips, redaction for every table/mode/seat, host + 3 guests playing full matches in each trump mode (guests that fake another seat are corrected), rejoin snapshot, seat limits |
 
@@ -658,7 +795,7 @@ with the code).
 
 ---
 
-## 15. How to make common changes
+## 16. How to make common changes
 
 **Add a Mania card type**
 1. Add a `Kind` in `engine/model/Cards.kt` (points, title, description, `shortLabel`, `drawAmount` if it draws).
@@ -681,12 +818,14 @@ with the code).
 1. Field in `SpiderProfile` (with a default), a setter in `SpiderViewModel` (`updatePrefs`), a toggle in the LOOK dialog
    (`SpiderDialogs.kt`).
 
-**Add a whole new game** (follow Spider/Mindi as templates)
+**Add a whole new game** (follow Bhabhi, the newest and simplest, or Spider/Mindi as templates)
 1. Rules package with an immutable state, an `apply`/move function returning events + states, and JVM tests.
+   Measure the bots against each other (as in §10.2) so every level really plays better than the one below.
 2. `ui/<game>/`: a layout class (pure geometry), a world class (sprites on one Canvas), a ViewModel (pump events, run
    bots, save/resume, rewards) and a screen.
-3. A route in `AppNavHost`, a tile in `HomeTab`, a How to Play tab, stats in `ProfileTab`, achievements in `Catalog`,
-   and a line in `privacy.html` / `terms.html`.
+3. A route in `AppNavHost`, a `pending…` launch slot in `AppContainer`, a tile in the right `HomeTab` section
+   (`LobbySection`), a How to Play tab, stats in
+   `ProfileTab`, achievements in `Catalog`, a line in `OnboardingScreen` and in `privacy.html` / `terms.html`.
 
 **Add an achievement or mission:** entry in `Achievements.all` or `Missions` (`data/Catalog.kt`), then its condition in
 `Progression.apply` (Mania), `SpiderViewModel.onWon` or `MindiViewModel.finishMatch`.
@@ -694,16 +833,18 @@ with the code).
 **Add a cosmetic:** entry in `TableTheme` / `AvatarFrame` (`Catalog.kt`), `CardBack` (`CardArt.kt`) or
 `SpiderBackground` (`SpiderBackgrounds.kt`), with price and level. `CollectionTab` lists them automatically.
 
-**Add a sound:** put `sfx_name.wav` in `res/raw`, add an `Sfx` entry, play it with `app.sound.play(Sfx.X)`.
+**Add a sound:** put `sfx_name.flac` (or `.wav`) in `res/raw`, add an `Sfx` entry, play it with `app.sound.play(Sfx.X)`.
 
 **Add a screen:** a route in `Routes` + `composable(...)` in `AppNavHost`; build it from `GameBackdrop` /
 `RoyalBackground`, `ScreenTitleBar`, `JewelPanel` / `GlassPanel` and `GameButton`; handle the status-bar inset; make
-sure back does something sensible (§12.5).
+sure back does something sensible (§13.5).
 
 ---
 
-## 16. Gotchas we already ran into
+## 17. Gotchas we already ran into
 
+0. **Never hard-code on-screen text.** Use a string resource in all three languages (§13.6); a check that compares
+   against English words (as the room screen once did with "Bot") breaks in Hindi and Gujarati.
 1. **Tap handlers that keep an old action.** Inside `Modifier.pointerInput(key) { … }` a callback keeps its first
    value until the key changes. Wrap callbacks with `rememberUpdatedState` (see `GameButton`). This once made
    "Let's Play!" run the old "Next" action.
@@ -723,10 +864,21 @@ sure back does something sensible (§12.5).
    the `mindi` route).
 9. **Hiding the navigation bar changes geometry.** Bottom insets became 0, so anything that assumed a bottom bar height
    moved. Always derive positions from `WindowInsets` and the layout classes, never from fixed pixel numbers.
+10. **A dragged card must fly back when the drop is refused.** While dragging, `SpiderWorld` moves the sprite's `x`/`y`
+    but keeps its old target `tx`/`ty`. `retarget()` must decide "already there" from the current `x`/`y`; comparing
+    only `tx`/`ty` once left refused cards stuck where they were dropped, and the next drag then missed its column.
+11. **Screen edges belong to the system Back swipe.** With swipe navigation, a drag that starts on the first or last
+    column is right at the screen edge and Android treats it as Back (Spider used to exit mid-drag). `SpiderTable` marks
+    those two column strips with `Modifier.systemGestureExclusion`. Android normally honours only 200dp of exclusion per
+    edge, but not while the navigation bar is hidden, which it always is here (§13.4). Check the result with
+    `adb shell dumpsys window | grep mSystemGestureExclusion`.
+12. **Tables that redraw forever drain the battery.** Every game screen once redrew 120 times a second while idle
+    (1.8 CPU cores on a Galaxy A07, on the lobby too). Measure with
+    `adb shell dumpsys gfxinfo com.puzzel.lab.cardsmania reset`, wait 10 s, then read "Total frames rendered".
 
 ---
 
-## 17. Known gaps / TODO before release
+## 18. Known gaps / TODO before release
 
 * Replace the placeholders in `terms.html` and `privacy.html` (company name, contact email, jurisdiction).
 * Add release signing and run `./gradlew lint` (not run yet).
@@ -737,6 +889,8 @@ sure back does something sensible (§12.5).
   * two physical phones on a home router (device tests used a phone plus the emulator)
   * Mindi with 6 or 8 players and the Cut / Open trump modes (covered by automated tests only)
 * A guest who loses the connection mid-game has to rejoin from Join a Room (no automatic reconnect).
+* Bhabhi has no Daily Challenge or Events entry yet, and the optional "take a hand" house rule
+  is not implemented.
 * After **Reset progress**, the default profile appears only after the app restarts.
 * `SpiderProfile.tapToMove` is stored but no longer used (replaced by `selectMode`).
 * Store listing: never mention or compare to other card-game brands; content rating target 13+ / Everyone.

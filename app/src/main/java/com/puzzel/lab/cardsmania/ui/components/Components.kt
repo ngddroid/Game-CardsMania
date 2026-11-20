@@ -1,5 +1,6 @@
 package com.puzzel.lab.cardsmania.ui.components
 
+import androidx.compose.runtime.State
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.Spring
@@ -63,7 +64,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
 import com.puzzel.lab.cardsmania.LocalApp
+import com.puzzel.lab.cardsmania.R
 import com.puzzel.lab.cardsmania.audio.Sfx
 import com.puzzel.lab.cardsmania.data.AvatarFrame
 import com.puzzel.lab.cardsmania.data.TableTheme
@@ -514,18 +517,21 @@ fun GemSwitch(checked: Boolean, onChange: (Boolean) -> Unit, modifier: Modifier 
     }
 }
 
-/** Pulsing glow modifier helper value. */
+/**
+ * A 0..1..0 pulse. Use it as `val pulse by rememberPulse()` and read `pulse` only inside draw-phase lambdas
+ * (`graphicsLayer {}`, `drawBehind {}`, a Canvas block): then each frame only redraws, instead of recomposing the
+ * whole composable 60 times a second.
+ */
 @Composable
-fun rememberPulse(period: Int = 1200): Float {
+fun rememberPulse(period: Int = 1200): State<Float> {
     val inf = rememberInfiniteTransition(label = "pulse")
-    val v by inf.animateFloat(0f, 1f, infiniteRepeatable(tween(period), RepeatMode.Reverse), label = "p")
-    return v
+    return inf.animateFloat(0f, 1f, infiniteRepeatable(tween(period), RepeatMode.Reverse), label = "p")
 }
 
 @Composable
 fun ScreenTitleBar(title: String, onBack: () -> Unit, modifier: Modifier = Modifier, trailing: @Composable (() -> Unit)? = null) {
     Row(modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-        RoundIconButton(GameIcons.Back, onBack, size = 44.dp, contentDescription = "Back")
+        RoundIconButton(GameIcons.Back, onBack, size = 44.dp, contentDescription = stringResource(R.string.shell_back))
         Spacer(Modifier.width(12.dp))
         OutlinedTitle(title, fontSize = 26.sp, outlineWidth = 8f, modifier = Modifier.weight(1f), textAlign = TextAlign.Start)
         trailing?.invoke()

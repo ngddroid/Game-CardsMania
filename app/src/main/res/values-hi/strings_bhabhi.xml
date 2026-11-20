@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Setup screen -->
+    <string name="bhabhi_title">भाभी</string>
+    <string name="bhabhi_tile_title">भाभी</string>
+    <string name="bhabhi_continue_title">गेम जारी रखें</string>
+    <string name="bhabhi_continue_sub">अपना सेव किया भाभी गेम वहीं से खेलें</string>
+    <string name="bhabhi_section_players">खिलाड़ी</string>
+    <string name="bhabhi_section_rules">नियम</string>
+    <string name="bhabhi_safe_first">पहला राउंड सेफ़</string>
+    <string name="bhabhi_safe_first_desc">पहली हुकुम की चाल में ठुल्ला नहीं — जिसके पास हुकुम नहीं, वह कोई भी पत्ता डाल दे</string>
+    <string name="bhabhi_section_table">टेबल</string>
+    <string name="bhabhi_bots">बॉट</string>
+    <string name="bhabhi_expert">एक्सपर्ट</string>
+    <string name="bhabhi_turn_timer">टर्न टाइमर</string>
+    <string name="bhabhi_off">बंद</string>
+    <string name="bhabhi_seconds">%1$d से.</string>
+    <string name="bhabhi_deal_cards">पत्ते बाँटें</string>
+    <string name="bhabhi_hero_title">भाभी मत बनना!</string>
+    <string name="bhabhi_hero_sub">वही सूट चलो · न हो तो ठुल्ला · सबसे पहले पत्ते खत्म करो</string>
+    <string name="bhabhi_table_even">%1$d खिलाड़ी · हर एक को %2$d पत्ते</string>
+    <string name="bhabhi_table_uneven">%1$d खिलाड़ी · हर एक को %2$d–%3$d पत्ते</string>
+
+    <!-- Game screen -->
+    <string name="bhabhi_shuffling">पत्ते फेंटे जा रहे हैं…</string>
+    <string name="bhabhi_cd_pause">रोकें</string>
+    <string name="bhabhi_cd_hint">संकेत</string>
+    <string name="bhabhi_cd_emote">इमोजी</string>
+    <string name="bhabhi_top_title">भाभी · %1$d खिलाड़ी</string>
+    <plurals name="bhabhi_top_trick">
+        <item quantity="one">चाल %1$d · %2$d पत्ता बाहर</item>
+        <item quantity="other">चाल %1$d · %2$d पत्ते बाहर</item>
+    </plurals>
+    <plurals name="bhabhi_top_trick_safe">
+        <item quantity="one">चाल %1$d · %2$d पत्ता बाहर · पहला राउंड सेफ़</item>
+        <item quantity="other">चाल %1$d · %2$d पत्ते बाहर · पहला राउंड सेफ़</item>
+    </plurals>
+    <string name="bhabhi_finish_hint">पत्ते खत्म करो और बच निकलो · जिसके पास आखिर में पत्ते बचें, वही भाभी</string>
+    <string name="bhabhi_you">आप</string>
+    <string name="bhabhi_player">खिलाड़ी</string>
+    <string name="bhabhi_badge">भाभी</string>
+    <string name="bhabhi_finish">खत्म करें</string>
+
+    <!-- Status pill -->
+    <string name="bhabhi_status_got_away">आप बच निकले! 🎉 अब भाभी कौन बनेगा?</string>
+    <string name="bhabhi_status_tap_again">खेलने के लिए फिर टैप करें या ऊपर स्वाइप करें</string>
+    <string name="bhabhi_status_open">आपके पास A♠ है — इसी से गेम शुरू करें</string>
+    <string name="bhabhi_status_lead">आपकी चाल — कोई भी पत्ता</string>
+    <string name="bhabhi_status_thulla">%1$s नहीं है? कोई भी पत्ता डालो — ठुल्ला!</string>
+    <string name="bhabhi_status_no_suit_safe">%1$s नहीं है? कोई भी पत्ता डालो (पहला राउंड सेफ़ है)</string>
+    <string name="bhabhi_status_follow">%1$s %2$s ही चलें</string>
+    <string name="bhabhi_status_your_turn">आपकी बारी</string>
+    <string name="bhabhi_status_thinking">%1$s सोच रहा है…</string>
+
+    <!-- Suit names (shown in the UI only; the engine keeps English) -->
+    <string name="bhabhi_suit_spades">हुकुम</string>
+    <string name="bhabhi_suit_hearts">पान</string>
+    <string name="bhabhi_suit_diamonds">ईंट</string>
+    <string name="bhabhi_suit_clubs">चिड़ी</string>
+
+    <!-- Toasts -->
+    <string name="bhabhi_toast_time_up">समय खत्म! आपकी जगह एक पत्ता चल दिया गया</string>
+    <string name="bhabhi_toast_open">A♠ से गेम शुरू करें</string>
+    <string name="bhabhi_toast_follow">वही सूट चलें: %1$s का पत्ता खेलें</string>
+
+    <!-- Table pop-ups -->
+    <string name="bhabhi_pop_you_have_ace">आपके पास A♠ है</string>
+    <string name="bhabhi_pop_ace_opens">A♠ से शुरुआत</string>
+    <string name="bhabhi_pop_thulla">ठुल्ला!</string>
+    <string name="bhabhi_pop_you_pick_up">आपने उठाए +%1$d</string>
+    <string name="bhabhi_pop_pick_up">उठाए +%1$d</string>
+    <string name="bhabhi_pop_you_got_away">आप बच निकले! %1$s</string>
+    <string name="bhabhi_pop_safe">बच गए %1$s</string>
+    <string name="bhabhi_pop_you_bhabhi">आप बने भाभी!</string>
+    <string name="bhabhi_pop_bhabhi">भाभी!</string>
+
+    <!-- Result -->
+    <string name="bhabhi_result_you_bhabhi">आप बने भाभी!</string>
+    <string name="bhabhi_result_first">सबसे पहले बाहर!</string>
+    <string name="bhabhi_result_got_away">आप बच निकले!</string>
+    <string name="bhabhi_result_bhabhi_sub">आखिर में आपके पास पत्ते बचे — अगली बार ज़रूर</string>
+    <string name="bhabhi_result_finished">आप %2$d में से %1$s स्थान पर रहे</string>
+    <string name="bhabhi_ordinal_1">पहले</string>
+    <string name="bhabhi_ordinal_2">दूसरे</string>
+    <string name="bhabhi_ordinal_3">तीसरे</string>
+    <string name="bhabhi_ordinal_4">चौथे</string>
+    <string name="bhabhi_ordinal_5">पाँचवें</string>
+    <string name="bhabhi_ordinal_6">छठे</string>
+    <string name="bhabhi_ordinal_7">सातवें</string>
+    <string name="bhabhi_ordinal_8">आठवें</string>
+    <string name="bhabhi_ordinal_n">%1$dवें</string>
+    <string name="bhabhi_result_left">भाभी · %1$d बचे</string>
+    <plurals name="bhabhi_pickups">
+        <item quantity="one">%d बार उठाए</item>
+        <item quantity="other">%d बार उठाए</item>
+    </plurals>
+    <string name="bhabhi_result_xp">+%1$d XP</string>
+    <string name="bhabhi_achievement">उपलब्धि: %1$s</string>
+    <string name="bhabhi_home">होम</string>
+    <string name="bhabhi_play_again">फिर से खेलें</string>
+
+    <!-- Pause menu -->
+    <string name="bhabhi_paused">रुका हुआ</string>
+    <string name="bhabhi_resume">जारी रखें</string>
+    <string name="bhabhi_how_to">कैसे खेलें</string>
+    <string name="bhabhi_saved_note">आपका गेम सेव है — बाद में भाभी से जारी रखें।</string>
+    <string name="bhabhi_quit">होम पर जाएँ</string>
+</resources>

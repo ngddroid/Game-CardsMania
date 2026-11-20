@@ -1,5 +1,7 @@
 package com.puzzel.lab.cardsmania.spider
 
+import com.puzzel.lab.cardsmania.R
+import com.puzzel.lab.cardsmania.i18n.Strings
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -49,9 +51,9 @@ data class SpiderSave(
 
 object SpiderRules {
     fun difficulty(suits: Int) = when (suits) {
-        1 -> "Easy"
-        2 -> "Medium"
-        else -> "Hard"
+        1 -> Strings.get(R.string.data_spider_difficulty_easy)
+        2 -> Strings.get(R.string.data_spider_difficulty_medium)
+        else -> Strings.get(R.string.data_spider_difficulty_hard)
     }
 
     fun winCoins(suits: Int) = when (suits) {

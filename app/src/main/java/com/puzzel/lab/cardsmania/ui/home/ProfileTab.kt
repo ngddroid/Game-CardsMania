@@ -42,7 +42,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import com.puzzel.lab.cardsmania.LocalApp
+import com.puzzel.lab.cardsmania.R
 import com.puzzel.lab.cardsmania.data.Achievements
 import com.puzzel.lab.cardsmania.data.Leveling
 import com.puzzel.lab.cardsmania.data.MatchRecord
@@ -94,12 +97,12 @@ fun ProfileTab(onSettings: () -> Unit) {
             .padding(horizontal = 16.dp)
     ) {
         Row(Modifier.fillMaxWidth().padding(vertical = 10.dp).staggerIn(0), verticalAlignment = Alignment.CenterVertically) {
-            OutlinedTitle("Profile", fontSize = 30.sp, outlineWidth = 10f)
+            OutlinedTitle(stringResource(R.string.shell_tab_profile), fontSize = 30.sp, outlineWidth = 10f)
             Spacer(Modifier.weight(1f))
-            RoundIconButton(GameIcons.Settings, onSettings, size = 42.dp, contentDescription = "Settings")
+            RoundIconButton(GameIcons.Settings, onSettings, size = 42.dp, contentDescription = stringResource(R.string.shell_settings))
         }
 
-        JewelPanel(Modifier.fillMaxWidth().staggerIn(1), rim = Rim.GOLD, fill = PanelFill.ROYAL, padding = 16.dp, title = "PLAYER CARD") {
+        JewelPanel(Modifier.fillMaxWidth().staggerIn(1), rim = Rim.GOLD, fill = PanelFill.ROYAL, padding = 16.dp, title = stringResource(R.string.shell_player_card)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box {
                     AvatarBadge(PlayerAvatars.get(profile.avatar), size = 92.dp, frame = profile.avatarFrame, glow = 0.6f)
@@ -107,15 +110,15 @@ fun ProfileTab(onSettings: () -> Unit) {
                 }
                 Spacer(Modifier.width(14.dp))
                 Column(Modifier.weight(1f)) {
-                    StrokeText(profile.name.ifBlank { "Player" }, fontSize = 24.sp, strokeWidth = 7f)
-                    Text("Level ${profile.level} · ${profile.avatarFrame.title} frame", color = CM.GoldLight, fontSize = 13.sp, fontWeight = FontWeight.ExtraBold)
+                    StrokeText(profile.name.ifBlank { stringResource(R.string.shell_player_default) }, fontSize = 24.sp, strokeWidth = 7f)
+                    Text(stringResource(R.string.shell_profile_level_frame, profile.level, profile.avatarFrame.title), color = CM.GoldLight, fontSize = 13.sp, fontWeight = FontWeight.ExtraBold)
                     Spacer(Modifier.height(6.dp))
                     GemProgressBar(prog, Modifier.fillMaxWidth(), height = 12.dp, colors = listOf(Color(0xFF8B5CF6), Color(0xFFFF5FA2)))
                     Spacer(Modifier.height(3.dp))
-                    Text("$into / $need XP", color = CM.TextDim, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.shell_profile_xp, into, need), color = CM.TextDim, fontSize = 12.sp, fontWeight = FontWeight.Bold)
                 }
                 Spacer(Modifier.width(8.dp))
-                RoundIconButton(GameIcons.Edit, { editing = true }, size = 40.dp, contentDescription = "Edit profile")
+                RoundIconButton(GameIcons.Edit, { editing = true }, size = 40.dp, contentDescription = stringResource(R.string.shell_profile_edit_cd))
             }
         }
 
@@ -123,26 +126,26 @@ fun ProfileTab(onSettings: () -> Unit) {
         val games = profile.totalGames
         val wins = profile.totalWins
         Row(Modifier.fillMaxWidth().staggerIn(2), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            StatTile("Matches", formatNumber(games), Modifier.weight(1f))
-            StatTile("Wins", formatNumber(wins), Modifier.weight(1f))
-            StatTile("Win rate", if (games == 0) "—" else "${wins * 100 / games}%", Modifier.weight(1f))
+            StatTile(stringResource(R.string.shell_stat_matches), formatNumber(games), Modifier.weight(1f))
+            StatTile(stringResource(R.string.shell_stat_wins), formatNumber(wins), Modifier.weight(1f))
+            StatTile(stringResource(R.string.shell_stat_win_rate), if (games == 0) "—" else "${wins * 100 / games}%", Modifier.weight(1f))
         }
         Spacer(Modifier.height(10.dp))
         Row(Modifier.fillMaxWidth().staggerIn(3), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            StatTile("Trophies", "${profile.achievements.size}/${Achievements.all.size}", Modifier.weight(1f))
-            StatTile("Coins", formatNumber(profile.coins), Modifier.weight(1f), coin = true)
-            StatTile("Daily streak", "${profile.dailyStreak}", Modifier.weight(1f))
+            StatTile(stringResource(R.string.shell_trophies), "${profile.achievements.size}/${Achievements.all.size}", Modifier.weight(1f))
+            StatTile(stringResource(R.string.shell_stat_coins), formatNumber(profile.coins), Modifier.weight(1f), coin = true)
+            StatTile(stringResource(R.string.shell_stat_daily_streak), "${profile.dailyStreak}", Modifier.weight(1f))
         }
 
         Spacer(Modifier.height(18.dp))
         TrophyCabinet(profile.achievements, Modifier.staggerIn(4))
 
         Spacer(Modifier.height(22.dp))
-        RibbonHeader("GAME STATS", Modifier.align(Alignment.CenterHorizontally).staggerIn(5), color = Color(0xFF1E6FE8), icon = GameIcons.Stats)
+        RibbonHeader(stringResource(R.string.shell_profile_game_stats), Modifier.align(Alignment.CenterHorizontally).staggerIn(5), color = Color(0xFF1E6FE8), icon = GameIcons.Stats)
         Spacer(Modifier.height(10.dp))
         var statTab by rememberSaveable { mutableIntStateOf(0) }
         Row(Modifier.fillMaxWidth().staggerIn(5), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            listOf("Mania", "Spider", "Mindi").forEachIndexed { i, t -> ChoiceChip(t, statTab == i, { statTab = i }, Modifier.weight(1f)) }
+            listOf(R.string.shell_chip_mania, R.string.shell_chip_spider, R.string.shell_chip_mindi, R.string.shell_chip_bhabhi).forEachIndexed { i, t -> ChoiceChip(stringResource(t), statTab == i, { statTab = i }, Modifier.weight(1f)) }
         }
         Spacer(Modifier.height(10.dp))
         when (statTab) {
@@ -154,16 +157,17 @@ fun ProfileTab(onSettings: () -> Unit) {
                 SpiderStatsCard(suits, profile.spider.stat(suits))
                 Spacer(Modifier.height(10.dp))
             }
-            else -> MindiStatsCard(profile.mindi.stats)
+            2 -> MindiStatsCard(profile.mindi.stats)
+            else -> BhabhiStatsCard(profile.bhabhi.stats)
         }
 
         Spacer(Modifier.height(12.dp))
-        SectionHeader("Recent Matches", Modifier.staggerIn(8))
+        SectionHeader(stringResource(R.string.shell_profile_recent), Modifier.staggerIn(8))
         Spacer(Modifier.height(10.dp))
         if (profile.history.isEmpty()) {
             GlassPanel(Modifier.fillMaxWidth().staggerIn(9)) {
                 Text(
-                    "No matches yet. Deal yourself in and your results will show up here!",
+                    stringResource(R.string.shell_profile_no_matches),
                     color = CM.TextDim,
                     fontSize = 14.sp,
                     textAlign = TextAlign.Center,
@@ -181,11 +185,11 @@ fun ProfileTab(onSettings: () -> Unit) {
     }
 
     if (editing) {
-        GemDialog(title = "Edit Profile", onDismiss = { editing = false }) {
+        GemDialog(title = stringResource(R.string.shell_profile_edit_title), onDismiss = { editing = false }) {
             ProfileEditorContent(
                 initialName = profile.name,
                 initialAvatar = profile.avatar,
-                confirmText = "Save",
+                confirmText = stringResource(R.string.shell_save),
                 frame = profile.avatarFrame,
                 onSave = { name, avatar ->
                     scope.launch { app.profile.update { it.copy(name = name, avatar = avatar, profileCreated = true) } }
@@ -234,17 +238,18 @@ private fun ModeStatsCard(mode: GameMode, s: ModeStats, modifier: Modifier = Mod
         Column(Modifier.weight(1f).padding(12.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(ModeInfo.title(mode), color = Color.White, fontSize = 17.sp, fontWeight = FontWeight.Black, modifier = Modifier.weight(1f))
-                Pill("${s.games} played", Color(0x66000000))
+                Pill(stringResource(R.string.shell_profile_played, s.games), Color(0x66000000))
             }
             Spacer(Modifier.height(8.dp))
             val winRate = if (s.games == 0) "—" else "${s.wins * 100 / s.games}%"
             val cells = listOf(
-                "Wins" to "${s.wins}",
-                "Win %" to winRate,
-                "Best streak" to "${s.bestStreak}",
-                "Biggest stack" to if (s.biggestStack > 0) "+${s.biggestStack}" else "—",
-                "Fastest win" to if (s.fastestWin > 0) "${s.fastestWin} turns" else "—",
-                "Points" to formatNumber(s.points),
+                stringResource(R.string.shell_stat_wins) to "${s.wins}",
+                stringResource(R.string.shell_stat_win_pct) to winRate,
+                stringResource(R.string.shell_stat_best_streak) to "${s.bestStreak}",
+                stringResource(R.string.shell_stat_biggest_stack) to if (s.biggestStack > 0) "+${s.biggestStack}" else "—",
+                stringResource(R.string.shell_stat_fastest_win) to
+                    if (s.fastestWin > 0) pluralStringResource(R.plurals.shell_stat_turns, s.fastestWin, s.fastestWin) else "—",
+                stringResource(R.string.shell_stat_points) to formatNumber(s.points),
             )
             cells.chunked(3).forEach { row ->
                 Row(Modifier.fillMaxWidth().padding(vertical = 3.dp)) {
@@ -281,19 +286,24 @@ private fun HistoryRow(r: MatchRecord, now: Long, modifier: Modifier = Modifier)
                 .border(1.5.dp, Color.White.copy(alpha = 0.7f), CircleShape),
             contentAlignment = Alignment.Center
         ) {
-            Text(if (r.won) "1st" else "#${r.place}", color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Black)
+            Text(if (r.won) stringResource(R.string.shell_history_first) else "#${r.place}", color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Black)
         }
         Spacer(Modifier.width(10.dp))
         Column(Modifier.weight(1f)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(if (r.won) "Victory" else "Defeat", color = if (r.won) CM.GoldLight else Color.White, fontSize = 15.sp, fontWeight = FontWeight.Black)
+                Text(if (r.won) stringResource(R.string.shell_history_victory) else stringResource(R.string.shell_history_defeat), color = if (r.won) CM.GoldLight else Color.White, fontSize = 15.sp, fontWeight = FontWeight.Black)
                 if (r.daily) {
                     Spacer(Modifier.width(6.dp))
-                    Pill("DAILY", CM.Violet)
+                    Pill(stringResource(R.string.shell_history_daily), CM.Violet)
                 }
             }
             Text(
-                "${ModeInfo.short(r.mode)} · ${r.players} players · ${DateUtils.getRelativeTimeSpanString(r.time, now, DateUtils.MINUTE_IN_MILLIS)}",
+                stringResource(
+                    R.string.shell_history_line,
+                    ModeInfo.short(r.mode),
+                    pluralStringResource(R.plurals.shell_history_players, r.players, r.players),
+                    DateUtils.getRelativeTimeSpanString(r.time, now, DateUtils.MINUTE_IN_MILLIS).toString(),
+                ),
                 color = CM.TextDim,
                 fontSize = 12.sp,
                 maxLines = 1,
@@ -301,7 +311,7 @@ private fun HistoryRow(r: MatchRecord, now: Long, modifier: Modifier = Modifier)
             )
         }
         Column(horizontalAlignment = Alignment.End) {
-            Text("${r.points} pts", color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Black)
+            Text(stringResource(R.string.shell_history_pts, r.points), color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Black)
             Row(verticalAlignment = Alignment.CenterVertically) {
                 CoinIcon(14.dp)
                 Text(" +${r.coins}", color = CM.GoldLight, fontSize = 13.sp, fontWeight = FontWeight.Black)
@@ -315,8 +325,8 @@ private fun HistoryRow(r: MatchRecord, now: Long, modifier: Modifier = Modifier)
 @Composable
 private fun TrophyCabinet(unlocked: Set<String>, modifier: Modifier = Modifier) {
     val shown = Achievements.all.filter { it.id in unlocked }.takeLast(8)
-    JewelPanel(modifier.fillMaxWidth(), rim = Rim.BRONZE, fill = PanelFill.NIGHT, title = "TROPHY CABINET", titleColor = Color(0xFF8E5A00), padding = 12.dp) {
-        Text("${unlocked.size} of ${Achievements.all.size} trophies", color = CM.GoldLight, fontSize = 13.sp, fontWeight = FontWeight.ExtraBold,
+    JewelPanel(modifier.fillMaxWidth(), rim = Rim.BRONZE, fill = PanelFill.NIGHT, title = stringResource(R.string.shell_trophy_cabinet), titleColor = Color(0xFF8E5A00), padding = 12.dp) {
+        Text(stringResource(R.string.shell_trophy_count, unlocked.size, Achievements.all.size), color = CM.GoldLight, fontSize = 13.sp, fontWeight = FontWeight.ExtraBold,
             modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
         Spacer(Modifier.height(8.dp))
         listOf(shown.take(4), shown.drop(4)).forEach { row ->
@@ -361,27 +371,51 @@ private fun StatGrid(cells: List<Pair<String, String>>) {
 @Composable
 private fun SpiderStatsCard(suits: Int, s: com.puzzel.lab.cardsmania.spider.SpiderModeStats) {
     val label = when (suits) {
-        1 -> "1 Suit · Easy"
-        2 -> "2 Suits · Medium"
-        else -> "4 Suits · Hard"
+        1 -> stringResource(R.string.shell_spider_stats_1)
+        2 -> stringResource(R.string.shell_spider_stats_2)
+        else -> stringResource(R.string.shell_spider_stats_4)
     }
     JewelPanel(Modifier.fillMaxWidth(), rim = Rim.EMERALD, fill = PanelFill.FELT, padding = 12.dp, studs = false) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Row { repeat(if (suits == 4) 4 else suits) { Icon(GameIcons.suit(it), null, tint = if (it == 1 || it == 2) Color(0xFFFF6B7A) else Color.White, modifier = Modifier.size(18.dp)) } }
             Spacer(Modifier.width(8.dp))
-            Text("Spider $label", color = Color.White, fontSize = 16.sp, fontFamily = DisplayFamily, modifier = Modifier.weight(1f))
-            Pill("${s.played} played", Color(0x66000000))
+            Text(label, color = Color.White, fontSize = 16.sp, fontFamily = DisplayFamily, modifier = Modifier.weight(1f))
+            Pill(stringResource(R.string.shell_profile_played, s.played), Color(0x66000000))
         }
         Spacer(Modifier.height(8.dp))
         fun time(ms: Long) = if (ms <= 0) "—" else String.format(java.util.Locale.US, "%d:%02d", ms / 60000, (ms / 1000) % 60)
         StatGrid(
             listOf(
-                "Wins" to "${s.won}",
-                "Win %" to if (s.played == 0) "—" else "${s.won * 100 / s.played}%",
-                "Best streak" to "${s.bestStreak}",
-                "Best time" to time(s.bestTimeMs),
-                "Fewest moves" to if (s.bestMoves > 0) "${s.bestMoves}" else "—",
-                "Top score" to if (s.bestScore > 0) "${s.bestScore}" else "—",
+                stringResource(R.string.shell_stat_wins) to "${s.won}",
+                stringResource(R.string.shell_stat_win_pct) to if (s.played == 0) "—" else "${s.won * 100 / s.played}%",
+                stringResource(R.string.shell_stat_best_streak) to "${s.bestStreak}",
+                stringResource(R.string.shell_stat_best_time) to time(s.bestTimeMs),
+                stringResource(R.string.shell_stat_fewest_moves) to if (s.bestMoves > 0) "${s.bestMoves}" else "—",
+                stringResource(R.string.shell_stat_top_score) to if (s.bestScore > 0) "${s.bestScore}" else "—",
+            )
+        )
+    }
+}
+
+@Composable
+private fun BhabhiStatsCard(s: com.puzzel.lab.cardsmania.bhabhi.BhabhiStats) {
+    JewelPanel(Modifier.fillMaxWidth(), rim = Rim.GOLD, fill = PanelFill.WINE, padding = 12.dp, studs = false) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(GameIcons.Spade, null, tint = CM.GoldLight, modifier = Modifier.size(22.dp))
+            Spacer(Modifier.width(8.dp))
+            Text(stringResource(R.string.shell_game_bhabhi), color = Color.White, fontSize = 18.sp, fontFamily = DisplayFamily, modifier = Modifier.weight(1f))
+            Pill(pluralStringResource(R.plurals.shell_profile_games_count, s.games, s.games), Color(0x66000000))
+        }
+        Spacer(Modifier.height(8.dp))
+        StatGrid(
+            listOf(
+                stringResource(R.string.shell_stat_got_away) to "${s.escapes}",
+                stringResource(R.string.shell_stat_escape_pct) to if (s.games == 0) "—" else "${s.escapes * 100 / s.games}%",
+                stringResource(R.string.shell_stat_first_out) to "${s.firsts}",
+                stringResource(R.string.shell_stat_times_bhabhi) to "${s.bhabhis}",
+                stringResource(R.string.shell_stat_best_streak) to "${s.bestStreak}",
+                stringResource(R.string.shell_stat_thullas) to "${s.thullas}",
+                stringResource(R.string.shell_stat_pickups) to "${s.pickups}",
             )
         )
     }
@@ -393,19 +427,19 @@ private fun MindiStatsCard(s: com.puzzel.lab.cardsmania.mindi.MindiStats) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(GameIcons.Team, null, tint = CM.GoldLight, modifier = Modifier.size(22.dp))
             Spacer(Modifier.width(8.dp))
-            Text("Mindi", color = Color.White, fontSize = 18.sp, fontFamily = DisplayFamily, modifier = Modifier.weight(1f))
-            Pill("${s.matches} matches", Color(0x66000000))
+            Text(stringResource(R.string.shell_game_mindi), color = Color.White, fontSize = 18.sp, fontFamily = DisplayFamily, modifier = Modifier.weight(1f))
+            Pill(pluralStringResource(R.plurals.shell_profile_matches_count, s.matches, s.matches), Color(0x66000000))
         }
         Spacer(Modifier.height(8.dp))
         StatGrid(
             listOf(
-                "Match wins" to "${s.matchWins}",
-                "Win %" to if (s.matches == 0) "—" else "${s.matchWins * 100 / s.matches}%",
-                "Best streak" to "${s.bestStreak}",
-                "Hands won" to "${s.handWins}/${s.hands}",
-                "Mendikots" to "${s.mendikots}",
-                "Whitewashes" to "${s.whitewashes}",
-                "10s captured" to "${s.tensCaptured}",
+                stringResource(R.string.shell_stat_match_wins) to "${s.matchWins}",
+                stringResource(R.string.shell_stat_win_pct) to if (s.matches == 0) "—" else "${s.matchWins * 100 / s.matches}%",
+                stringResource(R.string.shell_stat_best_streak) to "${s.bestStreak}",
+                stringResource(R.string.shell_stat_hands_won) to "${s.handWins}/${s.hands}",
+                stringResource(R.string.shell_stat_mendikots) to "${s.mendikots}",
+                stringResource(R.string.shell_stat_whitewashes) to "${s.whitewashes}",
+                stringResource(R.string.shell_stat_tens) to "${s.tensCaptured}",
             )
         )
     }

@@ -49,11 +49,10 @@ import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.withFrameMillis
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -65,6 +64,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.LocalViewConfiguration
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -75,11 +75,15 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.puzzel.lab.cardsmania.R
 import com.puzzel.lab.cardsmania.data.AvatarRef
 import com.puzzel.lab.cardsmania.data.DifficultyInfo
 import com.puzzel.lab.cardsmania.mindi.MindiPhase
 import com.puzzel.lab.cardsmania.mindi.MindiState
 import com.puzzel.lab.cardsmania.mindi.MindiTrumpMode
+import com.puzzel.lab.cardsmania.ui.game.FrameDriver
+import com.puzzel.lab.cardsmania.ui.game.rememberFrameTick
+import com.puzzel.lab.cardsmania.ui.game.wakeOnTouch
 import com.puzzel.lab.cardsmania.ui.components.AvatarBadge
 import com.puzzel.lab.cardsmania.ui.components.OutlinedTitle
 import com.puzzel.lab.cardsmania.ui.components.RoundIconButton
@@ -88,7 +92,6 @@ import com.puzzel.lab.cardsmania.ui.render.CardArt
 import com.puzzel.lab.cardsmania.ui.spider.PlayingCardArt
 import com.puzzel.lab.cardsmania.ui.theme.CM
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
 import kotlin.math.roundToInt
 
 val TeamBlue = Color(0xFF2F8BFF)
@@ -134,7 +137,7 @@ fun MindiScreen(
         val wPx = constraints.maxWidth.toFloat()
         val hPx = constraints.maxHeight.toFloat()
         if (s == null || wPx <= 0f) {
-            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { OutlinedTitle("Shuffling…", fontSize = 28.sp) }
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { OutlinedTitle(stringResource(R.string.mindi_shuffling), fontSize = 28.sp) }
             return@BoxWithConstraints
         }
         val layout = remember(wPx, hPx, s.players, topInset, bottomInset, ui.me) {
@@ -197,15 +200,19 @@ fun MindiScreen(
 @Composable
 private fun MindiTable(vm: MindiViewModel, world: MindiWorld, ui: MindiUi) {
     val layout = world.layout
+    val driver = remember { FrameDriver() }
     SideEffect {
+        val theme = ui.profile.tableTheme.let { if (it == com.puzzel.lab.cardsmania.data.TableTheme.ROYAL) com.puzzel.lab.cardsmania.data.TableTheme.FELT else it }
+        val changed = world.back != ui.profile.cardBack || world.theme != theme || world.reduceMotion != ui.settings.reduceMotion
         world.back = ui.profile.cardBack
-        world.theme = ui.profile.tableTheme.let { if (it == com.puzzel.lab.cardsmania.data.TableTheme.ROYAL) com.puzzel.lab.cardsmania.data.TableTheme.FELT else it }
+        world.theme = theme
         world.reduceMotion = ui.settings.reduceMotion
         world.speed = when (ui.settings.speed) { 0 -> 1.3f; 2 -> 0.65f; else -> 1f }
+        if (changed) driver.wake()
     }
     LaunchedEffect(world, vm) {
-        vm.lastShown?.let { if (world.state == null) world.apply(it, 0.01f) }
-        vm.steps.collect { world.apply(it, world.speed) }
+        vm.lastShown?.let { if (world.state == null) { world.apply(it, 0.01f); driver.wake() } }
+        vm.steps.collect { world.apply(it, world.speed); driver.wake() }
     }
     LaunchedEffect(world, ui.legal, ui.selected, ui.hint, ui.idle, ui.hidePick) {
         world.legal = ui.legal
@@ -214,12 +221,12 @@ private fun MindiTable(vm: MindiViewModel, world: MindiWorld, ui: MindiUi) {
         world.interactive = ui.idle
         world.hideMode = ui.hidePick
         world.relayoutHand()
+        driver.wake()
     }
-    var tick by remember { mutableLongStateOf(0L) }
-    LaunchedEffect(Unit) { while (isActive) withFrameMillis { tick = it } }
+    val tick by rememberFrameTick(driver, world)
     val slop = LocalViewConfiguration.current.touchSlop
     Canvas(
-        Modifier.fillMaxSize().pointerInput(world, vm) {
+        Modifier.fillMaxSize().wakeOnTouch(driver).pointerInput(world, vm) {
             awaitEachGesture {
                 val down = awaitFirstDown(requireUnconsumed = false)
                 val id = world.hitHand(down.position.x, down.position.y)
@@ -256,15 +263,16 @@ private fun MindiTopBar(s: MindiState, ui: MindiUi, layout: MindiLayout, onPause
         Modifier.fillMaxWidth().offset { IntOffset(0, layout.topInset.roundToInt()) }.height(with(density) { layout.hudH.toDp() }).padding(horizontal = 10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        RoundIconButton(Icons.Rounded.Pause, onPause, size = 40.dp, contentDescription = "Pause")
+        RoundIconButton(Icons.Rounded.Pause, onPause, size = 40.dp, contentDescription = stringResource(R.string.mindi_cd_pause))
         Spacer(Modifier.width(8.dp))
         Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                "MINDI · " + if (ui.daily != null) "DAILY" else s.setup.trumpMode.title.uppercase(),
+                stringResource(R.string.mindi_hud_title, if (ui.daily != null) stringResource(R.string.mindi_hud_daily) else s.setup.trumpMode.title.uppercase()),
                 color = CM.GoldLight, fontWeight = FontWeight.Black, fontSize = 14.sp, letterSpacing = 1.sp,
             )
             Text(
-                "Hand ${s.handNo} · " + (if (s.setup.target <= 1) "Single hand" else "First to ${s.setup.target}") + " · ${s.players} players",
+                if (s.setup.target <= 1) stringResource(R.string.mindi_hud_line_single, s.handNo, s.players)
+                else stringResource(R.string.mindi_hud_line_target, s.handNo, s.setup.target, s.players),
                 color = CM.TextDim, fontSize = 11.sp, fontWeight = FontWeight.Bold,
             )
         }
@@ -282,9 +290,9 @@ private fun MindiTracker(s: MindiState, ui: MindiUi, layout: MindiLayout) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(6.dp)
     ) {
-        TeamPanel("YOUR TEAM", TeamBlue, s, myTeam, Modifier.weight(1f))
+        TeamPanel(stringResource(R.string.mindi_your_team), TeamBlue, s, myTeam, Modifier.weight(1f))
         TrumpIndicator(s, ui)
-        TeamPanel("RIVALS", TeamRed, s, 1 - myTeam, Modifier.weight(1f))
+        TeamPanel(stringResource(R.string.mindi_rivals), TeamRed, s, 1 - myTeam, Modifier.weight(1f))
     }
 }
 
@@ -324,14 +332,14 @@ private fun TeamPanel(title: String, color: Color, s: MindiState, team: Int, mod
             }
             Spacer(Modifier.weight(1f))
             Text("${s.tricks[team]}", color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Black)
-            Text(" tricks", color = CM.TextDim, fontSize = 9.sp, fontWeight = FontWeight.Bold)
+            Text(" " + stringResource(R.string.mindi_tricks_label), color = CM.TextDim, fontSize = 9.sp, fontWeight = FontWeight.Bold)
         }
     }
 }
 
 @Composable
 private fun TrumpIndicator(s: MindiState, ui: MindiUi) {
-    val pulse = rememberPulse(900)
+    val pulse by rememberPulse(900)
     Column(
         Modifier.width(66.dp).clip(RoundedCornerShape(14.dp))
             .background(Brush.verticalGradient(listOf(Color(0xEE3A1784), Color(0xEE1A0844))))
@@ -339,14 +347,14 @@ private fun TrumpIndicator(s: MindiState, ui: MindiUi) {
             .padding(vertical = 4.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("TRUMP", color = CM.GoldLight, fontSize = 9.sp, fontWeight = FontWeight.Black, letterSpacing = 1.sp)
+        Text(stringResource(R.string.mindi_trump_label), color = CM.GoldLight, fontSize = 9.sp, fontWeight = FontWeight.Black, letterSpacing = 1.sp)
         val trump = s.trump
         when {
             trump != null -> {
                 Text(
                     MindiViewModel.suitSymbol(trump), fontSize = 30.sp, fontWeight = FontWeight.Black,
                     color = if (trump == 1 || trump == 2) Color(0xFFFF5A6E) else Color.White,
-                    modifier = Modifier.scale(1f + pulse * 0.06f),
+                    modifier = Modifier.graphicsLayer { scaleX = 1f + pulse * 0.06f; scaleY = 1f + pulse * 0.06f },
                 )
                 Text(MindiViewModel.suitName(trump), color = Color.White, fontSize = 9.sp, fontWeight = FontWeight.Bold)
             }
@@ -359,15 +367,15 @@ private fun TrumpIndicator(s: MindiState, ui: MindiUi) {
                         null, Modifier.fillMaxSize()
                     )
                 }
-                Text(if (mine) "Yours" else "Hidden", color = CM.TextDim, fontSize = 9.sp, fontWeight = FontWeight.Bold)
+                Text(stringResource(if (mine) R.string.mindi_trump_yours else R.string.mindi_trump_hidden), color = CM.TextDim, fontSize = 9.sp, fontWeight = FontWeight.Bold)
             }
             s.setup.trumpMode == MindiTrumpMode.CUT -> {
                 Text("?", fontSize = 26.sp, fontWeight = FontWeight.Black, color = Color.White)
-                Text("Not cut yet", color = CM.TextDim, fontSize = 8.sp, fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.mindi_trump_not_cut), color = CM.TextDim, fontSize = 8.sp, fontWeight = FontWeight.Bold)
             }
             else -> {
                 Text("…", fontSize = 26.sp, color = Color.White)
-                Text("Choosing", color = CM.TextDim, fontSize = 9.sp)
+                Text(stringResource(R.string.mindi_trump_choosing), color = CM.TextDim, fontSize = 9.sp)
             }
         }
     }
@@ -383,7 +391,7 @@ private fun MindiSeatView(seat: Int, s: MindiState, ui: MindiUi, layout: MindiLa
     val avDp = with(density) { av.toDp() }
     val active = !s.isOver && (s.phase == MindiPhase.Play && s.turn == seat || (s.phase as? MindiPhase.ChooseHidden)?.seat == seat)
     val teamColor = if (s.team(seat) == s.team(ui.me)) TeamBlue else TeamRed
-    val pulse = rememberPulse(650)
+    val pulse by rememberPulse(650)
     var now by remember { mutableLongStateOf(System.currentTimeMillis()) }
     LaunchedEffect(ui.turnDeadline, active) {
         while (active && ui.turnDeadline > 0) { now = System.currentTimeMillis(); delay(100) }
@@ -404,8 +412,8 @@ private fun MindiSeatView(seat: Int, s: MindiState, ui: MindiUi, layout: MindiLa
                         .border(1.5.dp, Color.White, RoundedCornerShape(50)).padding(horizontal = 4.dp, vertical = 1.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    if (connected) androidx.compose.material3.Icon(Icons.Rounded.Wifi, "Online player", tint = Color.White, modifier = Modifier.size(11.dp))
-                    else Text("BOT", color = Color.White, fontSize = 8.sp, fontWeight = FontWeight.Black)
+                    if (connected) androidx.compose.material3.Icon(Icons.Rounded.Wifi, stringResource(R.string.mindi_cd_online_player), tint = Color.White, modifier = Modifier.size(11.dp))
+                    else Text(stringResource(R.string.mindi_bot_badge), color = Color.White, fontSize = 8.sp, fontWeight = FontWeight.Black)
                 }
             }
             if (seat == s.dealer) {
@@ -413,7 +421,7 @@ private fun MindiSeatView(seat: Int, s: MindiState, ui: MindiUi, layout: MindiLa
                     Modifier.align(Alignment.BottomStart).offset(x = (-4).dp, y = 2.dp).size(18.dp).clip(CircleShape)
                         .background(Color.White).border(1.5.dp, CM.Gold, CircleShape),
                     contentAlignment = Alignment.Center
-                ) { Text("D", fontSize = 10.sp, fontWeight = FontWeight.Black, color = Color(0xFF3A1F00)) }
+                ) { Text(stringResource(R.string.mindi_dealer_badge), fontSize = 10.sp, fontWeight = FontWeight.Black, color = Color(0xFF3A1F00)) }
             }
             if (seat != ui.me) {
                 Box(
@@ -437,7 +445,7 @@ private fun MindiSeatView(seat: Int, s: MindiState, ui: MindiUi, layout: MindiLa
                 Box(Modifier.size(6.dp).clip(CircleShape).background(teamColor))
                 Spacer(Modifier.width(3.dp))
                 Text(
-                    info.name + if (s.partnersOf(ui.me).contains(seat)) " (P)" else "",
+                    if (s.partnersOf(ui.me).contains(seat)) stringResource(R.string.mindi_partner_name, info.name) else info.name,
                     color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.width(if (s.players >= 6) 54.dp else 70.dp),
                 )
@@ -473,9 +481,9 @@ private fun MindiActionBar(ui: MindiUi, layout: MindiLayout, onHint: () -> Unit,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        RoundIconButton(Icons.Rounded.Lightbulb, onHint, size = 42.dp, tint = if (ui.idle && ui.legal.isNotEmpty()) CM.GoldLight else Color.White, contentDescription = "Hint")
-        RoundIconButton(Icons.Rounded.History, onLastTrick, size = 42.dp, contentDescription = "Last trick")
-        RoundIconButton(Icons.Rounded.EmojiEmotions, onEmote, size = 42.dp, contentDescription = "Emote")
+        RoundIconButton(Icons.Rounded.Lightbulb, onHint, size = 42.dp, tint = if (ui.idle && ui.legal.isNotEmpty()) CM.GoldLight else Color.White, contentDescription = stringResource(R.string.mindi_cd_hint))
+        RoundIconButton(Icons.Rounded.History, onLastTrick, size = 42.dp, contentDescription = stringResource(R.string.mindi_cd_last_trick))
+        RoundIconButton(Icons.Rounded.EmojiEmotions, onEmote, size = 42.dp, contentDescription = stringResource(R.string.mindi_cd_emote))
     }
 }
 
@@ -485,15 +493,15 @@ private fun StatusPill(s: MindiState, ui: MindiUi, layout: MindiLayout) {
     val myTurn = ui.idle && (s.phase == MindiPhase.Play && s.turn == ui.me || ui.hidePick)
     val text = when {
         !ui.idle || s.isOver -> ""
-        ui.hidePick -> if (ui.selected != null) "Tap again to hide this card as trump" else "Choose a card to hide — its suit becomes trump"
+        ui.hidePick -> stringResource(if (ui.selected != null) R.string.mindi_status_hide_confirm else R.string.mindi_status_hide_pick)
         s.phase == MindiPhase.Play && s.turn == ui.me -> when {
-            ui.selected != null -> "Tap again or swipe up to play"
-            s.trick.isEmpty() -> "Your lead!"
-            else -> "Your turn"
+            ui.selected != null -> stringResource(R.string.mindi_status_tap_again)
+            s.trick.isEmpty() -> stringResource(R.string.mindi_status_your_lead)
+            else -> stringResource(R.string.mindi_status_your_turn)
         }
         else -> {
             val actor = (s.phase as? MindiPhase.ChooseHidden)?.seat ?: s.turn
-            "${ui.seats.getOrNull(actor)?.name ?: "Player"} is thinking…"
+            stringResource(R.string.mindi_status_thinking, ui.seats.getOrNull(actor)?.name ?: stringResource(R.string.mindi_player))
         }
     }
     Box(Modifier.fillMaxWidth().offset { IntOffset(0, (layout.center.y + layout.trickCardH * 1.05f).roundToInt()) }, contentAlignment = Alignment.Center) {

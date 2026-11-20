@@ -1,9 +1,11 @@
 package com.puzzel.lab.cardsmania.ui.mindi
 
+import com.puzzel.lab.cardsmania.data.SaveFiles
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.puzzel.lab.cardsmania.CardsManiaApp
+import com.puzzel.lab.cardsmania.R
 import com.puzzel.lab.cardsmania.audio.Sfx
 import com.puzzel.lab.cardsmania.audio.Track
 import com.puzzel.lab.cardsmania.data.Achievement
@@ -16,6 +18,7 @@ import com.puzzel.lab.cardsmania.data.GameFactory
 import com.puzzel.lab.cardsmania.data.Profile
 import com.puzzel.lab.cardsmania.data.Settings
 import com.puzzel.lab.cardsmania.engine.model.Difficulty
+import com.puzzel.lab.cardsmania.i18n.Strings
 import com.puzzel.lab.cardsmania.mindi.HandKind
 import com.puzzel.lab.cardsmania.mindi.HandResult
 import com.puzzel.lab.cardsmania.mindi.MCard
@@ -164,8 +167,8 @@ class MindiViewModel(app: Application) : AndroidViewModel(app) {
                 else -> Unit
             }
             if (launch.resume) {
-                val saved = withContext(Dispatchers.IO) {
-                    runCatching { AppJson.decodeFromString(MindiSave.serializer(), saveFile.readText()) }.getOrNull()
+                val saved = SaveFiles.read(saveFile)?.let { text ->
+                    withContext(Dispatchers.Default) { runCatching { AppJson.decodeFromString(MindiSave.serializer(), text) }.getOrNull() }
                 }
                 if (saved != null && saved.state.phase !is MindiPhase.MatchOver) {
                     state = saved.state
@@ -192,7 +195,7 @@ class MindiViewModel(app: Application) : AndroidViewModel(app) {
 
     private fun buildSeats(setup: MindiSetup, p: Profile, seed: Long): List<MindiSeat> {
         val chars = Characters.all.shuffled(java.util.Random(seed))
-        val you = MindiSeat(p.name.ifBlank { "You" }, AvatarRef.player(p.avatar), isHuman = true)
+        val you = MindiSeat(p.name.ifBlank { Strings.get(R.string.mindi_you) }, AvatarRef.player(p.avatar), isHuman = true)
         return listOf(you) + (1 until setup.players).map { i ->
             val ch = chars[(i - 1) % chars.size]
             MindiSeat(ch.name, ch.id, isHuman = false, difficulty = setup.difficulty)
@@ -206,7 +209,7 @@ class MindiViewModel(app: Application) : AndroidViewModel(app) {
         val setup = launch.setup
         val launchSeats = launch.seats
         if (host == null || setup == null || launchSeats == null) {
-            _ui.update { it.copy(ready = true, ended = "The room is closed.") }
+            _ui.update { it.copy(ready = true, ended = Strings.get(R.string.mindi_room_closed)) }
             return
         }
         net = NetRole.HOST
@@ -241,7 +244,7 @@ class MindiViewModel(app: Application) : AndroidViewModel(app) {
     private fun startGuest() {
         val client = c.multiplayer.client
         if (client == null) {
-            _ui.update { it.copy(ready = true, ended = "You're not in a room any more.") }
+            _ui.update { it.copy(ready = true, ended = Strings.get(R.string.mindi_not_in_room)) }
             return
         }
         net = NetRole.GUEST
@@ -481,8 +484,8 @@ class MindiViewModel(app: Application) : AndroidViewModel(app) {
             c.haptics.light()
             val s = state ?: return
             val lead = s.leadSuit
-            if (lead != null && s.hands[me].any { it.suit == lead }) toast("Follow suit: play a ${suitName(lead)} card")
-            else if (s.revealer == me) toast("You must play a trump card")
+            if (lead != null && s.hands[me].any { it.suit == lead }) toast(Strings.get(R.string.mindi_toast_follow_suit, suitName(lead)))
+            else if (s.revealer == me) toast(Strings.get(R.string.mindi_toast_must_trump))
             return
         }
         if (u.selected == id) {
@@ -614,7 +617,7 @@ class MindiViewModel(app: Application) : AndroidViewModel(app) {
         val date = daily
         val lastHand = s.history.lastOrNull()
         viewModelScope.launch {
-            if (!isNet) withContext(Dispatchers.IO) { runCatching { saveFile.delete() } }
+            if (!isNet) SaveFiles.delete(saveFile)
             var result: MindiWin? = null
             val handsWon = s.history.count { it.winnerTeam == s.team(me) }
             val newProfile = c.profile.update { p ->
@@ -683,7 +686,7 @@ class MindiViewModel(app: Application) : AndroidViewModel(app) {
         val s = state ?: return
         if (s.phase is MindiPhase.MatchOver) return
         val save = MindiSave(s, seats, daily)
-        c.scope.launch(Dispatchers.IO) { runCatching { saveFile.writeText(AppJson.encodeToString(MindiSave.serializer(), save)) } }
+        SaveFiles.write(saveFile) { AppJson.encodeToString(MindiSave.serializer(), save) }
     }
 
     fun abandon() {
@@ -698,10 +701,10 @@ class MindiViewModel(app: Application) : AndroidViewModel(app) {
 
     companion object {
         fun suitName(s: Int) = when (s) {
-            0 -> "Spades"
-            1 -> "Hearts"
-            2 -> "Diamonds"
-            else -> "Clubs"
+            0 -> Strings.get(R.string.mindi_suit_spades)
+            1 -> Strings.get(R.string.mindi_suit_hearts)
+            2 -> Strings.get(R.string.mindi_suit_diamonds)
+            else -> Strings.get(R.string.mindi_suit_clubs)
         }
 
         fun suitSymbol(s: Int) = when (s) {

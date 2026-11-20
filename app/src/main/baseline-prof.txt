@@ -1,0 +1,15 @@
+# Baseline profile: code ART compiles ahead of time at install, instead of interpreting it on the first launches.
+# Without it the splash, lobby and first game stutter while the JIT warms up. AndroidX / Compose libraries ship their
+# own profiles, which the build merges in; these rules cover the app's own code and the JSON library used for saves.
+# Wildcards are expanded at build time. The app is small, so compiling all of it is cheap.
+#
+# For a tighter, measured profile later, add a :baselineprofile module (androidx.baselineprofile plugin) with a
+# Macrobenchmark journey and run ./gradlew :app:generateBaselineProfile on a device.
+
+# all app classes, and their methods as Hot + Startup + Post-startup
+Lcom/puzzel/lab/cardsmania/**;
+HSPLcom/puzzel/lab/cardsmania/**;->**(**)**
+
+# kotlinx.serialization (save files, profile, multiplayer messages)
+Lkotlinx/serialization/**;
+HSPLkotlinx/serialization/**;->**(**)**

@@ -57,7 +57,10 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
 import com.puzzel.lab.cardsmania.LocalApp
+import com.puzzel.lab.cardsmania.R
+import com.puzzel.lab.cardsmania.i18n.Strings
 import com.puzzel.lab.cardsmania.audio.Sfx
 import com.puzzel.lab.cardsmania.ui.components.ButtonStyle
 import com.puzzel.lab.cardsmania.ui.components.CoinIcon
@@ -120,8 +123,10 @@ class GameToasts internal constructor() {
         queue += ToastData(System.nanoTime(), icon, title, subtitle, color)
     }
 
-    fun achievement(icon: String, title: String, reward: Int) = show(icon, "Achievement: $title", "+$reward coins")
-    fun levelUp(level: Int) = show("⭐", "Level up!", "You reached level $level", Color(0xFFC0A6FF))
+    fun achievement(icon: String, title: String, reward: Int) =
+        show(icon, Strings.get(R.string.shell_toast_achievement, title), Strings.plural(R.plurals.shell_toast_plus_coins, reward))
+    fun levelUp(level: Int) =
+        show("⭐", Strings.get(R.string.shell_toast_level_up), Strings.get(R.string.shell_toast_reached_level, level), Color(0xFFC0A6FF))
 }
 
 internal data class ToastData(val id: Long, val icon: String, val title: String, val subtitle: String, val color: Color)
@@ -229,7 +234,7 @@ fun RewardPopup(
     amount: Int,
     onCollect: () -> Unit,
     subtitle: String? = null,
-    buttonText: String = "COLLECT",
+    buttonText: String = stringResource(R.string.shell_collect),
     icon: @Composable () -> Unit = { CoinIcon(84.dp) },
 ) {
     val app = LocalApp.current

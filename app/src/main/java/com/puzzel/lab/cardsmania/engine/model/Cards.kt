@@ -1,5 +1,7 @@
 package com.puzzel.lab.cardsmania.engine.model
 
+import com.puzzel.lab.cardsmania.R
+import com.puzzel.lab.cardsmania.i18n.Strings
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -41,7 +43,13 @@ data class Face(val suit: Suit, val kind: Kind, val value: Int = 0) {
     val isWild: Boolean get() = suit == Suit.WILD
 
     private fun numberWord(n: Int) = when (n) {
-        1 -> "One"; 2 -> "Two"; 4 -> "Four"; 5 -> "Five"; 6 -> "Six"; 10 -> "Ten"; else -> n.toString()
+        1 -> Strings.get(R.string.data_face_num_one)
+        2 -> Strings.get(R.string.data_face_num_two)
+        4 -> Strings.get(R.string.data_face_num_four)
+        5 -> Strings.get(R.string.data_face_num_five)
+        6 -> Strings.get(R.string.data_face_num_six)
+        10 -> Strings.get(R.string.data_face_num_ten)
+        else -> n.toString()
     }
 
     /** Cards added to a stack / penalty. */
@@ -96,33 +104,33 @@ data class Face(val suit: Suit, val kind: Kind, val value: Int = 0) {
     val title: String
         get() = when (kind) {
             Kind.NUMBER -> value.toString()
-            Kind.BLOCK -> "Skip"
-            Kind.REVERSE -> "Reverse"
-            Kind.DRAW -> "Draw ${numberWord(value)}"
-            Kind.BLOCK_ALL -> "Skip Everyone"
-            Kind.PURGE -> "Discard All"
-            Kind.ECLIPSE -> "Flip"
-            Kind.PRISM -> "Wild"
-            Kind.PRISM_DRAW -> "Wild Draw ${numberWord(value)}"
-            Kind.PRISM_REBOUND -> "Wild Reverse Draw Four"
-            Kind.COLOR_STORM -> "Wild Color Storm"
-            Kind.PRISM_HUNT -> "Wild Draw Color"
+            Kind.BLOCK -> Strings.get(R.string.data_face_skip)
+            Kind.REVERSE -> Strings.get(R.string.data_face_reverse)
+            Kind.DRAW -> Strings.get(R.string.data_face_draw, numberWord(value))
+            Kind.BLOCK_ALL -> Strings.get(R.string.data_face_skip_all)
+            Kind.PURGE -> Strings.get(R.string.data_face_discard_all)
+            Kind.ECLIPSE -> Strings.get(R.string.data_face_flip)
+            Kind.PRISM -> Strings.get(R.string.data_face_wild)
+            Kind.PRISM_DRAW -> Strings.get(R.string.data_face_wild_draw, numberWord(value))
+            Kind.PRISM_REBOUND -> Strings.get(R.string.data_face_wild_reverse_draw_four)
+            Kind.COLOR_STORM -> Strings.get(R.string.data_face_wild_color_storm)
+            Kind.PRISM_HUNT -> Strings.get(R.string.data_face_wild_draw_color)
         }
 
     val description: String
         get() = when (kind) {
-            Kind.NUMBER -> "Match by color or number."
-            Kind.BLOCK -> "The next player loses their turn."
-            Kind.REVERSE -> "Flips the direction of play. With 2 players it acts as Skip."
-            Kind.DRAW -> "The next player draws $value and loses their turn."
-            Kind.BLOCK_ALL -> "Every other player is skipped — you play again."
-            Kind.PURGE -> "Also discard every other card of this color from your hand."
-            Kind.ECLIPSE -> "Flips the whole game to the other side (Light ⇄ Dark)."
-            Kind.PRISM -> "Choose the next color. Play it any time."
-            Kind.PRISM_DRAW -> "Choose a color. The next player draws $value and loses their turn."
-            Kind.PRISM_REBOUND -> "Choose a color, reverse direction, and the next player draws 4."
-            Kind.COLOR_STORM -> "The next player names a color and reveals cards until it appears — keeping them all."
-            Kind.PRISM_HUNT -> "Choose a color. The next player draws until they find it."
+            Kind.NUMBER -> Strings.get(R.string.data_face_desc_number)
+            Kind.BLOCK -> Strings.get(R.string.data_face_desc_skip)
+            Kind.REVERSE -> Strings.get(R.string.data_face_desc_reverse)
+            Kind.DRAW -> Strings.get(R.string.data_face_desc_draw, value)
+            Kind.BLOCK_ALL -> Strings.get(R.string.data_face_desc_skip_all)
+            Kind.PURGE -> Strings.get(R.string.data_face_desc_discard_all)
+            Kind.ECLIPSE -> Strings.get(R.string.data_face_desc_flip)
+            Kind.PRISM -> Strings.get(R.string.data_face_desc_wild)
+            Kind.PRISM_DRAW -> Strings.get(R.string.data_face_desc_wild_draw, value)
+            Kind.PRISM_REBOUND -> Strings.get(R.string.data_face_desc_wild_reverse_draw_four)
+            Kind.COLOR_STORM -> Strings.get(R.string.data_face_desc_wild_color_storm)
+            Kind.PRISM_HUNT -> Strings.get(R.string.data_face_desc_wild_draw_color)
         }
 }
 

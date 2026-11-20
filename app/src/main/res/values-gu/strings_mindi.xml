@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Mindi setup -->
+    <string name="mindi_title">મીંડી</string>
+    <string name="mindi_continue_title">મૅચ ચાલુ રાખો</string>
+    <string name="mindi_continue_desc">તમારી સેવ કરેલી મીંડી ગેમ ત્યાંથી જ રમો</string>
+    <string name="mindi_daily_title">ડેઇલી ચેલેન્જ</string>
+    <string name="mindi_daily_desc_best">મુશ્કેલ બોટ સામે એક રાઉન્ડ · બેસ્ટ %1$s</string>
+    <string name="mindi_daily_desc_new">મુશ્કેલ બોટ સામે એક રાઉન્ડ · 3 સ્ટાર જીતો</string>
+    <string name="mindi_players">ખેલાડીઓ</string>
+    <string name="mindi_double_deck">ડબલ ડેક</string>
+    <string name="mindi_double_deck_desc">104 પત્તાં અને 8 દસ્સા — 5 દસ્સા વાળી ટીમ રાઉન્ડ જીતે</string>
+    <string name="mindi_trump_section">ટ્રમ્પ</string>
+    <string name="mindi_must_trump">ખુલ્યા પછી ટ્રમ્પ ફરજિયાત</string>
+    <string name="mindi_must_trump_desc">જે ટ્રમ્પ ખોલાવે, તેની પાસે હોય તો તેણે ટ્રમ્પ જ રમવું પડે</string>
+    <string name="mindi_match">મૅચ</string>
+    <string name="mindi_points_to_win">જીતવા માટે પોઇન્ટ</string>
+    <string name="mindi_one_hand">1 રાઉન્ડ</string>
+    <string name="mindi_points_info">જીત = 1 પોઇન્ટ · મેન્ડીકોટ = 2 · વ્હાઇટવૉશ = 3</string>
+    <string name="mindi_bots">બોટ</string>
+    <string name="mindi_expert">એક્સપર્ટ</string>
+    <string name="mindi_turn_timer">વારાનો ટાઇમર</string>
+    <string name="mindi_timer_off">બંધ</string>
+    <string name="mindi_timer_secs">%1$d સે.</string>
+    <string name="mindi_deal_cards">પત્તાં વહેંચો</string>
+    <string name="mindi_hero_title">દસ્સા પકડો!</string>
+    <string name="mindi_hero_desc">સાથી સાથે ટીમ બનાવો · 4માંથી 3 મીંડી જીતો</string>
+    <plurals name="mindi_n_players">
+        <item quantity="one">%d ખેલાડી</item>
+        <item quantity="other">%d ખેલાડી</item>
+    </plurals>
+    <string name="mindi_vs">%1$d સામે %2$d</string>
+    <string name="mindi_classic">ક્લાસિક</string>
+    <string name="mindi_tile_title">મીંડી</string>
+    <string name="mindi_tile_desc">ટીમવાળી હાથની ગેમ · દસ્સા પકડો · 4, 6 કે 8 ખેલાડી</string>
+    <string name="mindi_table_4">2 સામે 2 · સાથી સામસામે · 52 પત્તાં, દરેકને 13</string>
+    <string name="mindi_table_6">3 સામે 3 · વારાફરતી બેઠક · દુગ્ગી કાઢી નાખી, દરેકને 8</string>
+    <string name="mindi_table_6_double">3 સામે 3 · વારાફરતી બેઠક · ડબલ ડેક, દરેકને 17</string>
+    <string name="mindi_table_8">4 સામે 4 · વારાફરતી બેઠક · દુગ્ગી કાઢી નાખી, દરેકને 6</string>
+    <string name="mindi_table_8_double">4 સામે 4 · વારાફરતી બેઠક · ડબલ ડેક, દરેકને 13</string>
+
+    <!-- table HUD -->
+    <string name="mindi_shuffling">પત્તાં ચીપાય છે…</string>
+    <string name="mindi_cd_pause">થોભો</string>
+    <string name="mindi_hud_title">મીંડી · %1$s</string>
+    <string name="mindi_hud_daily">ડેઇલી</string>
+    <string name="mindi_hud_line_single">રાઉન્ડ %1$d · ફક્ત એક રાઉન્ડ · %2$d ખેલાડી</string>
+    <string name="mindi_hud_line_target">રાઉન્ડ %1$d · પહેલા %2$d સુધી · %3$d ખેલાડી</string>
+    <string name="mindi_your_team">તમારી ટીમ</string>
+    <string name="mindi_rivals">વિરોધી</string>
+    <string name="mindi_tricks_label">હાથ</string>
+    <string name="mindi_trump_label">ટ્રમ્પ</string>
+    <string name="mindi_trump_yours">તમારું</string>
+    <string name="mindi_trump_hidden">છુપાયેલું</string>
+    <string name="mindi_trump_not_cut">હજી કપાયું નથી</string>
+    <string name="mindi_trump_choosing">પસંદ થાય છે</string>
+    <string name="mindi_cd_online_player">ઓનલાઇન ખેલાડી</string>
+    <string name="mindi_bot_badge">બોટ</string>
+    <string name="mindi_dealer_badge">ડી</string>
+    <string name="mindi_partner_name">%1$s (સા)</string>
+    <string name="mindi_cd_hint">સંકેત</string>
+    <string name="mindi_cd_last_trick">છેલ્લો હાથ</string>
+    <string name="mindi_cd_emote">ઇમોટ</string>
+    <string name="mindi_status_hide_confirm">આ પત્તું ટ્રમ્પ તરીકે છુપાવવા ફરી ટૅપ કરો</string>
+    <string name="mindi_status_hide_pick">છુપાવવા એક પત્તું પસંદ કરો — તેનો સૂટ ટ્રમ્પ બનશે</string>
+    <string name="mindi_status_tap_again">રમવા ફરી ટૅપ કરો અથવા ઉપર સ્વાઇપ કરો</string>
+    <string name="mindi_status_your_lead">તમારી શરૂઆત!</string>
+    <string name="mindi_status_your_turn">તમારો વારો</string>
+    <string name="mindi_status_thinking">%1$s વિચારે છે…</string>
+    <string name="mindi_player">ખેલાડી</string>
+    <string name="mindi_suit_spades">કાળી</string>
+    <string name="mindi_suit_hearts">લાલ</string>
+    <string name="mindi_suit_diamonds">ચોકટ</string>
+    <string name="mindi_suit_clubs">ફૂલી</string>
+
+    <!-- canvas pop-ups -->
+    <string name="mindi_pop_trump">ટ્રમ્પ</string>
+    <string name="mindi_pop_secret_trump">છુપો ટ્રમ્પ</string>
+    <string name="mindi_pop_trump_revealed">ટ્રમ્પ ખુલ્યો!</string>
+    <string name="mindi_pop_cut">કટ! નવો ટ્રમ્પ</string>
+    <string name="mindi_pop_trump_play">ટ્રમ્પ!</string>
+    <string name="mindi_pop_mindi">મીંડી!</string>
+    <string name="mindi_pop_mindi_n">મીંડી ×%1$d!</string>
+    <string name="mindi_pop_mendikot">મેન્ડીકોટ!</string>
+    <string name="mindi_pop_whitewash">વ્હાઇટવૉશ!</string>
+    <string name="mindi_trump_marker">ટ</string>
+
+    <!-- overlays -->
+    <string name="mindi_last_trick">છેલ્લો હાથ</string>
+    <string name="mindi_no_trick_yet">હજી સુધી કોઈ હાથ રમાયો નથી.</string>
+    <string name="mindi_won_it">%1$s જીત્યા</string>
+    <string name="mindi_close">બંધ કરો</string>
+    <string name="mindi_kind_normal">રાઉન્ડ જીત્યા</string>
+    <string name="mindi_kind_mendikot">મેન્ડીકોટ! ચારેય દસ્સા</string>
+    <string name="mindi_kind_whitewash">વ્હાઇટવૉશ! દરેક હાથ</string>
+    <string name="mindi_your_team_wins">તમારી ટીમ જીતી!</string>
+    <string name="mindi_rivals_win">વિરોધીઓ રાઉન્ડ જીત્યા</string>
+    <plurals name="mindi_result_points">
+        <item quantity="one">%1$s  ·  +%2$d પોઇન્ટ</item>
+        <item quantity="other">%1$s  ·  +%2$d પોઇન્ટ</item>
+    </plurals>
+    <string name="mindi_tens_tricks">%1$d દસ્સા · %2$d હાથ</string>
+    <string name="mindi_sb_title">સ્કોરબોર્ડ</string>
+    <string name="mindi_sb_hand">રાઉન્ડ</string>
+    <string name="mindi_sb_winner">વિજેતા</string>
+    <string name="mindi_sb_tens">દસ્સા</string>
+    <string name="mindi_sb_tricks">હાથ</string>
+    <string name="mindi_sb_pts">પોઇન્ટ</string>
+    <string name="mindi_sb_you">તમે</string>
+    <string name="mindi_sb_rivals">વિરોધી</string>
+    <string name="mindi_next_dealer">હવે વહેંચનાર: %1$s (હારેલી ટીમ વહેંચે)</string>
+    <string name="mindi_next_hand">આગલો રાઉન્ડ</string>
+    <string name="mindi_victory">જીત!</string>
+    <string name="mindi_good_game">સરસ રમ્યા!</string>
+    <string name="mindi_final_score">ફાઇનલ સ્કોર  %1$d – %2$d</string>
+    <string name="mindi_daily_stars_info">ડેઇલી: ★ જીત · ★★ 3+ દસ્સા · ★★★ 9+ હાથ કે મેન્ડીકોટ</string>
+    <string name="mindi_xp">+%1$d XP</string>
+    <string name="mindi_achievement">સિદ્ધિ: %1$s</string>
+    <string name="mindi_leave">છોડો</string>
+    <string name="mindi_home">હોમ</string>
+    <string name="mindi_room">રૂમ</string>
+    <string name="mindi_rematch">રીમૅચ</string>
+    <string name="mindi_play_again">ફરી રમો</string>
+    <string name="mindi_end_game_q">ગેમ પૂરી કરવી છે?</string>
+    <string name="mindi_leave_game_q">ગેમ છોડવી છે?</string>
+    <string name="mindi_menu">મેનુ</string>
+    <string name="mindi_paused">થોભાવેલું</string>
+    <string name="mindi_end_host_desc">આનાથી મૅચ પૂરી થશે અને બધા માટે રૂમ બંધ થશે.</string>
+    <string name="mindi_leave_desc">આ મૅચના બાકીના ભાગમાં તમારી જગ્યાએ એક બોટ રમશે.</string>
+    <string name="mindi_stay">રહો</string>
+    <string name="mindi_net_running">આ મેનુ ખુલ્લું હોય ત્યારે પણ મલ્ટિપ્લેયર મૅચ ચાલુ રહે છે.</string>
+    <string name="mindi_back_to_game">ગેમ પર પાછા</string>
+    <string name="mindi_resume">ચાલુ રાખો</string>
+    <string name="mindi_how_to_play">કેવી રીતે રમવું</string>
+    <string name="mindi_saved_note">તમારી મૅચ સેવ છે — પછીથી મીંડીમાંથી ચાલુ રાખો.</string>
+    <string name="mindi_end_game">ગેમ પૂરી કરો</string>
+    <string name="mindi_leave_game">ગેમ છોડો</string>
+    <string name="mindi_quit_home">હોમ પર જાઓ</string>
+    <string name="mindi_waiting_host">હોસ્ટની રાહ…</string>
+
+    <!-- view model -->
+    <string name="mindi_you">તમે</string>
+    <string name="mindi_room_closed">રૂમ બંધ થઈ ગયો છે.</string>
+    <string name="mindi_not_in_room">તમે હવે કોઈ રૂમમાં નથી.</string>
+    <string name="mindi_toast_follow_suit">સૂટ મેળવો: %1$sનું પત્તું રમો</string>
+    <string name="mindi_toast_must_trump">તમારે ટ્રમ્પનું પત્તું રમવું પડશે</string>
+</resources>

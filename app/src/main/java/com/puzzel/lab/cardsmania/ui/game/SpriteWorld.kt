@@ -17,6 +17,7 @@ import android.graphics.SweepGradient
 import android.graphics.Typeface
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.toArgb
+import com.puzzel.lab.cardsmania.R
 import com.puzzel.lab.cardsmania.data.TableTheme
 import com.puzzel.lab.cardsmania.engine.DrawReason
 import com.puzzel.lab.cardsmania.engine.GameEvent
@@ -24,6 +25,7 @@ import com.puzzel.lab.cardsmania.engine.model.GameState
 import com.puzzel.lab.cardsmania.engine.model.Kind
 import com.puzzel.lab.cardsmania.engine.model.Side
 import com.puzzel.lab.cardsmania.engine.model.Suit
+import com.puzzel.lab.cardsmania.i18n.Strings
 import com.puzzel.lab.cardsmania.ui.render.CardArt
 import com.puzzel.lab.cardsmania.ui.render.CardBack
 import com.puzzel.lab.cardsmania.ui.render.SuitSymbols
@@ -51,13 +53,16 @@ class Sprite(val id: Int) {
     var owner = -1
     var removeAt = -1L
     var flying = false
+    /** In [SpriteWorld.playable] or [SpriteWorld.jumpIn] / in [SpriteWorld.selected]; refreshed when those change. */
+    var hlPlayable = false
+    var hlSelected = false
 }
 
 /**
  * All cards on the table as animated sprites, plus table rendering and effects.
  * Retargeted every time the game state changes; animated every frame.
  */
-class SpriteWorld(val layout: TableLayout, private val humanId: Int = 0) {
+class SpriteWorld(val layout: TableLayout, private val humanId: Int = 0) : AnimatedWorld {
     val sprites = LinkedHashMap<Int, Sprite>()
     val fx = Fx(layout.density)
     private var prev: GameState? = null
@@ -73,8 +78,11 @@ class SpriteWorld(val layout: TableLayout, private val humanId: Int = 0) {
     var theme: TableTheme = TableTheme.ROYAL
     var back: CardBack = CardBack.ROYAL
     var selected: List<Int> = emptyList()
+        set(v) { field = v; hlDirty = true }
     var playable: Set<Int> = emptySet()
+        set(v) { field = v; hlDirty = true }
     var jumpIn: Set<Int> = emptySet()
+        set(v) { field = v; hlDirty = true }
     var hint: Int? = null
     var sortMode = com.puzzel.lab.cardsmania.data.SortMode.COLOR
     var interactive = false
@@ -120,6 +128,7 @@ class SpriteWorld(val layout: TableLayout, private val humanId: Int = 0) {
         val old = state
         prev = old
         state = s
+        hlDirty = true
         sideTarget = if (s.side == Side.MOON) 1f else 0f
         if (old == null) sideMix = sideTarget
         val targets = layout.targets(s, selected, sortMode, playable, humanId)
@@ -257,18 +266,18 @@ class SpriteWorld(val layout: TableLayout, private val humanId: Int = 0) {
                 fx.burst(L.discardPos.x, L.discardPos.y, 10, intArrayOf(0x88FFFFFF.toInt(), 0x66FFE89A), 160f, 3.5f, 0f, 0.5f)
                 fx.ring(L.discardPos.x, L.discardPos.y, Fx.withAlpha(colorOf(face.suit), 0.9f), delayAt - 120, L.pileCardW * 1.1f, 520, 5f)
                 val label = when (face.kind) {
-                    Kind.BLOCK -> "SKIP!"
-                    Kind.REVERSE -> "REVERSE!"
-                    Kind.BLOCK_ALL -> "SKIP EVERYONE!"
-                    Kind.PURGE -> "DISCARD ALL!"
+                    Kind.BLOCK -> Strings.get(R.string.mania_fx_skip)
+                    Kind.REVERSE -> Strings.get(R.string.mania_fx_reverse)
+                    Kind.BLOCK_ALL -> Strings.get(R.string.mania_fx_skip_all)
+                    Kind.PURGE -> Strings.get(R.string.mania_fx_discard_all)
                     Kind.ECLIPSE -> null
                     Kind.DRAW -> "+${face.value}"
                     Kind.PRISM_DRAW -> "+${face.value}"
-                    Kind.PRISM_REBOUND -> "REVERSE +4"
-                    Kind.COLOR_STORM -> "COLOR STORM!"
-                    Kind.PRISM_HUNT -> "DRAW COLOR!"
+                    Kind.PRISM_REBOUND -> Strings.get(R.string.mania_fx_reverse_four)
+                    Kind.COLOR_STORM -> Strings.get(R.string.mania_fx_color_storm)
+                    Kind.PRISM_HUNT -> Strings.get(R.string.mania_fx_draw_color)
                     Kind.PRISM -> null
-                    Kind.NUMBER -> if (e.extras.isNotEmpty()) "COMBO x${e.extras.size + 1}!" else null
+                    Kind.NUMBER -> if (e.extras.isNotEmpty()) Strings.get(R.string.mania_fx_combo, e.extras.size + 1) else null
                 }
                 if (label != null) fx.pop(label, L.center.x, L.pileY - L.pileCardW * 1.05f, if (face.isWild) 0xFFFFE89A.toInt() else lighten(colorOf(face.suit)), now + 250, 30f, 1150)
                 if (face.kind == Kind.COLOR_STORM) {
@@ -279,7 +288,7 @@ class SpriteWorld(val layout: TableLayout, private val humanId: Int = 0) {
             }
             is GameEvent.Blocked -> for (id in e.playerIds) {
                 val pos = seat(id)
-                fx.pop("SKIPPED", pos.x.coerceIn(L.width * 0.16f, L.width * 0.84f), pos.y, 0xFFFF6F95.toInt(), now, 22f, 850, 0xFF5C0522.toInt(), 12f)
+                fx.pop(Strings.get(R.string.mania_fx_skipped), pos.x.coerceIn(L.width * 0.16f, L.width * 0.84f), pos.y, 0xFFFF6F95.toInt(), now, 22f, 850, 0xFF5C0522.toInt(), 12f)
                 fx.ring(pos.x, pos.y, 0xFFE0245E.toInt(), now, L.avatar * 0.9f, 500, 5f)
             }
             is GameEvent.DirectionChanged -> {
@@ -312,12 +321,12 @@ class SpriteWorld(val layout: TableLayout, private val humanId: Int = 0) {
             }
             is GameEvent.HandsSwapped -> {
                 val a = seat(e.a); val b = seat(e.b)
-                fx.pop("SWAP!", L.center.x, L.pileY - L.pileCardW * 1.05f, 0xFF7FF5EC.toInt(), now, 32f, 1000)
+                fx.pop(Strings.get(R.string.mania_fx_swap), L.center.x, L.pileY - L.pileCardW * 1.05f, 0xFF7FF5EC.toInt(), now, 32f, 1000)
                 fx.ring(a.x, a.y, 0xFF19D3C5.toInt(), now, L.avatar, 600)
                 fx.ring(b.x, b.y, 0xFF19D3C5.toInt(), now, L.avatar, 600)
             }
             is GameEvent.HandsRotated -> {
-                fx.pop("ROTATE!", L.center.x, L.pileY - L.pileCardW * 1.05f, 0xFF7FF5EC.toInt(), now, 32f, 1100)
+                fx.pop(Strings.get(R.string.mania_fx_rotate), L.center.x, L.pileY - L.pileCardW * 1.05f, 0xFF7FF5EC.toInt(), now, 32f, 1100)
                 fx.ring(L.center.x, L.center.y, 0xFF19D3C5.toInt(), now, L.ringRx, 800, 6f)
             }
             is GameEvent.Purged -> {
@@ -326,14 +335,14 @@ class SpriteWorld(val layout: TableLayout, private val humanId: Int = 0) {
             is GameEvent.PlayerEliminated -> {
                 val pos = seat(e.playerId)
                 fx.burst(pos.x, pos.y, 60, intArrayOf(0xFFB9E6FF.toInt(), white, 0xFF8B5CF6.toInt()), 420f, 7f, 500f, 1.3f, 3)
-                fx.pop("OVERLOAD!", pos.x, pos.y + L.avatar * 0.6f, 0xFFFF5F7A.toInt(), now, 30f, 1400)
+                fx.pop(Strings.get(R.string.mania_fx_overload), pos.x, pos.y + L.avatar * 0.6f, 0xFFFF5F7A.toInt(), now, 30f, 1400)
                 fx.shake(9f, 600, now)
                 fx.flash(0xFFFFFFFF.toInt(), now, 260, 0.35f)
             }
             is GameEvent.SideFlipped -> {
                 val moon = e.side == Side.MOON
                 fx.flash(if (moon) 0xFF2E166B.toInt() else 0xFFFFE6A0.toInt(), now, 1100, 0.75f)
-                fx.pop(if (moon) "DARK SIDE!" else "LIGHT SIDE!", L.center.x, L.center.y, if (moon) 0xFFC0A6FF.toInt() else 0xFFFFE89A.toInt(), now + 150, 44f, 1400)
+                fx.pop(if (moon) Strings.get(R.string.mania_fx_dark_side) else Strings.get(R.string.mania_fx_light_side), L.center.x, L.center.y, if (moon) 0xFFC0A6FF.toInt() else 0xFFFFE89A.toInt(), now + 150, 44f, 1400)
                 fx.burst(L.center.x, L.center.y, 70, if (moon) intArrayOf(white, 0xFFC0A6FF.toInt(), 0xFF7FF5EC.toInt()) else intArrayOf(0xFFFFE89A.toInt(), 0xFFFFB000.toInt(), white), 520f, 4f, 0f, 1.4f, 2)
                 fx.ring(L.center.x, L.center.y, if (moon) 0xFFC0A6FF.toInt() else 0xFFFFE89A.toInt(), now, L.height * 0.7f, 1100, 26f)
             }
@@ -346,12 +355,12 @@ class SpriteWorld(val layout: TableLayout, private val humanId: Int = 0) {
             }
             is GameEvent.Caught -> {
                 val pos = if (e.targetId == humanId) L.humanSeat else seat(e.targetId)
-                fx.pop("CAUGHT!", pos.x.coerceIn(L.width * 0.2f, L.width * 0.8f), pos.y, 0xFFFF5F7A.toInt(), now, 38f, 1100)
+                fx.pop(Strings.get(R.string.mania_fx_caught), pos.x.coerceIn(L.width * 0.2f, L.width * 0.8f), pos.y, 0xFFFF5F7A.toInt(), now, 38f, 1100)
                 fx.ring(pos.x, pos.y, 0xFFE0245E.toInt(), now, L.avatar * 1.4f, 600, 8f)
             }
             is GameEvent.ChallengeResult -> {
                 val pos = seat(if (e.success) e.offenderId else e.challengerId).let { if ((if (e.success) e.offenderId else e.challengerId) == humanId) L.humanSeat else it }
-                fx.pop(if (e.success) "BUSTED!" else "FAILED!", L.center.x, L.pileY - L.pileCardW, if (e.success) 0xFF6BEFB0.toInt() else 0xFFFF5F7A.toInt(), now, 36f, 1100)
+                fx.pop(if (e.success) Strings.get(R.string.mania_fx_busted) else Strings.get(R.string.mania_fx_failed), L.center.x, L.pileY - L.pileCardW, if (e.success) 0xFF6BEFB0.toInt() else 0xFFFF5F7A.toInt(), now, 36f, 1100)
                 fx.ring(pos.x, pos.y, 0xFFE0245E.toInt(), now, L.avatar * 1.3f, 600)
             }
             is GameEvent.StormStarted -> {
@@ -365,16 +374,16 @@ class SpriteWorld(val layout: TableLayout, private val humanId: Int = 0) {
             }
             is GameEvent.ShieldBlocked -> {
                 val pos = if (e.playerId == humanId) L.humanSeat else seat(e.playerId)
-                fx.pop("SHIELD!", pos.x.coerceIn(L.width * 0.2f, L.width * 0.8f), pos.y, 0xFF7FF5EC.toInt(), now, 34f, 1000)
+                fx.pop(Strings.get(R.string.mania_fx_shield), pos.x.coerceIn(L.width * 0.2f, L.width * 0.8f), pos.y, 0xFF7FF5EC.toInt(), now, 34f, 1000)
                 fx.ring(pos.x, pos.y, 0xFF19D3C5.toInt(), now, L.avatar * 1.6f, 700, 10f)
             }
             is GameEvent.TokenEarned -> if (e.playerId == humanId) fx.sparkles(L.humanSeat.x, L.humanSeat.y, L.avatar, 16, 0xFF7FF5EC.toInt())
             is GameEvent.Reshuffled -> {
-                fx.pop("RESHUFFLE", L.drawPos.x, L.pileY - L.pileCardW * 0.95f, 0xFFB9E6FF.toInt(), now, 22f, 900)
+                fx.pop(Strings.get(R.string.mania_fx_reshuffle), L.drawPos.x, L.pileY - L.pileCardW * 0.95f, 0xFFB9E6FF.toInt(), now, 22f, 900)
             }
             is GameEvent.Passed -> {
                 val pos = if (e.playerId == humanId) L.humanSeat else seat(e.playerId)
-                fx.pop("PASS", pos.x, pos.y, 0xFFB7A9DA.toInt(), now, 22f, 800)
+                fx.pop(Strings.get(R.string.mania_fx_pass), pos.x, pos.y, 0xFFB7A9DA.toInt(), now, 22f, 800)
             }
             is GameEvent.RoundEnded -> {
                 val pos = if (e.winnerId == humanId) L.humanSeat else seat(e.winnerId)
@@ -407,6 +416,56 @@ class SpriteWorld(val layout: TableLayout, private val humanId: Int = 0) {
     private var chevron: Path? = null
     private val sheenShader = LinearGradient(-1f, 0f, 1f, 0f, intArrayOf(0x00FFFFFF, 0x55FFFFFF, 0x00FFFFFF), null, Shader.TileMode.CLAMP)
     private val sheenMatrix = Matrix()
+
+    // highlight flags on sprites go stale when selected/playable/jumpIn change or new sprites appear
+    private var hlDirty = true
+    // hint id for the frame being drawn (-1 = none), so drawSprite compares plain ints
+    private var frameHint = -1
+    // time of the last drawn frame: an animation counts as running until a frame has drawn its end
+    private var drawnAt = 0L
+
+    // cached overlay pieces (no allocation per frame)
+    private var gemPath: Path? = null
+    private var gemCol = 0
+    private var gemShader: Shader? = null
+    private var auraCol = 0
+    private var auraShader: Shader? = null
+    private var pileCount = -1
+    private var pileCountText = ""
+    private var stackCount = -1
+    private var stackText = ""
+    private val fm = Paint.FontMetrics()
+
+    private fun refreshHighlights() {
+        if (!hlDirty) return
+        hlDirty = false
+        for (sp in sprites.values) {
+            sp.hlPlayable = sp.id in playable || sp.id in jumpIn
+            sp.hlSelected = sp.id in selected
+        }
+    }
+
+    // ---------------------------------------------------------------- frame pacing
+
+    override fun isBusy(now: Long): Boolean {
+        if (dragId != null) return true
+        if (abs(sideTarget - sideMix) > 0.001f) return true
+        if (fx.isActive(now) || fx.shakeX != 0f || fx.shakeY != 0f) return true
+        for (sp in sprites.values) {
+            // still moving (or waiting on its start delay), not yet drawn at its end, flipping, or waiting for removal
+            if (sp.start + sp.delay + sp.dur > drawnAt) return true
+            if (sp.prevLook != null || sp.removeAt > 0) return true
+        }
+        return false
+    }
+
+    /**
+     * Time-based decorations in [draw] that can show while nothing moves: the direction ring's rotating chevrons
+     * (drawn whenever a game is on the table), the draw-pile glow pulse (human's turn to draw), the pending-stack
+     * badge pulse, the playable/jump-in/hint card glow pulse and the Prism sheen. All are smooth decorative motion,
+     * so 30 fps. The chevrons alone keep this non-zero for as long as a state exists; the others need no extra check.
+     */
+    override fun idleFrameMs(now: Long): Long = if (state != null) DECOR_MS else 0L
 
     fun update(now: Long) {
         // side mix
@@ -446,25 +505,30 @@ class SpriteWorld(val layout: TableLayout, private val humanId: Int = 0) {
             sp.flying = t < 1f && (abs(dx) > 1f || abs(dy) > 1f)
             if (sp.removeAt in 1..now) dead += sp.id
         }
-        dead.forEach { sprites.remove(it) }
+        for (i in dead.indices) sprites.remove(dead[i])
     }
 
     fun draw(c: Canvas, now: Long) {
         val s = state
         ensureBitmaps()
+        refreshHighlights()
+        frameHint = hint ?: -1
         update(now)
-        val (sx, sy) = fx.shakeOffset(now)
+        fx.updateShake(now)
+        val sx = fx.shakeX
+        val sy = fx.shakeY
         c.save()
         c.translate(sx, sy)
         drawTable(c, now, s)
         // sprites in z order; flying cards on top
         drawList.clear()
-        drawList.addAll(sprites.values)
+        for (sp in sprites.values) drawList.add(sp)
         drawList.sortWith(drawOrder)
-        for (sp in drawList) drawSprite(c, sp, now)
+        for (i in drawList.indices) drawSprite(c, drawList[i], now)
         if (s != null) drawOverlays(c, now, s)
         fx.draw(c, now, layout.width, layout.height)
         c.restore()
+        drawnAt = now
     }
 
     // ---------------------------------------------------------------- table
@@ -498,8 +562,6 @@ class SpriteWorld(val layout: TableLayout, private val humanId: Int = 0) {
         }
     }
 
-    private val auraCache = HashMap<Int, Shader>()
-
     private fun drawTable(c: Canvas, now: Long, s: GameState?) {
         val L = layout
         bgDay?.let { c.drawBitmap(it, 0f, 0f, null) }
@@ -512,7 +574,9 @@ class SpriteWorld(val layout: TableLayout, private val humanId: Int = 0) {
         val col = if (s.color == Suit.WILD) 0xFFFFE89A.toInt() else Gems.color(s.color).toArgb()
 
         // color aura around the piles
-        val aura = auraCache.getOrPut(col) { RadialGradient(0f, 0f, L.ringRx * 1.05f, Fx.withAlpha(col, 0.42f), Fx.withAlpha(col, 0f), Shader.TileMode.CLAMP) }
+        val aura = auraShader?.takeIf { auraCol == col }
+            ?: RadialGradient(0f, 0f, L.ringRx * 1.05f, Fx.withAlpha(col, 0.42f), Fx.withAlpha(col, 0f), Shader.TileMode.CLAMP)
+                .also { auraShader = it; auraCol = col }
         c.save()
         c.translate(L.center.x, L.center.y)
         c.scale(1f, L.ringRy / L.ringRx * 1.25f)
@@ -599,7 +663,8 @@ class SpriteWorld(val layout: TableLayout, private val humanId: Int = 0) {
         // draw pile count
         text.textSize = 13f * d
         text.color = 0xCCFFFFFF.toInt()
-        c.drawText("${s.drawPile.size}", L.drawPos.x, L.drawPos.y + L.pileCardW * 0.7f + 18f * d, text)
+        if (s.drawPile.size != pileCount) { pileCount = s.drawPile.size; pileCountText = pileCount.toString() }
+        c.drawText(pileCountText, L.drawPos.x, L.drawPos.y + L.pileCardW * 0.7f + 18f * d, text)
 
         // current color gem next to the discard pile
         val gx = L.discardPos.x + L.pileCardW * 0.62f
@@ -608,9 +673,12 @@ class SpriteWorld(val layout: TableLayout, private val humanId: Int = 0) {
         val col = if (s.color == Suit.WILD) 0xFF8B5CF6.toInt() else Gems.color(s.color).toArgb()
         p.color = 0x66000000
         c.drawCircle(gx, gy + 2 * d, r * 1.1f, p)
-        val gem = Path().apply { moveTo(gx, gy - r); lineTo(gx + r, gy); lineTo(gx, gy + r); lineTo(gx - r, gy); close() }
+        val gem = gemPath ?: Path().apply { moveTo(gx, gy - r); lineTo(gx + r, gy); lineTo(gx, gy + r); lineTo(gx - r, gy); close() }
+            .also { gemPath = it }
         p.color = 0xFF000000.toInt()
-        p.shader = LinearGradient(gx - r, gy - r, gx + r, gy + r, intArrayOf(lighten(col), col, darken(col)), null, Shader.TileMode.CLAMP)
+        p.shader = gemShader?.takeIf { gemCol == col }
+            ?: LinearGradient(gx - r, gy - r, gx + r, gy + r, intArrayOf(lighten(col), col, darken(col)), null, Shader.TileMode.CLAMP)
+                .also { gemShader = it; gemCol = col }
         c.drawPath(gem, p)
         p.shader = null
         p.style = Paint.Style.STROKE
@@ -642,8 +710,9 @@ class SpriteWorld(val layout: TableLayout, private val humanId: Int = 0) {
             p.style = Paint.Style.FILL
             text.textSize = 17f * d
             text.color = 0xFFFFFFFF.toInt()
-            val fm = text.fontMetrics
-            c.drawText("+${s.pendingDraw}", 0f, -(fm.ascent + fm.descent) / 2, text)
+            text.getFontMetrics(fm)
+            if (s.pendingDraw != stackCount) { stackCount = s.pendingDraw; stackText = "+$stackCount" }
+            c.drawText(stackText, 0f, -(fm.ascent + fm.descent) / 2, text)
             c.restore()
         }
     }
@@ -699,18 +768,18 @@ class SpriteWorld(val layout: TableLayout, private val humanId: Int = 0) {
             shadowPaint.alpha = 255
         }
         val inHand = sp.zone == Zone.HAND
-        val isPlayable = inHand && (sp.id in playable || sp.id in jumpIn)
-        val isSelected = inHand && sp.id in selected
+        val isPlayable = inHand && sp.hlPlayable
+        val isSelected = inHand && sp.hlSelected
         if (inHand && interactive && (isPlayable || isSelected)) {
             glowBmp?.let { g ->
                 val pulse = 0.5f + 0.5f * sin(now / 260f + sp.id)
-                val k = if (isSelected || sp.id == hint) 1.3f else 1.16f
+                val k = if (isSelected || sp.id == frameHint) 1.3f else 1.16f
                 val gw = w * k
                 val gh = gw * 1.4f
                 rect.set(-gw / 2, -gh / 2, gw / 2, gh / 2)
                 shadowPaint.alpha = when {
                     isSelected -> 255
-                    sp.id == hint -> (180 + 75 * pulse).toInt()
+                    sp.id == frameHint -> (180 + 75 * pulse).toInt()
                     else -> (90 + 90 * pulse).toInt()
                 }
                 c.drawBitmap(g, null, rect, shadowPaint)
@@ -776,6 +845,11 @@ class SpriteWorld(val layout: TableLayout, private val humanId: Int = 0) {
         val tx = sp.tx; val ty = sp.ty; val tr = sp.trot; val tw = sp.tw
         sp.tx = Float.NaN
         retarget(sp, tx, ty, tr, tw, TweenSpec((260 * speedFactor).toLong(), 0, 0f, 0f, 0f), now)
+    }
+
+    private companion object {
+        /** Frame interval for slow decorations while the table is otherwise still (30 fps). */
+        const val DECOR_MS = 33L
     }
 
     @Suppress("unused")

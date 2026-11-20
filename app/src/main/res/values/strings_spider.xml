@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Spider Solitaire: table, bars, toasts -->
+    <string name="spider_auto_finish">AUTO FINISH</string>
+    <string name="spider_cd_back">Back</string>
+    <string name="spider_cd_how_to_play">How to play</string>
+    <string name="spider_hud_title">SPIDER</string>
+    <plurals name="spider_hud_suits">
+        <item quantity="one">%d SUIT</item>
+        <item quantity="other">%d SUITS</item>
+    </plurals>
+    <string name="spider_hud_daily">DAILY</string>
+    <string name="spider_stat_time">Time</string>
+    <string name="spider_stat_moves">Moves</string>
+    <string name="spider_stat_score">Score</string>
+    <string name="spider_bar_new">New</string>
+    <string name="spider_daily">Daily</string>
+    <string name="spider_bar_theme">Theme</string>
+    <string name="spider_bar_hint">Hint</string>
+    <string name="spider_undo">Undo</string>
+
+    <!-- new game -->
+    <string name="spider_new_game">New Game</string>
+    <string name="spider_level_easy">Easy</string>
+    <string name="spider_level_medium">Medium</string>
+    <string name="spider_level_hard">Hard</string>
+    <string name="spider_suits_1_desc">Spades only · every deal is winnable</string>
+    <string name="spider_suits_2_desc">Spades &amp; hearts · a real challenge</string>
+    <string name="spider_suits_4_desc">All four suits · for Spider masters</string>
+    <plurals name="spider_suit_count">
+        <item quantity="one">%d Suit</item>
+        <item quantity="other">%d Suits</item>
+    </plurals>
+    <string name="spider_replay_deal">Replay deal</string>
+    <string name="spider_view_stats">View statistics</string>
+
+    <!-- daily calendar -->
+    <string name="spider_daily_title">Daily Challenge</string>
+    <string name="spider_daily_desc">A new winnable deal every day — same deal for every player.</string>
+    <string name="spider_cd_prev_month">Previous month</string>
+    <string name="spider_cd_next_month">Next month</string>
+    <string name="spider_dow_mon">M</string>
+    <string name="spider_dow_tue">T</string>
+    <string name="spider_dow_wed">W</string>
+    <string name="spider_dow_thu">T</string>
+    <string name="spider_dow_fri">F</string>
+    <string name="spider_dow_sat">S</string>
+    <string name="spider_dow_sun">S</string>
+    <string name="spider_crowns_month">%1$d / %2$d crowns this month</string>
+    <plurals name="spider_tier_days">
+        <item quantity="one">%d day</item>
+        <item quantity="other">%d days</item>
+    </plurals>
+    <string name="spider_tier_every_day">Every day</string>
+    <string name="spider_play_today_again">Play today again</string>
+    <string name="spider_play_today">Play today\'s challenge</string>
+    <string name="spider_daily_bonus">First solve of each day: +100 bonus coins</string>
+    <string name="spider_tier_bronze">Bronze</string>
+    <string name="spider_tier_silver">Silver</string>
+    <string name="spider_tier_gold">Gold</string>
+    <string name="spider_trophy_shelf">TROPHY SHELF</string>
+
+    <!-- look & feel -->
+    <string name="spider_look_title">Table &amp; Cards</string>
+    <string name="spider_look_background">BACKGROUND</string>
+    <string name="spider_look_card_backs">Card backs come from your Collection.</string>
+    <string name="spider_four_color">Four-color suits</string>
+    <string name="spider_four_color_desc">Clubs green, diamonds blue — easier to tell apart</string>
+    <string name="spider_look_controls">CONTROLS</string>
+    <string name="spider_smart_tap">Smart tap</string>
+    <string name="spider_tap_target">Tap, then target</string>
+    <string name="spider_tap_target_desc">Tap cards to pick them up, then tap the column to place them. Drag works too.</string>
+    <string name="spider_smart_tap_desc">Tap cards to send them to the best spot. Tap again to try the next spot. Drag works too.</string>
+    <string name="spider_idle_hints">Idle hints</string>
+    <string name="spider_idle_hints_desc">Gently show a good move after 25 seconds</string>
+    <string name="spider_left_handed">Left-handed layout</string>
+    <string name="spider_left_handed_desc">Stock and finished runs on the left</string>
+    <string name="spider_show_timer">Show timer</string>
+    <string name="spider_show_timer_desc">Display the game clock</string>
+
+    <!-- rules -->
+    <string name="spider_rules_title">How to Play</string>
+    <string name="spider_rules_goal_t">Goal</string>
+    <string name="spider_rules_goal_b">Build 8 complete runs from King down to Ace in a single suit. Each finished run leaves the table automatically.</string>
+    <string name="spider_rules_moving_t">Moving</string>
+    <string name="spider_rules_moving_b">Put any face-up card on a card one rank higher, in any suit (a 7 on any 8).</string>
+    <string name="spider_rules_groups_t">Moving groups</string>
+    <string name="spider_rules_groups_b">A group of cards moves together only when it runs down in order AND all in one suit.</string>
+    <string name="spider_rules_empty_t">Empty columns</string>
+    <string name="spider_rules_empty_b">Any card or same-suit run can go into an empty column. Use them wisely!</string>
+    <string name="spider_rules_dealing_t">Dealing</string>
+    <string name="spider_rules_dealing_b">Tap the stock (top right) to deal one card onto every column. Empty columns get a card too.</string>
+    <string name="spider_rules_hints_t">Hints &amp; Undo</string>
+    <string name="spider_rules_hints_b">Stuck? Hint shows a good move (tap again for another). Undo is unlimited.</string>
+    <string name="spider_rules_score_t">Score</string>
+    <string name="spider_rules_score_b">Start with 500. Each move or undo costs 1 point, each finished run earns 100.</string>
+    <string name="spider_rules_tip_t">Tip</string>
+    <string name="spider_rules_tip_b">Turn over face-down cards early, and build in one suit whenever you can.</string>
+    <string name="spider_got_it">Got it!</string>
+
+    <!-- stuck -->
+    <string name="spider_stuck_title">No moves left</string>
+    <string name="spider_stuck_body">There are no useful moves and nothing left to deal. Undo a few moves to try another path, or start a fresh game.</string>
+    <string name="spider_keep_looking">Keep looking</string>
+
+    <!-- stats -->
+    <string name="spider_stats_title">Statistics</string>
+    <string name="spider_stat_played">Played</string>
+    <string name="spider_stat_won">Won</string>
+    <string name="spider_stat_win_pct" formatted="false">Win %</string>
+    <string name="spider_stat_streak">Streak</string>
+    <string name="spider_stat_best_time">Best time</string>
+    <string name="spider_stat_fewest_moves">Fewest moves</string>
+    <string name="spider_stat_top_score">Top score</string>
+    <string name="spider_daily_solved_count">Daily Challenges solved: %1$d</string>
+    <string name="spider_close">Close</string>
+
+    <!-- win -->
+    <string name="spider_win_daily">Daily Solved!</string>
+    <string name="spider_win_title">You Win!</string>
+    <string name="spider_new_best_time">New best time!</string>
+    <string name="spider_xp">+%1$d XP</string>
+    <string name="spider_home">Home</string>
+
+    <!-- toasts -->
+    <string name="spider_toast_no_place">No place for these cards yet</string>
+    <string name="spider_toast_drop_on_column">Drop the cards on a column</string>
+    <string name="spider_toast_nothing_to_undo">Nothing to undo</string>
+    <string name="spider_err_not_allowed">That move isn\'t allowed</string>
+    <string name="spider_err_face_down">Face-down cards can\'t move</string>
+    <string name="spider_err_same_suit">Only same-suit runs move together</string>
+    <string name="spider_err_king">A King can only go to an empty column</string>
+    <!-- "A 7 goes on an 8": English needs "an" before Ace and 8; the three forms cover every case -->
+    <string name="spider_err_goes_on">A %1$s goes on a %2$s</string>
+    <string name="spider_err_goes_on_an_first">An %1$s goes on a %2$s</string>
+    <string name="spider_err_goes_on_an_second">A %1$s goes on an %2$s</string>
+    <string name="spider_rank_ace">Ace</string>
+    <string name="spider_rank_jack">Jack</string>
+    <string name="spider_rank_queen">Queen</string>
+    <string name="spider_rank_king">King</string>
+</resources>

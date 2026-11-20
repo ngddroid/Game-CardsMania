@@ -50,7 +50,9 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
 import com.puzzel.lab.cardsmania.LocalApp
+import com.puzzel.lab.cardsmania.R
 import com.puzzel.lab.cardsmania.audio.Sfx
 import com.puzzel.lab.cardsmania.data.Leveling
 import com.puzzel.lab.cardsmania.data.PlayerAvatars
@@ -105,8 +107,8 @@ fun HudBar(
         }
         Spacer(Modifier.width(8.dp))
         Column(Modifier.weight(1f)) {
-            Text(profile.name.ifBlank { "Player" }, color = Color.White, fontFamily = DisplayFamily, fontSize = 17.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
-            Text("Level ${profile.level}", color = CM.TextDim, fontSize = 11.sp, maxLines = 1)
+            Text(profile.name.ifBlank { stringResource(R.string.shell_player_default) }, color = Color.White, fontFamily = DisplayFamily, fontSize = 17.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(stringResource(R.string.shell_hud_level, profile.level), color = CM.TextDim, fontSize = 11.sp, maxLines = 1)
         }
         // coin capsule
         Row(
@@ -129,15 +131,15 @@ fun HudBar(
                 Modifier.size(28.dp).clip(CircleShape).background(Brush.verticalGradient(listOf(Color(0xFF5BF0A2), Color(0xFF13B36A))))
                     .border(1.5.dp, Color.White.copy(alpha = 0.7f), CircleShape),
                 contentAlignment = Alignment.Center,
-            ) { Icon(GameIcons.Plus, "Get coins", tint = Color.White, modifier = Modifier.size(16.dp)) }
+            ) { Icon(GameIcons.Plus, stringResource(R.string.shell_hud_get_coins), tint = Color.White, modifier = Modifier.size(16.dp)) }
         }
         if (onHelp != null) {
             Spacer(Modifier.width(6.dp))
-            RoundIconButton(GameIcons.Help, onHelp, size = 40.dp, contentDescription = "How to play")
+            RoundIconButton(GameIcons.Help, onHelp, size = 40.dp, contentDescription = stringResource(R.string.shell_how_to_play))
         }
         if (onSettings != null) {
             Spacer(Modifier.width(6.dp))
-            RoundIconButton(GameIcons.Settings, onSettings, size = 40.dp, contentDescription = "Settings")
+            RoundIconButton(GameIcons.Settings, onSettings, size = 40.dp, contentDescription = stringResource(R.string.shell_settings))
         }
     }
 }

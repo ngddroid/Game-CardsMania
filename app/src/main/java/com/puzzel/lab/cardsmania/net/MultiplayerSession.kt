@@ -1,11 +1,13 @@
 package com.puzzel.lab.cardsmania.net
 
 import android.app.Application
+import com.puzzel.lab.cardsmania.R
 import com.puzzel.lab.cardsmania.data.AvatarRef
 import com.puzzel.lab.cardsmania.data.Characters
 import com.puzzel.lab.cardsmania.data.Profile
 import com.puzzel.lab.cardsmania.engine.model.GameConfig
 import com.puzzel.lab.cardsmania.engine.model.PlayerSetup
+import com.puzzel.lab.cardsmania.i18n.Strings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -43,10 +45,10 @@ class MultiplayerSession(private val app: Application) {
     /** Opens a room on this phone. Returns null on success or an error message. */
     fun hostRoom(profile: Profile): String? {
         leaveAll()
-        val ip = NetworkInfo.localIpv4(app) ?: return "Connect to Wi-Fi (or turn on your hotspot) to host a room."
+        val ip = NetworkInfo.localIpv4(app) ?: return Strings.get(R.string.mp_err_no_wifi)
         val h = RoomHost(
             scope = scope,
-            hostName = profile.name.ifBlank { "Host" },
+            hostName = profile.name.ifBlank { Strings.get(R.string.mp_host) },
             hostAvatar = profile.avatar,
             playerAvatar = { AvatarRef.player(it) },
             botIdentity = { i, seed ->
@@ -55,14 +57,14 @@ class MultiplayerSession(private val app: Application) {
                 c.name to c.id
             },
         )
-        if (!h.start(ip)) return "Couldn't open a room on this network."
+        if (!h.start(ip)) return Strings.get(R.string.mp_err_open_failed)
         host = h
         _role.value = NetRole.HOST
-        discovery.advertise(profile.name.ifBlank { "Host" }, h.port)
+        discovery.advertise(profile.name.ifBlank { Strings.get(R.string.mp_host) }, h.port)
         return null
     }
 
-    fun hostSetup(profile: Profile) = PlayerSetup(profile.name.ifBlank { "Host" }, AvatarRef.player(profile.avatar), isHuman = true)
+    fun hostSetup(profile: Profile) = PlayerSetup(profile.name.ifBlank { Strings.get(R.string.mp_host) }, AvatarRef.player(profile.avatar), isHuman = true)
 
     fun startHostedGame(profile: Profile): GameConfig? = host?.startGame(System.nanoTime(), hostSetup(profile))
 
@@ -72,12 +74,23 @@ class MultiplayerSession(private val app: Application) {
     fun startHostedMindi(profile: Profile): HostedMindi? {
         val h = host ?: return null
         val seed = System.nanoTime()
-        val me = com.puzzel.lab.cardsmania.mindi.MindiSeat(profile.name.ifBlank { "Host" }, AvatarRef.player(profile.avatar), isHuman = true)
+        val me = com.puzzel.lab.cardsmania.mindi.MindiSeat(profile.name.ifBlank { Strings.get(R.string.mp_host) }, AvatarRef.player(profile.avatar), isHuman = true)
         val (setup, seats) = h.startMindi(seed, me)
         return HostedMindi(setup, seats, seed)
     }
 
-    fun closeRoom(reason: String = "The host closed the room.") {
+    /** A hosted Bhabhi game: what the host's Bhabhi screen needs to start. */
+    data class HostedBhabhi(val setup: com.puzzel.lab.cardsmania.bhabhi.BhabhiSetup, val seats: List<com.puzzel.lab.cardsmania.bhabhi.BhabhiSeat>, val seed: Long)
+
+    fun startHostedBhabhi(profile: Profile): HostedBhabhi? {
+        val h = host ?: return null
+        val seed = System.nanoTime()
+        val me = com.puzzel.lab.cardsmania.bhabhi.BhabhiSeat(profile.name.ifBlank { Strings.get(R.string.mp_host) }, AvatarRef.player(profile.avatar), isHuman = true)
+        val (setup, seats) = h.startBhabhi(seed, me)
+        return HostedBhabhi(setup, seats, seed)
+    }
+
+    fun closeRoom(reason: String = Strings.get(R.string.mp_host_closed_room)) {
         discovery.stopAdvertising()
         host?.close(reason)
         host = null
@@ -89,7 +102,7 @@ class MultiplayerSession(private val app: Application) {
     suspend fun join(ip: String, port: Int, profile: Profile): String? {
         leaveAll()
         val c = RoomClient(scope)
-        val err = c.join(ip, port, NetMsg.Hello(profile.name.ifBlank { "Guest" }, profile.avatar, deviceToken))
+        val err = c.join(ip, port, NetMsg.Hello(profile.name.ifBlank { Strings.get(R.string.mp_guest) }, profile.avatar, deviceToken))
         if (err != null) return err
         client = c
         _role.value = NetRole.GUEST

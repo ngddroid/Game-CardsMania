@@ -53,12 +53,15 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.puzzel.lab.cardsmania.GameLaunch
 import com.puzzel.lab.cardsmania.LocalApp
+import com.puzzel.lab.cardsmania.R
 import com.puzzel.lab.cardsmania.audio.Sfx
 import com.puzzel.lab.cardsmania.data.BotPick
 import com.puzzel.lab.cardsmania.data.Characters
@@ -109,7 +112,7 @@ fun GameSetupScreen(initialMode: GameMode?, onBack: () -> Unit, onStart: () -> U
 
     GameBackdrop(style = BackdropStyle.LOBBY) {
         Column(Modifier.fillMaxSize().statusBarsPadding()) {
-            ScreenTitleBar("Game Setup", onBack)
+            ScreenTitleBar(stringResource(R.string.mania_setup_title), onBack)
             Column(
                 Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(14.dp)
@@ -118,7 +121,7 @@ fun GameSetupScreen(initialMode: GameMode?, onBack: () -> Unit, onStart: () -> U
                 ModeHero(mode)
 
                 // ---------------- mode
-                SectionHeader("Choose your mode")
+                SectionHeader(stringResource(R.string.mania_setup_choose_mode))
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     GameMode.entries.forEach { m ->
                         ModeTile(m, m == mode, Modifier.weight(1f)) { setup = setup.copy(mode = m) }
@@ -128,7 +131,7 @@ fun GameSetupScreen(initialMode: GameMode?, onBack: () -> Unit, onStart: () -> U
 
                 // ---------------- players
                 GlassPanel(Modifier.fillMaxWidth()) {
-                    SectionHeader("Players", trailing = {
+                    SectionHeader(stringResource(R.string.mania_setup_players), trailing = {
                         Text("${setup.bots.size + 1} / 6", color = CM.GoldLight, fontWeight = FontWeight.Black)
                     })
                     Spacer(Modifier.height(6.dp))
@@ -142,7 +145,7 @@ fun GameSetupScreen(initialMode: GameMode?, onBack: () -> Unit, onStart: () -> U
                         }
                     }
                     Spacer(Modifier.height(12.dp))
-                    Text("All bots", color = CM.TextDim, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.mania_setup_all_bots), color = CM.TextDim, fontSize = 12.sp, fontWeight = FontWeight.Bold)
                     Spacer(Modifier.height(6.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                         Difficulty.entries.forEach { d ->
@@ -172,27 +175,27 @@ fun GameSetupScreen(initialMode: GameMode?, onBack: () -> Unit, onStart: () -> U
 
                 // ---------------- cards
                 GlassPanel(Modifier.fillMaxWidth()) {
-                    SectionHeader("Cards")
+                    SectionHeader(stringResource(R.string.mania_setup_cards))
                     Spacer(Modifier.height(10.dp))
-                    Label("Starting hand")
+                    Label(stringResource(R.string.mania_setup_starting_hand))
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        listOf(5, 7, 10).forEach { n -> ChoiceChip("$n cards", setup.handSize == n, { setup = setup.copy(handSize = n) }, Modifier.weight(1f)) }
+                        listOf(5, 7, 10).forEach { n -> ChoiceChip(pluralStringResource(R.plurals.mania_cards, n, n), setup.handSize == n, { setup = setup.copy(handSize = n) }, Modifier.weight(1f)) }
                     }
                     Spacer(Modifier.height(12.dp))
-                    Label("Deck")
+                    Label(stringResource(R.string.mania_setup_deck))
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        ChoiceChip("Standard", setup.deckCount == 1, { setup = setup.copy(deckCount = 1) }, Modifier.weight(1f))
-                        ChoiceChip("Double deck", setup.deckCount == 2, { setup = setup.copy(deckCount = 2) }, Modifier.weight(1f))
+                        ChoiceChip(stringResource(R.string.mania_setup_standard), setup.deckCount == 1, { setup = setup.copy(deckCount = 1) }, Modifier.weight(1f))
+                        ChoiceChip(stringResource(R.string.mania_setup_double_deck), setup.deckCount == 2, { setup = setup.copy(deckCount = 2) }, Modifier.weight(1f))
                     }
                     if (setup.bots.size >= 4 && setup.deckCount == 1 && mode == GameMode.CHAOS) {
                         Spacer(Modifier.height(6.dp))
-                        Text("Tip: a double deck keeps big Merciless tables flowing.", color = CM.Aqua, fontSize = 12.sp)
+                        Text(stringResource(R.string.mania_setup_tip_double), color = CM.Aqua, fontSize = 12.sp)
                     }
                     Spacer(Modifier.height(12.dp))
-                    Label("Match length")
+                    Label(stringResource(R.string.mania_setup_match_length))
                     FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         listOf(0, 100, 250, 500, 1000).forEach { t ->
-                            ChoiceChip(if (t == 0) "Single round" else "First to $t", setup.targetScore == t, { setup = setup.copy(targetScore = t) })
+                            ChoiceChip(if (t == 0) stringResource(R.string.mania_single_round) else stringResource(R.string.mania_first_to, t), setup.targetScore == t, { setup = setup.copy(targetScore = t) })
                         }
                     }
                 }
@@ -202,10 +205,10 @@ fun GameSetupScreen(initialMode: GameMode?, onBack: () -> Unit, onStart: () -> U
 
                 // ---------------- speed
                 GlassPanel(Modifier.fillMaxWidth()) {
-                    SectionHeader("Game speed")
+                    SectionHeader(stringResource(R.string.mania_setup_speed))
                     Spacer(Modifier.height(10.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        listOf("Relaxed", "Normal", "Fast").forEachIndexed { i, s ->
+                        listOf(stringResource(R.string.mania_speed_relaxed), stringResource(R.string.mania_speed_normal), stringResource(R.string.mania_speed_fast)).forEachIndexed { i, s ->
                             ChoiceChip(s, speed == i, {
                                 speed = i
                                 scope.launch { app.settings.update { it.copy(speed = i) } }
@@ -223,7 +226,7 @@ fun GameSetupScreen(initialMode: GameMode?, onBack: () -> Unit, onStart: () -> U
                     .padding(horizontal = 16.dp, vertical = 12.dp)
             ) {
                 GameButton(
-                    "START GAME", {
+                    stringResource(R.string.mania_start_game), {
                         val p = profile ?: return@GameButton
                         scope.launch {
                             val saved = app.profile.update { it.copy(setup = setup) }
@@ -312,7 +315,7 @@ private fun BotRow(pick: BotPick, onCycle: () -> Unit, onDifficulty: (Difficulty
         Spacer(Modifier.width(8.dp))
         Column(Modifier.weight(1f)) {
             Text(ch.name, color = Color.White, fontWeight = FontWeight.Black, fontSize = 14.sp, maxLines = 1)
-            Text("${ch.style} · tap avatar to change", color = CM.TextMuted, fontSize = 10.sp, maxLines = 1)
+            Text(stringResource(R.string.mania_setup_bot_hint, ch.style), color = CM.TextMuted, fontSize = 10.sp, maxLines = 1)
         }
         Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
             Difficulty.entries.forEach { d ->
@@ -358,31 +361,31 @@ internal fun RuleRow(title: String, desc: String, checked: Boolean, enabled: Boo
 @Composable
 internal fun HouseRulesPanel(mode: GameMode, rules: HouseRules, setRules: (HouseRules) -> Unit) {
     GlassPanel(Modifier.fillMaxWidth()) {
-        SectionHeader("House rules", trailing = {
+        SectionHeader(stringResource(R.string.mania_rules_title), trailing = {
             Icon(
-                GameIcons.Refresh, "Reset rules", tint = CM.TextDim,
+                GameIcons.Refresh, stringResource(R.string.mania_cd_reset_rules), tint = CM.TextDim,
                 modifier = Modifier.size(22.dp).clickable { setRules(ModeInfo.defaultRules(mode)) }
             )
         })
         Spacer(Modifier.height(6.dp))
         if (mode == GameMode.CHAOS) {
-            Text("Always on in Merciless: stacking, Seven swap & Zero rotate, draw until you match, and the 25-card knockout rule.", color = CM.TextDim, fontSize = 12.sp)
+            Text(stringResource(R.string.mania_rules_merciless_note), color = CM.TextDim, fontSize = 12.sp)
             Spacer(Modifier.height(6.dp))
         }
         if (mode != GameMode.CHAOS) {
-            RuleRow("Stacking", "Answer a +card with an equal or bigger +card to pass the total on.", rules.stacking) { setRules(rules.copy(stacking = it)) }
-            RuleRow("Seven & Zero", if (mode == GameMode.ECLIPSE) "A 7 swaps hands with a rival of your choice." else "A 7 swaps hands with a rival; a 0 passes every hand along.", rules.sevenZero) { setRules(rules.copy(sevenZero = it)) }
-            RuleRow("Draw to Match", "Keep drawing until you get a card you can play.", rules.drawToMatch) { setRules(rules.copy(drawToMatch = it)) }
+            RuleRow(stringResource(R.string.mania_rule_stacking), stringResource(R.string.mania_rule_stacking_desc), rules.stacking) { setRules(rules.copy(stacking = it)) }
+            RuleRow(stringResource(R.string.mania_rule_seven_zero), if (mode == GameMode.ECLIPSE) stringResource(R.string.mania_rule_seven_desc) else stringResource(R.string.mania_rule_seven_zero_desc), rules.sevenZero) { setRules(rules.copy(sevenZero = it)) }
+            RuleRow(stringResource(R.string.mania_rule_draw_match), stringResource(R.string.mania_rule_draw_match_desc), rules.drawToMatch) { setRules(rules.copy(drawToMatch = it)) }
             RuleRow(
-                "Challenge",
-                if (mode == GameMode.CLASSIC) "Wild Draw Four may be challenged. Off when stacking is on." else "Wild Draw Two may be challenged. Off when stacking is on.",
+                stringResource(R.string.mania_rule_challenge),
+                if (mode == GameMode.CLASSIC) stringResource(R.string.mania_rule_challenge_four_desc) else stringResource(R.string.mania_rule_challenge_two_desc),
                 rules.challenge && !rules.stacking, enabled = !rules.stacking,
             ) { setRules(rules.copy(challenge = it)) }
         }
-        RuleRow("Jump-In", "Hold the exact same card as the top card? Play it out of turn!", rules.jumpIn) { setRules(rules.copy(jumpIn = it)) }
-        RuleRow("Forced Play", "A playable drawn card must be played.", rules.forcedPlay) { setRules(rules.copy(forcedPlay = it)) }
-        RuleRow("Combo Drop", "Play several cards with the same number in one go.", rules.comboDrop, badge = "NEW") { setRules(rules.copy(comboDrop = it)) }
-        RuleRow("Mania Power-ups", "Action cards fill a meter that earns Peek and Shield tokens.", rules.powerUps, badge = "NEW") { setRules(rules.copy(powerUps = it)) }
+        RuleRow(stringResource(R.string.mania_rule_jump_in), stringResource(R.string.mania_rule_jump_in_desc), rules.jumpIn) { setRules(rules.copy(jumpIn = it)) }
+        RuleRow(stringResource(R.string.mania_rule_forced), stringResource(R.string.mania_rule_forced_desc), rules.forcedPlay) { setRules(rules.copy(forcedPlay = it)) }
+        RuleRow(stringResource(R.string.mania_rule_combo), stringResource(R.string.mania_rule_combo_desc), rules.comboDrop, badge = stringResource(R.string.mania_badge_new)) { setRules(rules.copy(comboDrop = it)) }
+        RuleRow(stringResource(R.string.mania_rule_powerups), stringResource(R.string.mania_rule_powerups_desc), rules.powerUps, badge = stringResource(R.string.mania_badge_new)) { setRules(rules.copy(powerUps = it)) }
     }
 }
 

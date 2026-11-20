@@ -21,8 +21,13 @@ class CardsManiaApp : Application() {
     lateinit var container: AppContainer
         private set
 
+    override fun attachBaseContext(base: android.content.Context) {
+        super.attachBaseContext(com.puzzel.lab.cardsmania.i18n.LocaleManager.wrap(base))
+    }
+
     override fun onCreate() {
         super.onCreate()
+        com.puzzel.lab.cardsmania.i18n.Strings.init(this)
         container = AppContainer(this)
     }
 }
@@ -47,6 +52,11 @@ class AppContainer(app: Application) {
 
     @Volatile var pendingLaunch: GameLaunch? = null
     @Volatile var pendingMindi: com.puzzel.lab.cardsmania.ui.mindi.MindiLaunch? = null
+    @Volatile var pendingBhabhi: com.puzzel.lab.cardsmania.ui.bhabhi.BhabhiLaunch? = null
+    /** Lobby section last shown (0 = Card Mania, 1 = Indian Card); kept while the app is running. */
+    var lobbySection: Int = 0
+    /** Where to go after the first-run Language screen. */
+    var afterLanguage: String? = null
 
     init {
         scope.launch {

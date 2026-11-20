@@ -56,7 +56,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.annotation.StringRes
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import com.puzzel.lab.cardsmania.LocalApp
+import com.puzzel.lab.cardsmania.R
+import com.puzzel.lab.cardsmania.i18n.Strings
 import com.puzzel.lab.cardsmania.audio.Sfx
 import com.puzzel.lab.cardsmania.data.AvatarFrame
 import com.puzzel.lab.cardsmania.data.PlayerAvatars
@@ -93,7 +98,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.sin
 
-private enum class Category(val label: String, val columns: Int) { TABLES("Tables", 2), BACKS("Backs", 3), FRAMES("Frames", 3), SPIDER("Spider", 3) }
+private enum class Category(@StringRes val labelRes: Int, val columns: Int) {
+    TABLES(R.string.shell_cat_tables, 2), BACKS(R.string.shell_cat_backs, 3), FRAMES(R.string.shell_cat_frames, 3), SPIDER(R.string.shell_cat_spider, 3)
+}
 
 private data class ShopItem(val category: Category, val name: String, val title: String, val price: Int, val level: Int) {
     val key: String
@@ -159,18 +166,18 @@ fun CollectionTab() {
                 .padding(horizontal = 16.dp)
         ) {
             Row(Modifier.fillMaxWidth().padding(vertical = 10.dp).staggerIn(0), verticalAlignment = Alignment.CenterVertically) {
-                OutlinedTitle("Collection", fontSize = 30.sp, outlineWidth = 10f)
+                OutlinedTitle(stringResource(R.string.shell_tab_collection), fontSize = 30.sp, outlineWidth = 10f)
                 Spacer(Modifier.weight(1f))
                 CoinChip(profile.coins)
             }
             Row(Modifier.fillMaxWidth().staggerIn(1), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 Category.entries.forEachIndexed { i, c ->
-                    ChoiceChip(c.label, cat == i, { cat = i }, Modifier.weight(1f))
+                    ChoiceChip(stringResource(c.labelRes), cat == i, { cat = i }, Modifier.weight(1f))
                 }
             }
             if (Category.entries[cat] == Category.SPIDER) {
                 Spacer(Modifier.height(8.dp))
-                Text("Free table backgrounds for Spider Solitaire — tap to use.", color = CM.TextDim, fontSize = 12.sp)
+                Text(stringResource(R.string.shell_collection_spider_hint), color = CM.TextDim, fontSize = 12.sp)
             }
             Spacer(Modifier.height(14.dp))
             val category = Category.entries[cat]
@@ -190,7 +197,7 @@ fun CollectionTab() {
                                         }
                                         profile.level < item.level -> {
                                             app.sound.play(Sfx.ERROR)
-                                            showToast("Reach level ${item.level} to unlock ${item.title}")
+                                            showToast(Strings.get(R.string.shell_collection_reach_level, item.level, item.title))
                                         }
                                         else -> confirm = item
                                     }
@@ -225,14 +232,16 @@ fun CollectionTab() {
 
     unlockedItem?.let { item ->
         RewardPopup(
-            title = "UNLOCKED!", amount = 0, subtitle = "${item.title} is now equipped.", buttonText = "AWESOME",
+            title = stringResource(R.string.shell_collection_unlocked), amount = 0,
+            subtitle = stringResource(R.string.shell_collection_equipped_msg, item.title),
+            buttonText = stringResource(R.string.shell_collection_awesome),
             onCollect = { unlockedItem = null },
             icon = { Box(Modifier.width(180.dp)) { ItemPreview(item, profile) } },
         )
     }
 
     confirm?.let { item ->
-        GemDialog(title = "Unlock ${item.title}?", onDismiss = { confirm = null }) {
+        GemDialog(title = stringResource(R.string.shell_collection_unlock_q, item.title), onDismiss = { confirm = null }) {
             Box(Modifier.width(170.dp)) { ItemPreview(item, profile) }
             Spacer(Modifier.height(14.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -240,16 +249,16 @@ fun CollectionTab() {
                 Spacer(Modifier.width(6.dp))
                 Text("${item.price}", color = CM.GoldLight, fontSize = 26.sp, fontWeight = FontWeight.Black)
             }
-            Text("You have ${profile.coins} coins", color = CM.TextDim, fontSize = 13.sp)
+            Text(pluralStringResource(R.plurals.shell_collection_you_have, profile.coins, profile.coins), color = CM.TextDim, fontSize = 13.sp)
             Spacer(Modifier.height(16.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                GameButton("CANCEL", { confirm = null }, style = ButtonStyle.GLASS, modifier = Modifier.weight(1f), height = 50.dp, fontSize = 16.sp)
+                GameButton(stringResource(R.string.shell_cancel), { confirm = null }, style = ButtonStyle.GLASS, modifier = Modifier.weight(1f), height = 50.dp, fontSize = 16.sp)
                 GameButton(
-                    "BUY",
+                    stringResource(R.string.shell_collection_buy),
                     onClick = {
                         if (profile.coins < item.price) {
                             app.sound.play(Sfx.ERROR)
-                            showToast("Not enough coins — win matches and open gifts to earn more!")
+                            showToast(Strings.get(R.string.shell_collection_not_enough))
                             confirm = null
                         } else {
                             scope.launch {
@@ -330,9 +339,9 @@ private fun ItemCard(item: ShopItem, profile: Profile, modifier: Modifier, onCli
         Text(item.title, color = Color.White, fontSize = 13.sp, fontFamily = DisplayFamily, maxLines = 1, textAlign = TextAlign.Center)
         Spacer(Modifier.height(3.dp))
         when {
-            equipped -> Text("EQUIPPED", color = CM.GoldLight, fontSize = 11.sp, fontWeight = FontWeight.Black)
-            owned -> Text("TAP TO EQUIP", color = CM.Emerald, fontSize = 11.sp, fontWeight = FontWeight.Black)
-            lockedLevel -> Text("LEVEL ${item.level}", color = CM.TextDim, fontSize = 11.sp, fontWeight = FontWeight.Black)
+            equipped -> Text(stringResource(R.string.shell_collection_equipped), color = CM.GoldLight, fontSize = 11.sp, fontWeight = FontWeight.Black)
+            owned -> Text(stringResource(R.string.shell_collection_tap_equip), color = CM.Emerald, fontSize = 11.sp, fontWeight = FontWeight.Black)
+            lockedLevel -> Text(stringResource(R.string.shell_collection_level, item.level), color = CM.TextDim, fontSize = 11.sp, fontWeight = FontWeight.Black)
             else -> Row(verticalAlignment = Alignment.CenterVertically) {
                 CoinIcon(14.dp)
                 Spacer(Modifier.width(3.dp))

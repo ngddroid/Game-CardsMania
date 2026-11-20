@@ -16,6 +16,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.puzzel.lab.cardsmania.GameLaunch
 import com.puzzel.lab.cardsmania.LocalApp
+import com.puzzel.lab.cardsmania.R
+import com.puzzel.lab.cardsmania.i18n.Strings
 import com.puzzel.lab.cardsmania.data.GameFactory
 import com.puzzel.lab.cardsmania.engine.model.GameMode
 import com.puzzel.lab.cardsmania.ui.game.GameScreen
@@ -32,6 +34,9 @@ import com.puzzel.lab.cardsmania.ui.settings.SettingsScreen
 import com.puzzel.lab.cardsmania.ui.setup.GameSetupScreen
 import com.puzzel.lab.cardsmania.ui.splash.SplashScreen
 import com.puzzel.lab.cardsmania.ui.spider.SpiderScreen
+import com.puzzel.lab.cardsmania.ui.bhabhi.BhabhiLaunch
+import com.puzzel.lab.cardsmania.ui.bhabhi.BhabhiScreen
+import com.puzzel.lab.cardsmania.ui.bhabhi.BhabhiSetupScreen
 import com.puzzel.lab.cardsmania.ui.mindi.MindiLaunch
 import com.puzzel.lab.cardsmania.ui.mindi.MindiScreen
 import com.puzzel.lab.cardsmania.ui.mindi.MindiSetupScreen
@@ -54,6 +59,10 @@ object Routes {
     const val SPIDER = "spider?daily={daily}"
     const val MINDI_SETUP = "mindi_setup"
     const val MINDI = "mindi"
+    const val BHABHI_SETUP = "bhabhi_setup"
+    const val BHABHI = "bhabhi"
+    const val LANGUAGE = "language?first={first}"
+    fun language(first: Boolean) = "language?first=$first"
     fun spider(daily: String? = null) = "spider?daily=${daily ?: ""}"
     const val MP_HOST = "mp_host"
     const val MP_JOIN = "mp_join"
@@ -67,6 +76,13 @@ object Routes {
 private fun NavHostController.goMain() = navigate(Routes.MAIN) {
     popUpTo(0) { inclusive = true }
     launchSingleTop = true
+}
+
+/** Where a room's game is played. */
+private fun com.puzzel.lab.cardsmania.net.RoomGame.route(): String = when (this) {
+    com.puzzel.lab.cardsmania.net.RoomGame.MANIA -> Routes.GAME
+    com.puzzel.lab.cardsmania.net.RoomGame.MINDI -> Routes.MINDI
+    com.puzzel.lab.cardsmania.net.RoomGame.BHABHI -> Routes.BHABHI
 }
 
 private fun parseMode(s: String?): GameMode? = s?.takeIf { it.isNotBlank() }?.let { runCatching { GameMode.valueOf(it) }.getOrNull() }
@@ -91,13 +107,40 @@ fun AppNavHost() {
         popExitTransition = { fadeOut(tween(220)) + scaleOut(tween(220), targetScale = 0.96f) },
     ) {
         composable(Routes.SPLASH) {
+            val ctx = androidx.compose.ui.platform.LocalContext.current
             SplashScreen(onFinished = { onboardingDone, profileCreated ->
-                when {
-                    !onboardingDone -> nav.navigate(Routes.ONBOARDING) { popUpTo(0) { inclusive = true } }
-                    !profileCreated -> nav.navigate(Routes.PROFILE_SETUP) { popUpTo(0) { inclusive = true } }
-                    else -> nav.goMain()
+                val next = when {
+                    !onboardingDone -> Routes.ONBOARDING
+                    !profileCreated -> Routes.PROFILE_SETUP
+                    else -> Routes.MAIN
                 }
+                // first launch: choose a language right after the splash
+                if (!com.puzzel.lab.cardsmania.i18n.LocaleManager.hasChosen(ctx)) {
+                    app.afterLanguage = next
+                    nav.navigate(Routes.language(true)) { popUpTo(0) { inclusive = true } }
+                } else if (next == Routes.MAIN) nav.goMain()
+                else nav.navigate(next) { popUpTo(0) { inclusive = true } }
             })
+        }
+        composable(
+            Routes.LANGUAGE,
+            arguments = listOf(androidx.navigation.navArgument("first") { type = androidx.navigation.NavType.BoolType; defaultValue = false }),
+        ) { entry ->
+            val first = entry.arguments?.getBoolean("first") ?: false
+            val activity = androidx.compose.ui.platform.LocalContext.current as? android.app.Activity
+            com.puzzel.lab.cardsmania.ui.language.LanguageScreen(
+                firstRun = first,
+                onBack = { nav.popBackStack() },
+                onDone = { changed ->
+                    if (first) {
+                        val next = app.afterLanguage ?: Routes.ONBOARDING
+                        app.afterLanguage = null
+                        nav.navigate(next) { popUpTo(0) { inclusive = true } }
+                    } else nav.popBackStack()
+                    // a new language needs a fresh activity so every screen re-reads its text
+                    if (changed) activity?.recreate()
+                },
+            )
         }
         composable(Routes.ONBOARDING) {
             OnboardingScreen(onDone = {
@@ -130,12 +173,87 @@ fun AppNavHost() {
                 onMultiplayer = { nav.navigate(Routes.MP_HUB) { launchSingleTop = true } },
                 onSpider = { nav.navigate(Routes.spider()) { launchSingleTop = true } },
                 onMindi = { nav.navigate(Routes.MINDI_SETUP) { launchSingleTop = true } },
+                onBhabhi = { nav.navigate(Routes.BHABHI_SETUP) { launchSingleTop = true } },
                 onSpiderDaily = { nav.navigate(Routes.spider(GameFactory.today())) { launchSingleTop = true } },
                 onMindiDaily = {
                     app.pendingMindi = MindiLaunch(setup = MindiViewModel.dailySetup(), daily = MindiViewModel.today())
                     nav.navigate(Routes.MINDI) { launchSingleTop = true }
                 },
             )
+        }
+        composable(Routes.BHABHI_SETUP) {
+            BhabhiSetupScreen(
+                onBack = { nav.popBackStack() },
+                onStart = { launch ->
+                    app.pendingBhabhi = launch
+                    nav.navigate(Routes.BHABHI) { launchSingleTop = true }
+                },
+            )
+        }
+        composable(Routes.BHABHI) {
+            // a new key = a fresh ViewModel and table for every new game (Play Again)
+            val bhabhiKeyState = androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableIntStateOf(0) }
+            val bhabhiKey = bhabhiKeyState.intValue
+            val mp = app.multiplayer
+            val launch = androidx.compose.runtime.remember(bhabhiKey) {
+                app.pendingBhabhi.also { app.pendingBhabhi = null }
+                    // never start a local game while this phone is seated in a multiplayer Bhabhi game
+                    ?: if (mp.client?.status?.value == com.puzzel.lab.cardsmania.net.ClientStatus.InGame) BhabhiLaunch(net = NetRole.GUEST)
+                    else BhabhiLaunch(resume = true)
+            }
+            // Guests follow the host: a new BhabhiStart = rematch, the lobby again = back to the room.
+            if (launch.net == NetRole.GUEST) {
+                val client = mp.client
+                if (client != null) {
+                    val firstStart = androidx.compose.runtime.remember(bhabhiKey) { client.starts.replayCache.lastOrNull() }
+                    androidx.compose.runtime.LaunchedEffect(bhabhiKey) {
+                        client.starts.collect { st ->
+                            if (st !== firstStart && st is NetMsg.BhabhiStart) {
+                                app.pendingBhabhi = BhabhiLaunch(net = NetRole.GUEST)
+                                bhabhiKeyState.intValue = bhabhiKey + 1
+                            }
+                        }
+                    }
+                    androidx.compose.runtime.LaunchedEffect(Unit) {
+                        client.status.collect { st ->
+                            if (st == com.puzzel.lab.cardsmania.net.ClientStatus.InLobby) {
+                                if (!nav.popBackStack(Routes.MP_LOBBY, false)) nav.navigate(Routes.MP_LOBBY) { popUpTo(Routes.MAIN); launchSingleTop = true }
+                            }
+                        }
+                    }
+                }
+            }
+            androidx.compose.runtime.key(bhabhiKey) {
+                BhabhiScreen(
+                    launch = launch,
+                    vmKey = "bhabhi_$bhabhiKey",
+                    onExit = {
+                        when (launch.net) {
+                            NetRole.HOST -> mp.closeRoom(Strings.get(R.string.shell_host_left))
+                            NetRole.GUEST -> mp.leaveRoom()
+                            else -> Unit
+                        }
+                        if (!nav.popBackStack(Routes.MAIN, false)) nav.goMain()
+                    },
+                    onHowTo = { nav.navigate(Routes.howto(null)) },
+                    onPlayAgain = { l ->
+                        if (launch.net == NetRole.HOST) {
+                            scope.launch {
+                                val hosted = mp.startHostedBhabhi(app.profile.current()) ?: return@launch
+                                app.pendingBhabhi = BhabhiLaunch(setup = hosted.setup, net = NetRole.HOST, seats = hosted.seats, seed = hosted.seed)
+                                bhabhiKeyState.intValue = bhabhiKey + 1
+                            }
+                        } else {
+                            app.pendingBhabhi = l
+                            bhabhiKeyState.intValue = bhabhiKey + 1
+                        }
+                    },
+                    onBackToRoom = if (launch.net == NetRole.HOST) ({
+                        mp.host?.backToLobby()
+                        if (!nav.popBackStack(Routes.MP_HOST, false)) nav.navigate(Routes.MP_HOST) { popUpTo(Routes.MAIN); launchSingleTop = true }
+                    }) else null,
+                )
+            }
         }
         composable(Routes.MINDI_SETUP) {
             MindiSetupScreen(
@@ -187,7 +305,7 @@ fun AppNavHost() {
                     vmKey = "mindi_$mindiKey",
                     onExit = {
                         when (launch.net) {
-                            NetRole.HOST -> mp.closeRoom("The host left the game.")
+                            NetRole.HOST -> mp.closeRoom(Strings.get(R.string.shell_host_left))
                             NetRole.GUEST -> mp.leaveRoom()
                             else -> Unit
                         }
@@ -233,8 +351,8 @@ fun AppNavHost() {
         composable(Routes.MP_HOST) {
             HostRoomScreen(
                 onClosed = { if (!nav.popBackStack(Routes.MAIN, false)) nav.goMain() },
-                onStart = { mindi ->
-                    nav.navigate(if (mindi) Routes.MINDI else Routes.GAME) { popUpTo(Routes.MP_HOST); launchSingleTop = true }
+                onStart = { game ->
+                    nav.navigate(game.route()) { popUpTo(Routes.MP_HOST); launchSingleTop = true }
                 },
             )
         }
@@ -247,8 +365,8 @@ fun AppNavHost() {
         composable(Routes.MP_LOBBY) {
             GuestLobbyScreen(
                 onLeft = { if (!nav.popBackStack(Routes.MAIN, false)) nav.goMain() },
-                onGameStart = { mindi ->
-                    nav.navigate(if (mindi) Routes.MINDI else Routes.GAME) { popUpTo(Routes.MP_LOBBY); launchSingleTop = true }
+                onGameStart = { game ->
+                    nav.navigate(game.route()) { popUpTo(Routes.MP_LOBBY); launchSingleTop = true }
                 },
             )
         }
@@ -288,6 +406,7 @@ fun AppNavHost() {
                 onBack = { nav.popBackStack() },
                 onLegal = { doc -> nav.navigate(Routes.legal(doc)) },
                 onHowTo = { nav.navigate(Routes.howto(null)) },
+                onLanguage = { nav.navigate(Routes.language(false)) { launchSingleTop = true } },
             )
         }
         composable(Routes.LEGAL, arguments = listOf(navArgument("doc") { type = NavType.StringType })) { entry ->

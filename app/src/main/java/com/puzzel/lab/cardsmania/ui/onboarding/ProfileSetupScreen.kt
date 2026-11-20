@@ -48,7 +48,9 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
 import com.puzzel.lab.cardsmania.LocalApp
+import com.puzzel.lab.cardsmania.R
 import com.puzzel.lab.cardsmania.audio.Sfx
 import com.puzzel.lab.cardsmania.data.AvatarFrame
 import com.puzzel.lab.cardsmania.data.PlayerAvatars
@@ -83,10 +85,10 @@ fun ProfileSetupScreen(onDone: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(Modifier.height(12.dp))
-            OutlinedTitle("Create Your Player", fontSize = 32.sp, outlineWidth = 11f, modifier = Modifier.staggerIn(0))
+            OutlinedTitle(stringResource(R.string.shell_setup_title), fontSize = 32.sp, outlineWidth = 11f, modifier = Modifier.staggerIn(0))
             Spacer(Modifier.height(6.dp))
             Text(
-                "Pick a name and an avatar. Your rivals are waiting!",
+                stringResource(R.string.shell_setup_sub),
                 color = CM.TextDim,
                 fontSize = 15.sp,
                 textAlign = TextAlign.Center,
@@ -97,7 +99,7 @@ fun ProfileSetupScreen(onDone: () -> Unit) {
                 ProfileEditorContent(
                     initialName = if (profile.profileCreated) profile.name else "",
                     initialAvatar = profile.avatar,
-                    confirmText = "Let's Go!",
+                    confirmText = stringResource(R.string.shell_setup_lets_go),
                     frame = AvatarFrame.GOLD,
                     onSave = { name, avatar ->
                         scope.launch {
@@ -127,7 +129,7 @@ fun ProfileEditorContent(
     var avatar by remember { mutableIntStateOf(initialAvatar) }
     var focused by remember { mutableStateOf(false) }
     val focus = LocalFocusManager.current
-    val pulse = rememberPulse(1400)
+    val pulse by rememberPulse(1400)
 
     Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
         AvatarBadge(PlayerAvatars.get(avatar), size = 104.dp, frame = frame, glow = 0.4f + 0.5f * pulse)
@@ -159,7 +161,7 @@ fun ProfileEditorContent(
                     contentAlignment = Alignment.Center
                 ) {
                     if (name.isEmpty()) {
-                        Text("Your name", color = CM.TextMuted, fontSize = 22.sp, fontWeight = FontWeight.Black, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+                        Text(stringResource(R.string.shell_name_hint), color = CM.TextMuted, fontSize = 22.sp, fontWeight = FontWeight.Black, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
                     }
                     inner()
                 }
@@ -173,7 +175,7 @@ fun ProfileEditorContent(
             modifier = Modifier.align(Alignment.End).padding(top = 4.dp, end = 6.dp)
         )
         Spacer(Modifier.height(8.dp))
-        Text("CHOOSE YOUR AVATAR", color = CM.GoldLight, fontSize = 13.sp, fontWeight = FontWeight.Black, letterSpacing = 1.sp)
+        Text(stringResource(R.string.shell_choose_avatar), color = CM.GoldLight, fontSize = 13.sp, fontWeight = FontWeight.Black, letterSpacing = 1.sp)
         Spacer(Modifier.height(10.dp))
         PlayerAvatars.all.indices.chunked(5).forEach { row ->
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
@@ -223,7 +225,7 @@ fun ProfileEditorContent(
         )
         if (!valid) {
             Spacer(Modifier.height(8.dp))
-            Text("Enter a name to continue", color = CM.TextDim, fontSize = 13.sp)
+            Text(stringResource(R.string.shell_name_required), color = CM.TextDim, fontSize = 13.sp)
         }
     }
 }

@@ -27,7 +27,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.layout.height
+import androidx.compose.ui.res.stringResource
 import com.puzzel.lab.cardsmania.LocalApp
+import com.puzzel.lab.cardsmania.R
 import com.puzzel.lab.cardsmania.audio.Sfx
 import com.puzzel.lab.cardsmania.audio.Track
 import com.puzzel.lab.cardsmania.data.GameFactory
@@ -58,6 +60,7 @@ fun MainScreen(
     onMultiplayer: () -> Unit = {},
     onSpider: () -> Unit = {},
     onMindi: () -> Unit = {},
+    onBhabhi: () -> Unit = {},
     onSpiderDaily: () -> Unit = {},
     onMindiDaily: () -> Unit = {},
 ) {
@@ -73,20 +76,20 @@ fun MainScreen(
         if (tab != 0) tab = 0 else confirmExit = true
     }
     if (confirmExit) {
-        com.puzzel.lab.cardsmania.ui.kit.GemDialog("Leave Cards Mania?", onDismiss = { confirmExit = false }) {
+        com.puzzel.lab.cardsmania.ui.kit.GemDialog(stringResource(R.string.shell_exit_title), onDismiss = { confirmExit = false }) {
             androidx.compose.material3.Text(
-                "Your progress is saved. Come back soon for your daily gift!",
+                stringResource(R.string.shell_exit_body),
                 color = com.puzzel.lab.cardsmania.ui.theme.CM.Text, fontSize = 14.sp,
                 textAlign = androidx.compose.ui.text.style.TextAlign.Center,
             )
             androidx.compose.foundation.layout.Spacer(Modifier.height(16.dp))
             androidx.compose.foundation.layout.Row(horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(10.dp)) {
                 com.puzzel.lab.cardsmania.ui.components.GameButton(
-                    "Stay", { confirmExit = false }, style = com.puzzel.lab.cardsmania.ui.components.ButtonStyle.GREEN,
+                    stringResource(R.string.shell_exit_stay), { confirmExit = false }, style = com.puzzel.lab.cardsmania.ui.components.ButtonStyle.GREEN,
                     modifier = Modifier.weight(1f), height = 50.dp, fontSize = 16.sp,
                 )
                 com.puzzel.lab.cardsmania.ui.components.GameButton(
-                    "Exit", { confirmExit = false; activity?.finish() }, style = com.puzzel.lab.cardsmania.ui.components.ButtonStyle.RED,
+                    stringResource(R.string.shell_exit_exit), { confirmExit = false; activity?.finish() }, style = com.puzzel.lab.cardsmania.ui.components.ButtonStyle.RED,
                     modifier = Modifier.weight(1f), height = 50.dp, fontSize = 16.sp,
                 )
             }
@@ -110,6 +113,7 @@ fun MainScreen(
                         0 -> HomeTab(
                             onOpenSetup, onQuickPlay, onResume, onDaily, onSettings, onHowTo, onMultiplayer, onSpider,
                             onMindi = onMindi,
+                            onBhabhi = onBhabhi,
                             onOpenEvents = { tab = 1 },
                             onGift = { amount, streak -> gift = amount to streak },
                         )
@@ -119,7 +123,7 @@ fun MainScreen(
                     }
                 }
                 GameTabBar(
-                    tabs = tabs,
+                    tabs = tabs.map { (icon, label) -> GameTab(icon, stringResource(label)) },
                     selected = tab,
                     badges = badgesFor(profile),
                     onSelect = {
@@ -134,9 +138,9 @@ fun MainScreen(
         }
         gift?.let { (amount, streak) ->
             RewardPopup(
-                title = "DAILY GIFT",
+                title = stringResource(R.string.shell_gift_title),
                 amount = amount,
-                subtitle = if (streak > 1) "Day $streak streak! Come back tomorrow for an even bigger gift." else "Come back tomorrow for an even bigger gift.",
+                subtitle = if (streak > 1) stringResource(R.string.shell_gift_streak, streak) else stringResource(R.string.shell_gift_come_back),
                 onCollect = { gift = null },
                 icon = { GiftChestPop() },
             )
@@ -173,9 +177,10 @@ private fun badgesFor(p: Profile): Set<Int> {
     return set
 }
 
+/** Dock tabs: icon + label resource (resolved in the composable so the label follows the app language). */
 private val tabs = listOf(
-    GameTab(GameIcons.Lobby, "Lobby"),
-    GameTab(GameIcons.Trophy, "Events"),
-    GameTab(GameIcons.Chest, "Collection"),
-    GameTab(GameIcons.Profile, "Profile"),
+    GameIcons.Lobby to R.string.shell_tab_lobby,
+    GameIcons.Trophy to R.string.shell_tab_events,
+    GameIcons.Chest to R.string.shell_tab_collection,
+    GameIcons.Profile to R.string.shell_tab_profile,
 )

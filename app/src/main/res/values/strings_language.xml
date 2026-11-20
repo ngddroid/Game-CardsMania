@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="lang_title">Choose your language</string>
+    <string name="lang_change_later">You can change the language any time in Settings.</string>
+    <string name="lang_continue">CONTINUE</string>
+    <string name="lang_save">SAVE</string>
+    <string name="lang_settings_group">Language</string>
+    <string name="lang_settings_row">App language: %1$s</string>
+</resources>

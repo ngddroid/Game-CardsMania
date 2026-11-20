@@ -1,5 +1,7 @@
 package com.puzzel.lab.cardsmania.net
 
+import com.puzzel.lab.cardsmania.R
+import com.puzzel.lab.cardsmania.i18n.Strings
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -49,8 +51,9 @@ class RoomClient(private val scope: CoroutineScope) {
         _status.value = ClientStatus.Connecting
         val welcome = CompletableDeferred<String>() // "" = welcomed, otherwise the failure reason
         val c = runCatching { withContext(Dispatchers.IO) { Connection.connect(host, port, scope) } }.getOrElse {
-            _status.value = ClientStatus.Failed("Couldn't reach the room. Are you on the same Wi-Fi?")
-            return "Couldn't reach the room. Are you on the same Wi-Fi?"
+            val unreachable = Strings.get(R.string.mp_err_unreachable)
+            _status.value = ClientStatus.Failed(unreachable)
+            return unreachable
         }
         conn = c
         c.start(
@@ -70,7 +73,7 @@ class RoomClient(private val scope: CoroutineScope) {
                         _room.value = msg.room
                         if (!msg.room.inGame && _status.value == ClientStatus.InGame) _status.value = ClientStatus.InLobby
                     }
-                    is NetMsg.Start, is NetMsg.Sync, is NetMsg.MindiStart, is NetMsg.MindiSync -> {
+                    is NetMsg.Start, is NetMsg.Sync, is NetMsg.MindiStart, is NetMsg.MindiSync, is NetMsg.BhabhiStart, is NetMsg.BhabhiSync -> {
                         val ch = Channel<NetMsg>(Channel.UNLIMITED)
                         ch.trySend(msg)
                         game.close()
@@ -78,14 +81,14 @@ class RoomClient(private val scope: CoroutineScope) {
                         _status.value = ClientStatus.InGame
                         _starts.tryEmit(msg)
                     }
-                    is NetMsg.Steps, is NetMsg.MindiSteps, is NetMsg.Emote, is NetMsg.ActionRejected -> game.trySend(msg)
+                    is NetMsg.Steps, is NetMsg.MindiSteps, is NetMsg.BhabhiSteps, is NetMsg.Emote, is NetMsg.ActionRejected -> game.trySend(msg)
                     is NetMsg.Ended -> {
                         _status.value = ClientStatus.Ended(msg.reason)
                         game.trySend(msg)
                     }
                     is NetMsg.Kicked -> {
                         _status.value = ClientStatus.Kicked
-                        game.trySend(NetMsg.Ended("You were removed from the room."))
+                        game.trySend(NetMsg.Ended(Strings.get(R.string.mp_removed)))
                     }
                     else -> Unit
                 }
@@ -93,14 +96,15 @@ class RoomClient(private val scope: CoroutineScope) {
             onClosed = {
                 val s = _status.value
                 if (!leaving && s !is ClientStatus.Ended && s !is ClientStatus.Kicked && s !is ClientStatus.Failed) {
-                    _status.value = ClientStatus.Ended("Lost connection to the host.")
-                    game.trySend(NetMsg.Ended("Lost connection to the host."))
+                    val lost = Strings.get(R.string.mp_lost_connection)
+                    _status.value = ClientStatus.Ended(lost)
+                    game.trySend(NetMsg.Ended(lost))
                 }
-                welcome.complete("Connection closed.")
+                welcome.complete(Strings.get(R.string.mp_connection_closed))
             },
         )
         c.send(hello)
-        val answer = withTimeoutOrNull(6000) { welcome.await() } ?: "The room didn't answer."
+        val answer = withTimeoutOrNull(6000) { welcome.await() } ?: Strings.get(R.string.mp_no_answer)
         val result: String? = answer.ifEmpty { null }
         if (result != null) {
             if (_status.value !is ClientStatus.Failed) _status.value = ClientStatus.Failed(result)

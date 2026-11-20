@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Spider Solitaire: table, bars, toasts -->
+    <string name="spider_auto_finish">ઑટો ફિનિશ</string>
+    <string name="spider_cd_back">પાછા</string>
+    <string name="spider_cd_how_to_play">કેવી રીતે રમવું</string>
+    <string name="spider_hud_title">સ્પાઇડર</string>
+    <plurals name="spider_hud_suits">
+        <item quantity="one">%d સૂટ</item>
+        <item quantity="other">%d સૂટ</item>
+    </plurals>
+    <string name="spider_hud_daily">ડેઇલી</string>
+    <string name="spider_stat_time">સમય</string>
+    <string name="spider_stat_moves">ચાલ</string>
+    <string name="spider_stat_score">સ્કોર</string>
+    <string name="spider_bar_new">નવી</string>
+    <string name="spider_daily">ડેઇલી</string>
+    <string name="spider_bar_theme">થીમ</string>
+    <string name="spider_bar_hint">સંકેત</string>
+    <string name="spider_undo">અનડૂ</string>
+
+    <!-- new game -->
+    <string name="spider_new_game">નવી ગેમ</string>
+    <string name="spider_level_easy">સરળ</string>
+    <string name="spider_level_medium">મીડિયમ</string>
+    <string name="spider_level_hard">મુશ્કેલ</string>
+    <string name="spider_suits_1_desc">ફક્ત કાળી · દરેક ડીલ જીતી શકાય</string>
+    <string name="spider_suits_2_desc">કાળી અને લાલ · ખરી ચેલેન્જ</string>
+    <string name="spider_suits_4_desc">ચારેય સૂટ · સ્પાઇડરના ઉસ્તાદો માટે</string>
+    <plurals name="spider_suit_count">
+        <item quantity="one">%d સૂટ</item>
+        <item quantity="other">%d સૂટ</item>
+    </plurals>
+    <string name="spider_replay_deal">આ જ ડીલ ફરી</string>
+    <string name="spider_view_stats">આંકડા જુઓ</string>
+
+    <!-- daily calendar -->
+    <string name="spider_daily_title">ડેઇલી ચેલેન્જ</string>
+    <string name="spider_daily_desc">દરરોજ એક નવી જીતી શકાય એવી ડીલ — બધા ખેલાડીઓ માટે એક જ.</string>
+    <string name="spider_cd_prev_month">પાછલો મહિનો</string>
+    <string name="spider_cd_next_month">આવતો મહિનો</string>
+    <string name="spider_dow_mon">સો</string>
+    <string name="spider_dow_tue">મં</string>
+    <string name="spider_dow_wed">બુ</string>
+    <string name="spider_dow_thu">ગુ</string>
+    <string name="spider_dow_fri">શુ</string>
+    <string name="spider_dow_sat">શ</string>
+    <string name="spider_dow_sun">ર</string>
+    <string name="spider_crowns_month">આ મહિને %1$d / %2$d તાજ</string>
+    <plurals name="spider_tier_days">
+        <item quantity="one">%d દિવસ</item>
+        <item quantity="other">%d દિવસ</item>
+    </plurals>
+    <string name="spider_tier_every_day">દરરોજ</string>
+    <string name="spider_play_today_again">આજની ફરી રમો</string>
+    <string name="spider_play_today">આજની ચેલેન્જ રમો</string>
+    <string name="spider_daily_bonus">દરરોજ પહેલી જીત પર: +100 બોનસ સિક્કા</string>
+    <string name="spider_tier_bronze">કાંસ્ય</string>
+    <string name="spider_tier_silver">ચાંદી</string>
+    <string name="spider_tier_gold">સોનું</string>
+    <string name="spider_trophy_shelf">ટ્રોફી શેલ્ફ</string>
+
+    <!-- look & feel -->
+    <string name="spider_look_title">ટેબલ અને પત્તાં</string>
+    <string name="spider_look_background">બેકગ્રાઉન્ડ</string>
+    <string name="spider_look_card_backs">કાર્ડ બેક તમારા કલેક્શનમાંથી આવે છે.</string>
+    <string name="spider_four_color">ચાર રંગના સૂટ</string>
+    <string name="spider_four_color_desc">ફૂલી લીલી, ચોકટ વાદળી — ઓળખવામાં સરળ</string>
+    <string name="spider_look_controls">કંટ્રોલ</string>
+    <string name="spider_smart_tap">સ્માર્ટ ટૅપ</string>
+    <string name="spider_tap_target">ટૅપ, પછી જગ્યા</string>
+    <string name="spider_tap_target_desc">પત્તાં ઉપાડવા ટૅપ કરો, પછી મૂકવા માટે કૉલમ પર ટૅપ કરો. ડ્રૅગ પણ ચાલે છે.</string>
+    <string name="spider_smart_tap_desc">પત્તાં પર ટૅપ કરો, તે સૌથી સારી જગ્યાએ જશે. આગલી જગ્યા માટે ફરી ટૅપ કરો. ડ્રૅગ પણ ચાલે છે.</string>
+    <string name="spider_idle_hints">આપમેળે સંકેત</string>
+    <string name="spider_idle_hints_desc">25 સેકન્ડ પછી હળવેથી એક સારી ચાલ બતાવો</string>
+    <string name="spider_left_handed">ડાબા હાથવાળો લેઆઉટ</string>
+    <string name="spider_left_handed_desc">સ્ટોક અને પૂરા સેટ ડાબી બાજુ</string>
+    <string name="spider_show_timer">ટાઇમર બતાવો</string>
+    <string name="spider_show_timer_desc">ગેમની ઘડિયાળ બતાવો</string>
+
+    <!-- rules -->
+    <string name="spider_rules_title">કેવી રીતે રમવું</string>
+    <string name="spider_rules_goal_t">લક્ષ્ય</string>
+    <string name="spider_rules_goal_b">એક જ સૂટમાં બાદશાહથી એક્કા સુધીના 8 પૂરા સેટ બનાવો. દરેક પૂરો સેટ આપમેળે ટેબલ પરથી હટી જાય છે.</string>
+    <string name="spider_rules_moving_t">ચાલ ચાલવી</string>
+    <string name="spider_rules_moving_b">કોઈ પણ ખુલ્લું પત્તું તેનાથી એક મોટા પત્તા પર મૂકો, કોઈ પણ સૂટમાં (7 ને કોઈ પણ 8 પર).</string>
+    <string name="spider_rules_groups_t">પત્તાંનું ગ્રુપ</string>
+    <string name="spider_rules_groups_b">પત્તાંનું ગ્રુપ સાથે ત્યારે જ ચાલે જ્યારે તે ક્રમમાં નીચે જાય અને આખું એક જ સૂટનું હોય.</string>
+    <string name="spider_rules_empty_t">ખાલી કૉલમ</string>
+    <string name="spider_rules_empty_b">કોઈ પણ પત્તું કે એક સૂટનો સેટ ખાલી કૉલમમાં જઈ શકે. સમજદારીથી વાપરો!</string>
+    <string name="spider_rules_dealing_t">પત્તાં વહેંચવા</string>
+    <string name="spider_rules_dealing_b">દરેક કૉલમ પર એક પત્તું વહેંચવા સ્ટોક (ઉપર જમણે) પર ટૅપ કરો. ખાલી કૉલમને પણ પત્તું મળે છે.</string>
+    <string name="spider_rules_hints_t">સંકેત અને અનડૂ</string>
+    <string name="spider_rules_hints_b">અટકી ગયા? સંકેત એક સારી ચાલ બતાવે છે (બીજી માટે ફરી ટૅપ કરો). અનડૂ જેટલી વાર જોઈએ.</string>
+    <string name="spider_rules_score_t">સ્કોર</string>
+    <string name="spider_rules_score_b">500થી શરૂઆત. દરેક ચાલ કે અનડૂ પર 1 પોઇન્ટ કપાય, દરેક પૂરા સેટ પર 100 મળે.</string>
+    <string name="spider_rules_tip_t">ટિપ</string>
+    <string name="spider_rules_tip_b">બંધ પત્તાં વહેલાં ખોલો, અને જ્યારે પણ થાય ત્યારે એક જ સૂટમાં સેટ બનાવો.</string>
+    <string name="spider_got_it">સમજાઈ ગયું!</string>
+
+    <!-- stuck -->
+    <string name="spider_stuck_title">કોઈ ચાલ બાકી નથી</string>
+    <string name="spider_stuck_body">કોઈ કામની ચાલ નથી અને વહેંચવા માટે કંઈ બાકી નથી. બીજો રસ્તો અજમાવવા થોડી ચાલ અનડૂ કરો, અથવા નવી ગેમ શરૂ કરો.</string>
+    <string name="spider_keep_looking">હજી શોધું</string>
+
+    <!-- stats -->
+    <string name="spider_stats_title">આંકડા</string>
+    <string name="spider_stat_played">રમ્યા</string>
+    <string name="spider_stat_won">જીત્યા</string>
+    <string name="spider_stat_win_pct" formatted="false">જીત %</string>
+    <string name="spider_stat_streak">સતત જીત</string>
+    <string name="spider_stat_best_time">શ્રેષ્ઠ સમય</string>
+    <string name="spider_stat_fewest_moves">સૌથી ઓછી ચાલ</string>
+    <string name="spider_stat_top_score">ટોપ સ્કોર</string>
+    <string name="spider_daily_solved_count">ડેઇલી ચેલેન્જ પૂરી કરી: %1$d</string>
+    <string name="spider_close">બંધ કરો</string>
+
+    <!-- win -->
+    <string name="spider_win_daily">ડેઇલી પૂરી!</string>
+    <string name="spider_win_title">તમે જીત્યા!</string>
+    <string name="spider_new_best_time">નવો બેસ્ટ સમય!</string>
+    <string name="spider_xp">+%1$d XP</string>
+    <string name="spider_home">હોમ</string>
+
+    <!-- toasts -->
+    <string name="spider_toast_no_place">આ પત્તાં માટે હજી કોઈ જગ્યા નથી</string>
+    <string name="spider_toast_drop_on_column">પત્તાં કોઈ કૉલમ પર મૂકો</string>
+    <string name="spider_toast_nothing_to_undo">અનડૂ કરવા માટે કંઈ નથી</string>
+    <string name="spider_err_not_allowed">આ ચાલ ચાલી શકાય નહીં</string>
+    <string name="spider_err_face_down">બંધ પત્તાં ખસી શકે નહીં</string>
+    <string name="spider_err_same_suit">ફક્ત એક જ સૂટના સેટ સાથે ચાલે</string>
+    <string name="spider_err_king">બાદશાહ ફક્ત ખાલી કૉલમમાં જ જઈ શકે</string>
+    <string name="spider_err_goes_on">%1$s ફક્ત %2$s પર જ જાય</string>
+    <string name="spider_err_goes_on_an_first">%1$s ફક્ત %2$s પર જ જાય</string>
+    <string name="spider_err_goes_on_an_second">%1$s ફક્ત %2$s પર જ જાય</string>
+    <string name="spider_rank_ace">એક્કો</string>
+    <string name="spider_rank_jack">ગુલામ</string>
+    <string name="spider_rank_queen">રાણી</string>
+    <string name="spider_rank_king">બાદશાહ</string>
+</resources>

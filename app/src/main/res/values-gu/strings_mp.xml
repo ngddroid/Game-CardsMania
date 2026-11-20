@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Seat list / room summary -->
+    <string name="mp_players">ખેલાડીઓ</string>
+    <string name="mp_host">હોસ્ટ</string>
+    <string name="mp_guest">ગેસ્ટ</string>
+    <string name="mp_name_you">%1$s (તમે)</string>
+    <string name="mp_ready">તૈયાર</string>
+    <string name="mp_reconnecting">ફરી જોડાય છે…</string>
+    <string name="mp_bot">બોટ</string>
+    <string name="mp_cd_remove_player">ખેલાડીને કાઢો</string>
+    <string name="mp_open_seat">ખાલી સીટ — મિત્રની રાહ (કોઈ ન આવે તો બોટ રમશે)</string>
+    <string name="mp_sum_mindi_players">મીંડી · %1$d ખેલાડી</string>
+    <string name="mp_sum_vs">%1$d સામે %2$d</string>
+    <string name="mp_sum_double_deck">ડબલ ડેક</string>
+    <string name="mp_sum_single_hand">એક રાઉન્ડ</string>
+    <string name="mp_sum_first_to">પહેલા %1$d સુધી</string>
+    <string name="mp_sum_single_round">એક રાઉન્ડ</string>
+    <string name="mp_n_cards">%1$d પત્તાં</string>
+    <string name="mp_rule_must_trump">ખુલ્યા પછી ટ્રમ્પ ફરજિયાત</string>
+    <string name="mp_rule_turns">%1$d સે.નો વારો</string>
+    <string name="mp_rule_stacking">સ્ટેકિંગ</string>
+    <string name="mp_rule_seven_zero">સેવન &amp; ઝીરો</string>
+    <string name="mp_rule_draw_to_match">મેચ સુધી ડ્રો</string>
+    <string name="mp_rule_challenge">ચેલેન્જ</string>
+    <string name="mp_rule_jump_in">જમ્પ-ઇન</string>
+    <string name="mp_rule_forced_play">ફોર્સ્ડ પ્લે</string>
+    <string name="mp_rule_combo_drop">કોમ્બો ડ્રોપ</string>
+    <string name="mp_rule_power_ups">પાવર-અપ</string>
+    <string name="mp_no_house_rules">કોઈ હાઉસ રૂલ નથી</string>
+
+    <!-- Hub -->
+    <string name="mp_title">મલ્ટિપ્લેયર</string>
+    <string name="mp_err_permission">Cards Mania ને તમારા Wi-Fi પર ફોન શોધવાની પરવાનગી જોઈએ.</string>
+    <string name="mp_play_with_friends">મિત્રો સાથે રમો</string>
+    <string name="mp_hub_intro">બધા એક જ Wi-Fi સાથે જોડાય. એક ફોન રૂમ હોસ્ટ કરે, બાકીના એમાં જોડાય — ઇન્ટરનેટની જરૂર નથી.</string>
+    <string name="mp_host_room">રૂમ હોસ્ટ કરો</string>
+    <string name="mp_host_room_sub">મોડ, સીટો અને બોટ તમે પસંદ કરો</string>
+    <string name="mp_join_room">રૂમમાં જોડાઓ</string>
+    <string name="mp_join_room_sub">નજીકનો રૂમ શોધો અથવા એનો કોડ નાખો</string>
+    <string name="mp_permission_note">Android પૂછશે કે Cards Mania તમારા નેટવર્ક પર ડિવાઇસ શોધી શકે કે નહીં. એનો ઉપયોગ ફક્ત એક રૂમના ફોન જોડવા માટે થાય છે.</string>
+    <string name="mp_how_it_works">કેવી રીતે ચાલે છે</string>
+    <string name="mp_step_1">1. બધા ફોન એક જ Wi-Fi સાથે જોડો (અથવા કોઈ એક ફોનના હોટસ્પોટ સાથે).</string>
+    <string name="mp_step_2">2. એક ખેલાડી \"રૂમ હોસ્ટ કરો\" દબાવીને મોડ, સીટો અને બોટ પસંદ કરે.</string>
+    <string name="mp_step_3">3. મિત્રો \"રૂમમાં જોડાઓ\" દબાવીને રૂમ પસંદ કરે — અથવા એનો કોડ ટાઇપ કરે.</string>
+    <string name="mp_step_4">4. હોસ્ટ સ્ટાર્ટ દબાવે. 6 સુધી ખેલાડીઓ, સાથે બોટ પણ.</string>
+    <string name="mp_link_wifi">Wi-Fi સાથે જોડાયેલા છો</string>
+    <string name="mp_link_ethernet">લોકલ નેટવર્ક સાથે જોડાયેલા છો</string>
+    <string name="mp_link_hotspot">હોટસ્પોટ ચાલુ છે — મિત્રો એમાં જોડાઈ શકે</string>
+    <string name="mp_link_none">Wi-Fi પર નથી — સાથે રમવા જોડાઓ</string>
+
+    <!-- Guest lobby -->
+    <string name="mp_not_in_room">હવે તમે કોઈ રૂમમાં નથી.</string>
+    <string name="mp_kicked">હોસ્ટે તમને રૂમમાંથી કાઢી નાખ્યા.</string>
+    <string name="mp_room">રૂમ</string>
+    <string name="mp_youre_in">તમે અંદર છો!</string>
+    <string name="mp_hosts_room">%1$sનો રૂમ</string>
+    <string name="mp_waiting_host">હોસ્ટ શરૂ કરે એની રાહ…</string>
+    <string name="mp_game">ગેમ</string>
+    <string name="mp_mindi_tagline">બે ટીમ, વારાફરતી સીટો. રાઉન્ડ જીતવા 4 માંથી 3 દસ્સા જીતો.</string>
+    <string name="mp_bhabhi_tagline">દરેક પોતાના માટે. એ જ રંગ નાખો, ન હોય તો ઠુલ્લા — છેલ્લે જેની પાસે પત્તાં બચે એ ભાભી.</string>
+    <string name="mp_leave_room">રૂમ છોડો</string>
+    <string name="mp_leave_title">રૂમ છોડવો છે?</string>
+    <string name="mp_leave_text">હોસ્ટ લોબીમાં હોય ત્યાં સુધી તમે ફરી જોડાઈ શકો.</string>
+    <string name="mp_leave">છોડો</string>
+
+    <!-- Host room -->
+    <string name="mp_room_closed">રૂમ બંધ થઈ ગયો છે.</string>
+    <string name="mp_your_room">તમારો રૂમ</string>
+    <string name="mp_room_open">તમારા Wi-Fi પર રૂમ ખુલ્લો છે</string>
+    <string name="mp_room_code">રૂમ કોડ</string>
+    <string name="mp_room_code_hint">મિત્રોને તમારો રૂમ \"રૂમમાં જોડાઓ\"માં દેખાશે. ન દેખાય તો તેઓ આ કોડ ટાઇપ કરી શકે.</string>
+    <string name="mp_mania_limit">મેનિયા ટેબલ પર 6 સુધી — મીંડી અને ભાભીમાં 8 સુધી.</string>
+    <string name="mp_seats_bots">સીટો અને બોટ</string>
+    <string name="mp_seats_at_table">ટેબલ પર સીટો</string>
+    <string name="mp_bots">બોટ</string>
+    <plurals name="mp_seats_open_friends">
+        <item quantity="one">મિત્રો માટે %d સીટ ખાલી</item>
+        <item quantity="other">મિત્રો માટે %d સીટો ખાલી</item>
+    </plurals>
+    <plurals name="mp_seats_open_friends_bots">
+        <item quantity="one">મિત્રો માટે %d સીટ ખાલી · ખાલી સીટ પર બોટ રમશે</item>
+        <item quantity="other">મિત્રો માટે %d સીટો ખાલી · ખાલી સીટો પર બોટ રમશે</item>
+    </plurals>
+    <string name="mp_bot_difficulty">બોટનું લેવલ</string>
+    <string name="mp_expert">એક્સપર્ટ</string>
+    <string name="mp_cards">પત્તાં</string>
+    <string name="mp_starting_hand">શરૂઆતનાં પત્તાં</string>
+    <string name="mp_deck">ડેક</string>
+    <string name="mp_standard">સ્ટાન્ડર્ડ</string>
+    <string name="mp_double_deck">ડબલ ડેક</string>
+    <string name="mp_match_length">મેચની લંબાઈ</string>
+    <string name="mp_single_round">એક રાઉન્ડ</string>
+    <string name="mp_first_to">પહેલા %1$d સુધી</string>
+    <string name="mp_game_speed">ગેમની સ્પીડ</string>
+    <string name="mp_speed_relaxed">આરામથી</string>
+    <string name="mp_speed_normal">સામાન્ય</string>
+    <string name="mp_speed_fast">ઝડપી</string>
+    <string name="mp_no_friends">હજી કોઈ મિત્ર નથી — છતાં બોટ સાથે શરૂ કરી શકો.</string>
+    <plurals name="mp_friends_ready">
+        <item quantity="one">%d મિત્ર તૈયાર</item>
+        <item quantity="other">%d મિત્રો તૈયાર</item>
+    </plurals>
+    <string name="mp_deal_cards">પત્તાં વહેંચો</string>
+    <string name="mp_start_game">ગેમ શરૂ કરો</string>
+    <string name="mp_close_title">રૂમ બંધ કરવો છે?</string>
+    <string name="mp_close_text_empty">તમારો રૂમ Wi-Fi પરથી ગાયબ થઈ જશે.</string>
+    <string name="mp_close_text_guests">રૂમમાંના બધાને હોમ પર મોકલી દેવાશે.</string>
+    <string name="mp_close_room">રૂમ બંધ કરો</string>
+    <string name="mp_stay">રહો</string>
+    <string name="mp_table">ટેબલ</string>
+    <string name="mp_double_deck_desc">104 પત્તાં અને 8 દસ્સા — 5 દસ્સા જીતો તો રાઉન્ડ તમારો</string>
+    <string name="mp_teams">ટીમો</string>
+    <string name="mp_blue_team">વાદળી ટીમ</string>
+    <string name="mp_red_team">લાલ ટીમ</string>
+    <string name="mp_trump">ટ્રમ્પ</string>
+    <string name="mp_must_trump_desc">જે ટ્રમ્પ ખોલે, એણે શક્ય હોય તો ટ્રમ્પ જ રમવો પડશે</string>
+    <string name="mp_match">મેચ</string>
+    <string name="mp_points_to_win">જીતના પોઇન્ટ</string>
+    <string name="mp_one_hand">1 રાઉન્ડ</string>
+    <string name="mp_points_note">જીત = 1 પોઇન્ટ · મેન્ડીકોટ = 2 · વ્હાઇટવૉશ = 3</string>
+    <string name="mp_turn_timer">ટર્ન ટાઇમર</string>
+    <string name="mp_seconds">%1$d સે.</string>
+    <string name="mp_timer_note">સમય પૂરો થાય ત્યારે એ ખેલાડીના બદલે એક સેફ પત્તું રમાઈ જાય છે.</string>
+
+    <!-- Join room -->
+    <string name="mp_rooms_on_wifi">તમારા Wi-Fi પરના રૂમ</string>
+    <string name="mp_have_code">રૂમ કોડ છે?</string>
+    <string name="mp_bad_code">આ કોડ બરાબર નથી લાગતો.</string>
+    <string name="mp_join">જોડાઓ</string>
+    <string name="mp_rejoin">ફરી જોડાઓ</string>
+    <string name="mp_code_hint">કોડ હોસ્ટની રૂમ સ્ક્રીન પર દેખાય છે.</string>
+    <string name="mp_joining">જોડાય છે…</string>
+    <string name="mp_mindi_room_line">મીંડી · %1$d ખેલાડી · %2$s</string>
+    <string name="mp_bhabhi_room_line">ભાભી · %1$d ખેલાડી</string>
+    <string name="mp_in_progress">ગેમ ચાલુ છે · તમે રમતા હતા તો ફરી જોડાઓ</string>
+    <string name="mp_room_full">રૂમ ભરેલો છે</string>
+    <plurals name="mp_players_count">
+        <item quantity="one">%d ખેલાડી</item>
+        <item quantity="other">%d ખેલાડી</item>
+    </plurals>
+    <plurals name="mp_seats_open_count">
+        <item quantity="one">%d સીટ ખાલી</item>
+        <item quantity="other">%d સીટો ખાલી</item>
+    </plurals>
+    <string name="mp_room_line">%1$s · %2$s</string>
+    <string name="mp_checking_room">રૂમ ચકાસે છે…</string>
+    <string name="mp_looking">રૂમ શોધે છે…</string>
+    <string name="mp_looking_hint">ખાતરી કરો કે હોસ્ટે રૂમ ખોલ્યો છે અને તમે એ જ Wi-Fi પર છો.</string>
+
+    <!-- Network messages (shown on this phone or sent to the other phone) -->
+    <string name="mp_err_no_wifi">રૂમ હોસ્ટ કરવા Wi-Fi સાથે જોડાઓ (અથવા તમારો હોટસ્પોટ ચાલુ કરો).</string>
+    <string name="mp_err_open_failed">આ નેટવર્ક પર રૂમ ખોલી ન શકાયો.</string>
+    <string name="mp_host_closed_room">હોસ્ટે રૂમ બંધ કરી દીધો.</string>
+    <string name="mp_err_unreachable">રૂમ સુધી પહોંચી ન શકાયું. શું તમે એ જ Wi-Fi પર છો?</string>
+    <string name="mp_removed">તમને રૂમમાંથી કાઢી નાખવામાં આવ્યા.</string>
+    <string name="mp_lost_connection">હોસ્ટ સાથેનું કનેક્શન તૂટી ગયું.</string>
+    <string name="mp_connection_closed">કનેક્શન બંધ થઈ ગયું.</string>
+    <string name="mp_no_answer">રૂમ તરફથી કોઈ જવાબ ન આવ્યો.</string>
+    <string name="mp_reject_version">ઍપનું વર્ઝન અલગ છે — બંને ફોન અપડેટ કરો.</string>
+    <string name="mp_reject_started">આ ગેમ પહેલેથી શરૂ થઈ ગઈ છે.</string>
+    <string name="mp_reject_full">રૂમ ભરેલો છે.</string>
+</resources>

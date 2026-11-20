@@ -45,11 +45,14 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.puzzel.lab.cardsmania.GameLaunch
 import com.puzzel.lab.cardsmania.LocalApp
+import com.puzzel.lab.cardsmania.R
 import com.puzzel.lab.cardsmania.audio.Sfx
 import com.puzzel.lab.cardsmania.audio.Track
 import com.puzzel.lab.cardsmania.data.DifficultyInfo
@@ -57,10 +60,15 @@ import com.puzzel.lab.cardsmania.data.ModeInfo
 import com.puzzel.lab.cardsmania.data.Profile
 import com.puzzel.lab.cardsmania.engine.model.Difficulty
 import com.puzzel.lab.cardsmania.engine.model.GameMode
+import com.puzzel.lab.cardsmania.bhabhi.BhabhiEngine
+import com.puzzel.lab.cardsmania.bhabhi.BhabhiSetup
 import com.puzzel.lab.cardsmania.mindi.MindiSetup
 import com.puzzel.lab.cardsmania.mindi.MindiTrumpMode
 import com.puzzel.lab.cardsmania.net.NetRole
 import com.puzzel.lab.cardsmania.net.RoomGame
+import com.puzzel.lab.cardsmania.ui.bhabhi.BhabhiGameTile
+import com.puzzel.lab.cardsmania.ui.bhabhi.BhabhiLaunch
+import com.puzzel.lab.cardsmania.ui.bhabhi.tableLine
 import com.puzzel.lab.cardsmania.ui.mindi.MindiGameTile
 import com.puzzel.lab.cardsmania.ui.mindi.MindiLaunch
 import com.puzzel.lab.cardsmania.ui.mindi.SeatOption
@@ -86,12 +94,12 @@ import com.puzzel.lab.cardsmania.ui.theme.CM
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun HostRoomScreen(onClosed: () -> Unit, onStart: (mindi: Boolean) -> Unit) {
+fun HostRoomScreen(onClosed: () -> Unit, onStart: (game: RoomGame) -> Unit) {
     val app = LocalApp.current
     val mp = app.multiplayer
     val host = mp.host
     if (host == null) {
-        EndedDialog("The room is closed.", onOk = onClosed)
+        EndedDialog(stringResource(R.string.mp_room_closed), onOk = onClosed)
         return
     }
     val room by host.room.collectAsState()
@@ -114,7 +122,7 @@ fun HostRoomScreen(onClosed: () -> Unit, onStart: (mindi: Boolean) -> Unit) {
 
     RoyalBackground(rays = false) {
         Column(Modifier.fillMaxSize().statusBarsPadding()) {
-            ScreenTitleBar("Your Room", { confirmClose = true })
+            ScreenTitleBar(stringResource(R.string.mp_your_room), { confirmClose = true })
             Column(
                 Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(14.dp)
@@ -130,13 +138,13 @@ fun HostRoomScreen(onClosed: () -> Unit, onStart: (mindi: Boolean) -> Unit) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         PulseDot()
                         Spacer(Modifier.width(8.dp))
-                        Text("Room open on your Wi-Fi", color = CM.Text, fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                        Text(stringResource(R.string.mp_room_open), color = CM.Text, fontWeight = FontWeight.Bold, fontSize = 13.sp)
                     }
                     Spacer(Modifier.height(6.dp))
-                    Text("ROOM CODE", color = CM.TextDim, fontWeight = FontWeight.Black, fontSize = 11.sp, letterSpacing = 2.sp)
+                    Text(stringResource(R.string.mp_room_code), color = CM.TextDim, fontWeight = FontWeight.Black, fontSize = 11.sp, letterSpacing = 2.sp)
                     OutlinedTitle(room.code.ifBlank { "—" }, fontSize = 34.sp)
                     Text(
-                        "Friends will see your room under Join a Room. If it doesn't show up, they can type this code.",
+                        stringResource(R.string.mp_room_code_hint),
                         color = CM.TextDim, fontSize = 12.sp, textAlign = TextAlign.Center
                     )
                 }
@@ -145,14 +153,14 @@ fun HostRoomScreen(onClosed: () -> Unit, onStart: (mindi: Boolean) -> Unit) {
 
                 // ---------- game
                 GlassPanel(Modifier.fillMaxWidth()) {
-                    SectionHeader("Game")
+                    SectionHeader(stringResource(R.string.mp_game))
                     Spacer(Modifier.height(10.dp))
                     val maniaAllowed = room.players <= 6
                     Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                         GameMode.entries.forEach { m ->
-                            ModeTile(m, !room.isMindi && m == room.mode, Modifier.weight(1f).graphicsLayer { alpha = if (maniaAllowed) 1f else 0.4f }) {
+                            ModeTile(m, room.isMania && m == room.mode, Modifier.weight(1f).graphicsLayer { alpha = if (maniaAllowed) 1f else 0.4f }) {
                                 if (!maniaAllowed) app.sound.play(Sfx.ERROR)
-                                else update { it.copy(game = RoomGame.MANIA, mode = m, rules = if (it.isMindi || it.mode != m) ModeInfo.defaultRules(m) else it.rules, seats = it.seats.coerceAtMost(6)) }
+                                else update { it.copy(game = RoomGame.MANIA, mode = m, rules = if (!it.isMania || it.mode != m) ModeInfo.defaultRules(m) else it.rules, seats = it.seats.coerceAtMost(6)) }
                             }
                         }
                     }
@@ -160,22 +168,32 @@ fun HostRoomScreen(onClosed: () -> Unit, onStart: (mindi: Boolean) -> Unit) {
                     MindiGameTile(room.isMindi, Modifier.fillMaxWidth()) {
                         update { if (it.isMindi) it else it.copy(game = RoomGame.MINDI, seats = it.mindi.players) }
                     }
+                    Spacer(Modifier.height(10.dp))
+                    BhabhiGameTile(room.isBhabhi, Modifier.fillMaxWidth()) {
+                        update { if (it.isBhabhi) it else it.copy(game = RoomGame.BHABHI, seats = maxOf(it.bhabhi.players, it.players)) }
+                    }
                     Spacer(Modifier.height(8.dp))
                     Text(
-                        if (room.isMindi) "Two teams, alternate seats. Win 3 of the 4 tens to take the hand." else ModeInfo.tagline(room.mode),
+                        when {
+                            room.isMindi -> stringResource(R.string.mp_mindi_tagline)
+                            room.isBhabhi -> stringResource(R.string.mp_bhabhi_tagline)
+                            else -> ModeInfo.tagline(room.mode)
+                        },
                         color = CM.TextDim, fontSize = 12.sp, fontWeight = FontWeight.Bold,
                     )
-                    if (!maniaAllowed) Text("Mania tables seat up to 6 — Mindi fits up to 8.", color = CM.TextMuted, fontSize = 11.sp)
+                    if (!maniaAllowed) Text(stringResource(R.string.mp_mania_limit), color = CM.TextMuted, fontSize = 11.sp)
                 }
 
                 if (room.isMindi) {
                     MindiRoomOptions(room, ::update)
+                } else if (room.isBhabhi) {
+                    BhabhiRoomOptions(room, ::update)
                 } else {
                 // ---------- seats & bots
                 GlassPanel(Modifier.fillMaxWidth().animateContentSize()) {
-                    SectionHeader("Seats & bots")
+                    SectionHeader(stringResource(R.string.mp_seats_bots))
                     Spacer(Modifier.height(10.dp))
-                    Label("Seats at the table")
+                    Label(stringResource(R.string.mp_seats_at_table))
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         (2..6).forEach { n ->
                             val allowed = n >= 1 + room.guests.size
@@ -187,13 +205,13 @@ fun HostRoomScreen(onClosed: () -> Unit, onStart: (mindi: Boolean) -> Unit) {
                     Spacer(Modifier.height(12.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Column(Modifier.weight(1f)) {
-                            Text("Bots", color = Color.White, fontWeight = FontWeight.ExtraBold, fontSize = 15.sp)
-                            Text("${room.openSeats} seat(s) open for friends", color = CM.TextDim, fontSize = 12.sp)
+                            Text(stringResource(R.string.mp_bots), color = Color.White, fontWeight = FontWeight.ExtraBold, fontSize = 15.sp)
+                            Text(pluralStringResource(R.plurals.mp_seats_open_friends, room.openSeats, room.openSeats), color = CM.TextDim, fontSize = 12.sp)
                         }
                         Stepper(room.bots, 0, room.maxBots) { v -> update { it.copy(bots = v) } }
                     }
                     Spacer(Modifier.height(12.dp))
-                    Label("Bot difficulty")
+                    Label(stringResource(R.string.mp_bot_difficulty))
                     Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                         Difficulty.entries.forEach { d ->
                             ChoiceChip(DifficultyInfo.label(d), room.botDifficulty == d, { update { it.copy(botDifficulty = d) } }, Modifier.weight(1f), color = DifficultyInfo.color(d))
@@ -203,29 +221,29 @@ fun HostRoomScreen(onClosed: () -> Unit, onStart: (mindi: Boolean) -> Unit) {
 
                 // ---------- cards
                 GlassPanel(Modifier.fillMaxWidth()) {
-                    SectionHeader("Cards")
+                    SectionHeader(stringResource(R.string.mp_cards))
                     Spacer(Modifier.height(10.dp))
-                    Label("Starting hand")
+                    Label(stringResource(R.string.mp_starting_hand))
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        listOf(5, 7, 10).forEach { n -> ChoiceChip("$n cards", room.handSize == n, { update { it.copy(handSize = n) } }, Modifier.weight(1f)) }
+                        listOf(5, 7, 10).forEach { n -> ChoiceChip(stringResource(R.string.mp_n_cards, n), room.handSize == n, { update { it.copy(handSize = n) } }, Modifier.weight(1f)) }
                     }
                     Spacer(Modifier.height(12.dp))
-                    Label("Deck")
+                    Label(stringResource(R.string.mp_deck))
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        ChoiceChip("Standard", room.deckCount == 1, { update { it.copy(deckCount = 1) } }, Modifier.weight(1f))
-                        ChoiceChip("Double deck", room.deckCount == 2, { update { it.copy(deckCount = 2) } }, Modifier.weight(1f))
+                        ChoiceChip(stringResource(R.string.mp_standard), room.deckCount == 1, { update { it.copy(deckCount = 1) } }, Modifier.weight(1f))
+                        ChoiceChip(stringResource(R.string.mp_double_deck), room.deckCount == 2, { update { it.copy(deckCount = 2) } }, Modifier.weight(1f))
                     }
                     Spacer(Modifier.height(12.dp))
-                    Label("Match length")
+                    Label(stringResource(R.string.mp_match_length))
                     FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         listOf(0, 100, 250, 500, 1000).forEach { t ->
-                            ChoiceChip(if (t == 0) "Single round" else "First to $t", room.targetScore == t, { update { it.copy(targetScore = t) } })
+                            ChoiceChip(if (t == 0) stringResource(R.string.mp_single_round) else stringResource(R.string.mp_first_to, t), room.targetScore == t, { update { it.copy(targetScore = t) } })
                         }
                     }
                     Spacer(Modifier.height(12.dp))
-                    Label("Game speed")
+                    Label(stringResource(R.string.mp_game_speed))
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        listOf("Relaxed", "Normal", "Fast").forEachIndexed { i, s ->
+                        listOf(stringResource(R.string.mp_speed_relaxed), stringResource(R.string.mp_speed_normal), stringResource(R.string.mp_speed_fast)).forEachIndexed { i, s ->
                             ChoiceChip(s, room.speed == i, { update { it.copy(speed = i) } }, Modifier.weight(1f))
                         }
                     }
@@ -244,25 +262,31 @@ fun HostRoomScreen(onClosed: () -> Unit, onStart: (mindi: Boolean) -> Unit) {
             ) {
                 val friends = room.guests.count { it.connected }
                 Text(
-                    if (friends == 0) "No friends yet — you can still start with bots." else "$friends friend(s) ready",
+                    if (friends == 0) stringResource(R.string.mp_no_friends) else pluralStringResource(R.plurals.mp_friends_ready, friends, friends),
                     color = CM.TextDim, fontSize = 12.sp, fontWeight = FontWeight.Bold
                 )
                 Spacer(Modifier.height(6.dp))
                 GameButton(
-                    if (room.isMindi) "DEAL CARDS" else "START GAME", {
+                    if (room.isMania) stringResource(R.string.mp_start_game) else stringResource(R.string.mp_deal_cards), {
                         val p = profile ?: return@GameButton
-                        if (room.isMindi) {
-                            val h = mp.startHostedMindi(p) ?: return@GameButton
-                            app.pendingMindi = MindiLaunch(setup = h.setup, net = NetRole.HOST, seats = h.seats, seed = h.seed)
-                            onStart(true)
-                        } else {
-                            val cfg = mp.startHostedGame(p) ?: return@GameButton
-                            app.pendingLaunch = GameLaunch(cfg, net = NetRole.HOST)
-                            onStart(false)
+                        when (room.game) {
+                            RoomGame.MINDI -> {
+                                val h = mp.startHostedMindi(p) ?: return@GameButton
+                                app.pendingMindi = MindiLaunch(setup = h.setup, net = NetRole.HOST, seats = h.seats, seed = h.seed)
+                            }
+                            RoomGame.BHABHI -> {
+                                val h = mp.startHostedBhabhi(p) ?: return@GameButton
+                                app.pendingBhabhi = BhabhiLaunch(setup = h.setup, net = NetRole.HOST, seats = h.seats, seed = h.seed)
+                            }
+                            RoomGame.MANIA -> {
+                                val cfg = mp.startHostedGame(p) ?: return@GameButton
+                                app.pendingLaunch = GameLaunch(cfg, net = NetRole.HOST)
+                            }
                         }
+                        onStart(room.game)
                     },
                     style = ButtonStyle.GOLD, icon = Icons.Rounded.PlayArrow, height = 60.dp, fontSize = 21.sp,
-                    modifier = Modifier.fillMaxWidth(), sound = if (room.isMindi) Sfx.SHUFFLE else Sfx.MANIA, enabled = profile != null,
+                    modifier = Modifier.fillMaxWidth(), sound = if (room.isMania) Sfx.MANIA else Sfx.SHUFFLE, enabled = profile != null,
                 )
             }
         }
@@ -270,9 +294,9 @@ fun HostRoomScreen(onClosed: () -> Unit, onStart: (mindi: Boolean) -> Unit) {
 
     if (confirmClose) {
         ConfirmDialog(
-            title = "Close room?",
-            text = if (room.guests.isEmpty()) "Your room will disappear from the Wi-Fi." else "Everyone in the room will be sent back home.",
-            confirm = "Close room",
+            title = stringResource(R.string.mp_close_title),
+            text = if (room.guests.isEmpty()) stringResource(R.string.mp_close_text_empty) else stringResource(R.string.mp_close_text_guests),
+            confirm = stringResource(R.string.mp_close_room),
             onConfirm = {
                 confirmClose = false
                 mp.closeRoom()
@@ -293,7 +317,7 @@ private fun MindiRoomOptions(room: RoomState, update: ((RoomState) -> RoomState)
     fun mindi(t: (MindiSetup) -> MindiSetup) = update { it.copy(mindi = t(it.mindi)) }
 
     GlassPanel(Modifier.fillMaxWidth().animateContentSize()) {
-        SectionHeader("Table")
+        SectionHeader(stringResource(R.string.mp_table))
         Spacer(Modifier.height(10.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             listOf(4, 6, 8).forEach { n ->
@@ -308,65 +332,126 @@ private fun MindiRoomOptions(room: RoomState, update: ((RoomState) -> RoomState)
         Text(mindiTableLine(setup), color = CM.TextDim, fontSize = 12.sp, fontWeight = FontWeight.Bold)
         if (room.seats >= 6) {
             Spacer(Modifier.height(8.dp))
-            ToggleRow("Double deck", "104 cards and 8 tens — 5 tens win the hand", setup.doubleDeck) { v -> mindi { it.copy(doubleDeck = v) } }
+            ToggleRow(stringResource(R.string.mp_double_deck), stringResource(R.string.mp_double_deck_desc), setup.doubleDeck) { v -> mindi { it.copy(doubleDeck = v) } }
         }
         Spacer(Modifier.height(12.dp))
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
-                Text("Bots", color = Color.White, fontWeight = FontWeight.ExtraBold, fontSize = 15.sp)
-                Text("${room.openSeats} seat(s) open for friends · bots fill any empty seat", color = CM.TextDim, fontSize = 12.sp)
+                Text(stringResource(R.string.mp_bots), color = Color.White, fontWeight = FontWeight.ExtraBold, fontSize = 15.sp)
+                Text(pluralStringResource(R.plurals.mp_seats_open_friends_bots, room.openSeats, room.openSeats), color = CM.TextDim, fontSize = 12.sp)
             }
             Stepper(room.bots, 0, room.maxBots) { v -> update { it.copy(bots = v) } }
         }
         Spacer(Modifier.height(12.dp))
-        Label("Bot difficulty")
+        Label(stringResource(R.string.mp_bot_difficulty))
         Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             Difficulty.entries.forEach { d ->
-                ChoiceChip(if (d == Difficulty.GENIUS) "Expert" else DifficultyInfo.label(d), room.botDifficulty == d, { update { it.copy(botDifficulty = d) } }, Modifier.weight(1f), color = DifficultyInfo.color(d))
+                ChoiceChip(if (d == Difficulty.GENIUS) stringResource(R.string.mp_expert) else DifficultyInfo.label(d), room.botDifficulty == d, { update { it.copy(botDifficulty = d) } }, Modifier.weight(1f), color = DifficultyInfo.color(d))
             }
         }
         Spacer(Modifier.height(12.dp))
-        Label("Teams")
+        Label(stringResource(R.string.mp_teams))
         TeamsPreview(room)
     }
 
     GlassPanel(Modifier.fillMaxWidth()) {
-        SectionHeader("Trump")
+        SectionHeader(stringResource(R.string.mp_trump))
         Spacer(Modifier.height(10.dp))
         MindiTrumpMode.entries.forEach { m ->
             TrumpModeCard(m, setup.trumpMode == m) { mindi { it.copy(trumpMode = m) } }
             Spacer(Modifier.height(8.dp))
         }
         if (setup.trumpMode == MindiTrumpMode.HIDE) {
-            ToggleRow("Must trump after reveal", "Whoever reveals the trump must play one if they can", setup.mustTrumpAfterReveal) { v ->
+            ToggleRow(stringResource(R.string.mp_rule_must_trump), stringResource(R.string.mp_must_trump_desc), setup.mustTrumpAfterReveal) { v ->
                 mindi { it.copy(mustTrumpAfterReveal = v) }
             }
         }
     }
 
     GlassPanel(Modifier.fillMaxWidth()) {
-        SectionHeader("Match")
+        SectionHeader(stringResource(R.string.mp_match))
         Spacer(Modifier.height(10.dp))
-        Label("Points to win")
+        Label(stringResource(R.string.mp_points_to_win))
         Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             listOf(1, 3, 5, 7, 10).forEach { t ->
-                ChoiceChip(if (t == 1) "1 hand" else "$t", setup.target == t, { mindi { it.copy(target = t) } }, Modifier.weight(1f))
+                ChoiceChip(if (t == 1) stringResource(R.string.mp_one_hand) else "$t", setup.target == t, { mindi { it.copy(target = t) } }, Modifier.weight(1f))
             }
         }
-        Text("Win = 1 point · Mendikot = 2 · Whitewash = 3", color = CM.TextMuted, fontSize = 11.sp, modifier = Modifier.padding(top = 4.dp))
+        Text(stringResource(R.string.mp_points_note), color = CM.TextMuted, fontSize = 11.sp, modifier = Modifier.padding(top = 4.dp))
         Spacer(Modifier.height(12.dp))
-        Label("Turn timer")
+        Label(stringResource(R.string.mp_turn_timer))
         Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             listOf(10, 20, 30, 45).forEach { t ->
                 val sel = setup.turnTimer == t || (t == 30 && setup.turnTimer !in listOf(10, 20, 45))
-                ChoiceChip("${t}s", sel, { mindi { it.copy(turnTimer = t) } }, Modifier.weight(1f))
+                ChoiceChip(stringResource(R.string.mp_seconds, t), sel, { mindi { it.copy(turnTimer = t) } }, Modifier.weight(1f))
             }
         }
-        Text("When time runs out, a safe card is played for that player.", color = CM.TextMuted, fontSize = 11.sp, modifier = Modifier.padding(top = 4.dp))
+        Text(stringResource(R.string.mp_timer_note), color = CM.TextMuted, fontSize = 11.sp, modifier = Modifier.padding(top = 4.dp))
         Spacer(Modifier.height(12.dp))
-        Label("Game speed")
+        Label(stringResource(R.string.mp_game_speed))
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            listOf("Relaxed", "Normal", "Fast").forEachIndexed { i, s ->
+            listOf(stringResource(R.string.mp_speed_relaxed), stringResource(R.string.mp_speed_normal), stringResource(R.string.mp_speed_fast)).forEachIndexed { i, s ->
+                ChoiceChip(s, room.speed == i, { update { it.copy(speed = i) } }, Modifier.weight(1f))
+            }
+        }
+    }
+}
+
+/** Lobby options for a Bhabhi room: table size, bots, the safe first round, turn timer and speed. */
+@Composable
+private fun BhabhiRoomOptions(room: RoomState, update: ((RoomState) -> RoomState) -> Unit) {
+    val app = LocalApp.current
+    val setup = room.bhabhi
+    fun bhabhi(t: (BhabhiSetup) -> BhabhiSetup) = update { it.copy(bhabhi = t(it.bhabhi)) }
+
+    GlassPanel(Modifier.fillMaxWidth().animateContentSize()) {
+        SectionHeader(stringResource(R.string.mp_table))
+        Spacer(Modifier.height(10.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            (BhabhiEngine.MIN_PLAYERS..BhabhiEngine.MAX_PLAYERS).forEach { n ->
+                val allowed = n >= room.players
+                ChoiceChip("$n", room.seats == n, {
+                    if (!allowed) app.sound.play(Sfx.ERROR)
+                    else update { it.copy(seats = n, bots = it.bots.coerceAtMost(n - 1 - it.guests.size), bhabhi = it.bhabhi.copy(players = n)) }
+                }, Modifier.weight(1f).graphicsLayer { alpha = if (allowed) 1f else 0.4f })
+            }
+        }
+        Spacer(Modifier.height(8.dp))
+        Text(tableLine(setup.players), color = CM.TextDim, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+        Spacer(Modifier.height(12.dp))
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Column(Modifier.weight(1f)) {
+                Text(stringResource(R.string.mp_bots), color = Color.White, fontWeight = FontWeight.ExtraBold, fontSize = 15.sp)
+                Text(pluralStringResource(R.plurals.mp_seats_open_friends_bots, room.openSeats, room.openSeats), color = CM.TextDim, fontSize = 12.sp)
+            }
+            Stepper(room.bots, 0, room.maxBots) { v -> update { it.copy(bots = v) } }
+        }
+        Spacer(Modifier.height(12.dp))
+        Label(stringResource(R.string.mp_bot_difficulty))
+        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            Difficulty.entries.forEach { d ->
+                ChoiceChip(if (d == Difficulty.GENIUS) stringResource(R.string.mp_expert) else DifficultyInfo.label(d), room.botDifficulty == d, { update { it.copy(botDifficulty = d) } }, Modifier.weight(1f), color = DifficultyInfo.color(d))
+            }
+        }
+    }
+
+    GlassPanel(Modifier.fillMaxWidth()) {
+        SectionHeader(stringResource(R.string.mp_match))
+        Spacer(Modifier.height(6.dp))
+        ToggleRow(stringResource(R.string.bhabhi_safe_first), stringResource(R.string.bhabhi_safe_first_desc), setup.safeFirstTrick) { v -> bhabhi { it.copy(safeFirstTrick = v) } }
+        Spacer(Modifier.height(12.dp))
+        Label(stringResource(R.string.mp_turn_timer))
+        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            listOf(10, 20, 30, 45).forEach { t ->
+                val sel = setup.turnTimer == t || (t == 30 && setup.turnTimer !in listOf(10, 20, 45))
+                ChoiceChip(stringResource(R.string.mp_seconds, t), sel, { bhabhi { it.copy(turnTimer = t) } }, Modifier.weight(1f))
+            }
+        }
+        Text(stringResource(R.string.mp_timer_note), color = CM.TextMuted, fontSize = 11.sp, modifier = Modifier.padding(top = 4.dp))
+        Spacer(Modifier.height(12.dp))
+        Label(stringResource(R.string.mp_game_speed))
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            listOf(stringResource(R.string.mp_speed_relaxed), stringResource(R.string.mp_speed_normal), stringResource(R.string.mp_speed_fast)).forEachIndexed { i, s ->
                 ChoiceChip(s, room.speed == i, { update { it.copy(speed = i) } }, Modifier.weight(1f))
             }
         }
@@ -377,10 +462,13 @@ private fun MindiRoomOptions(room: RoomState, update: ((RoomState) -> RoomState)
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun TeamsPreview(room: RoomState) {
+    // (name, isBot) per seat
+    val hostLabel = stringResource(R.string.mp_name_you, room.hostName.ifBlank { stringResource(R.string.mp_host) })
+    val botLabel = stringResource(R.string.mp_bot)
     val names = buildList {
-        add(room.hostName.ifBlank { "Host" } + " (you)")
-        room.guests.forEach { add(it.name) }
-        while (size < room.seats) add("Bot")
+        add(hostLabel to false)
+        room.guests.forEach { add(it.name to false) }
+        while (size < room.seats) add(botLabel to true)
     }
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         listOf(0, 1).forEach { team ->
@@ -390,9 +478,9 @@ private fun TeamsPreview(room: RoomState) {
                     .border(1.5.dp, color.copy(alpha = 0.8f), RoundedCornerShape(14.dp)).padding(10.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                Text(if (team == 0) "BLUE TEAM" else "RED TEAM", color = color, fontWeight = FontWeight.Black, fontSize = 12.sp, letterSpacing = 1.sp)
-                names.forEachIndexed { seat, n ->
-                    if (seat % 2 == team) Text(n, color = if (n == "Bot") CM.TextDim else Color.White, fontWeight = FontWeight.Bold, fontSize = 13.sp, maxLines = 1)
+                Text(if (team == 0) stringResource(R.string.mp_blue_team) else stringResource(R.string.mp_red_team), color = color, fontWeight = FontWeight.Black, fontSize = 12.sp, letterSpacing = 1.sp)
+                names.forEachIndexed { seat, (n, isBot) ->
+                    if (seat % 2 == team) Text(n, color = if (isBot) CM.TextDim else Color.White, fontWeight = FontWeight.Bold, fontSize = 13.sp, maxLines = 1)
                 }
             }
         }
@@ -431,7 +519,7 @@ fun ConfirmDialog(title: String, text: String, confirm: String, onConfirm: () ->
             Text(text, color = CM.Text, fontSize = 14.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
             Spacer(Modifier.height(18.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                GameButton("Stay", onDismiss, style = ButtonStyle.GLASS, modifier = Modifier.weight(1f), height = 50.dp, fontSize = 15.sp)
+                GameButton(stringResource(R.string.mp_stay), onDismiss, style = ButtonStyle.GLASS, modifier = Modifier.weight(1f), height = 50.dp, fontSize = 15.sp)
                 GameButton(confirm, onConfirm, style = ButtonStyle.RED, modifier = Modifier.weight(1.3f), height = 50.dp, fontSize = 15.sp)
             }
         }

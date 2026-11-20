@@ -61,11 +61,14 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.puzzel.lab.cardsmania.LocalApp
+import com.puzzel.lab.cardsmania.R
 import com.puzzel.lab.cardsmania.audio.Sfx
 import com.puzzel.lab.cardsmania.data.AvatarRef
 import com.puzzel.lab.cardsmania.data.GameFactory
@@ -110,27 +113,27 @@ fun ColorPicker(side: Side, reason: ColorReason?, onPick: (Suit) -> Unit) {
     val suits = Suit.forSide(side)
     val appear = remember { Animatable(0f) }
     LaunchedEffect(Unit) { appear.animateTo(1f, spring(0.55f, 260f)) }
-    val pulse = rememberPulse(900)
+    val pulse by rememberPulse(900)
     Scrim(0.6f) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             OutlinedTitle(
                 when (reason) {
-                    ColorReason.STORM -> "Name a color!"
-                    else -> "Choose a color"
+                    ColorReason.STORM -> stringResource(R.string.mania_color_name_title)
+                    else -> stringResource(R.string.mania_color_choose_title)
                 },
                 fontSize = 30.sp,
             )
             if (reason == ColorReason.STORM) {
                 Spacer(Modifier.height(6.dp))
                 Text(
-                    "Wild Color Storm! You'll reveal cards until this color appears — and keep them all.",
+                    stringResource(R.string.mania_color_storm_desc),
                     color = CM.TextDim, fontSize = 13.sp, textAlign = TextAlign.Center, modifier = Modifier.padding(horizontal = 40.dp)
                 )
             }
             Spacer(Modifier.height(20.dp))
             Box(Modifier.size(280.dp), contentAlignment = Alignment.Center) {
                 // center prism
-                Canvas(Modifier.size(70.dp).rotate(pulse * 20f)) {
+                Canvas(Modifier.size(70.dp).graphicsLayer { rotationZ = pulse * 20f }) {
                     val c = center
                     val r = size.minDimension / 2
                     val cols = suits.map { Gems.color(it) }
@@ -188,16 +191,16 @@ private fun GemButton(suit: Suit, onClick: () -> Unit) {
 fun ChallengeDialog(offender: String, amount: Int, onChallenge: () -> Unit, onAccept: () -> Unit) {
     Scrim {
         JewelPanel(Modifier.padding(horizontal = 28.dp).fillMaxWidth(), rim = Rim.GOLD, fill = PanelFill.ROYAL, padding = 20.dp) {
-            OutlinedTitle("Wild Draw $amount!", fontSize = 30.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
+            OutlinedTitle(stringResource(R.string.mania_challenge_title, amount), fontSize = 30.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
             Spacer(Modifier.height(10.dp))
             Text(
-                "$offender hit you with a Wild +$amount. Challenge it?\n\nIf they could have matched the color, they draw $amount instead. If the play was fair, you draw ${amount + 2}.",
+                stringResource(R.string.mania_challenge_body, offender, amount, amount + 2),
                 color = CM.Text, fontSize = 14.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth()
             )
             Spacer(Modifier.height(18.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                GameButton("Accept +$amount", onAccept, style = ButtonStyle.PURPLE, modifier = Modifier.weight(1f), height = 50.dp, fontSize = 15.sp)
-                GameButton("Challenge!", onChallenge, style = ButtonStyle.RED, modifier = Modifier.weight(1f), height = 50.dp, fontSize = 15.sp)
+                GameButton(stringResource(R.string.mania_challenge_accept, amount), onAccept, style = ButtonStyle.PURPLE, modifier = Modifier.weight(1f), height = 50.dp, fontSize = 15.sp)
+                GameButton(stringResource(R.string.mania_challenge_button), onChallenge, style = ButtonStyle.RED, modifier = Modifier.weight(1f), height = 50.dp, fontSize = 15.sp)
             }
         }
     }
@@ -214,36 +217,36 @@ fun PauseMenu(ui: GameUi, net: com.puzzel.lab.cardsmania.net.NetRole = com.puzze
     var confirmQuit by remember { mutableStateOf(false) }
     Scrim(0.8f) {
         JewelPanel(Modifier.padding(horizontal = 32.dp).fillMaxWidth(), rim = Rim.GOLD, fill = PanelFill.ROYAL, padding = 20.dp) {
-            OutlinedTitle(if (confirmQuit) (if (isHost) "End game?" else "Leave game?") else if (isNet) "Menu" else "Paused", fontSize = 34.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
+            OutlinedTitle(if (confirmQuit) (if (isHost) stringResource(R.string.mania_pause_end_q) else stringResource(R.string.mania_pause_leave_q)) else if (isNet) stringResource(R.string.mania_pause_menu) else stringResource(R.string.mania_pause_paused), fontSize = 34.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
             Spacer(Modifier.height(16.dp))
             if (confirmQuit) {
                 Text(
                     when {
-                        isHost -> "This ends the game and closes the room for everyone."
-                        isNet -> "A bot will take your seat for the rest of this game."
-                        else -> "Your game is saved — continue it any time from Home."
+                        isHost -> stringResource(R.string.mania_pause_host_warn)
+                        isNet -> stringResource(R.string.mania_pause_net_warn)
+                        else -> stringResource(R.string.mania_pause_saved)
                     }, color = CM.TextDim, fontSize = 14.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
                 Spacer(Modifier.height(16.dp))
-                GameButton("Leave", onQuit, style = ButtonStyle.RED, modifier = Modifier.fillMaxWidth(), icon = GameIcons.Lobby)
+                GameButton(stringResource(R.string.mania_leave), onQuit, style = ButtonStyle.RED, modifier = Modifier.fillMaxWidth(), icon = GameIcons.Lobby)
                 Spacer(Modifier.height(10.dp))
-                GameButton("Stay", {
+                GameButton(stringResource(R.string.mania_stay), {
                     confirmQuit = false
                     onResume()
                 }, style = ButtonStyle.GLASS, modifier = Modifier.fillMaxWidth())
             } else {
                 if (isNet) {
-                    Text("Multiplayer games keep running while this menu is open.", color = CM.TextDim, fontSize = 12.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+                    Text(stringResource(R.string.mania_pause_net_note), color = CM.TextDim, fontSize = 12.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
                     Spacer(Modifier.height(10.dp))
                 }
-                GameButton(if (isNet) "Back to Game" else "Resume", onResume, style = ButtonStyle.GREEN, modifier = Modifier.fillMaxWidth(), icon = GameIcons.Play)
+                GameButton(if (isNet) stringResource(R.string.mania_back_to_game) else stringResource(R.string.mania_resume), onResume, style = ButtonStyle.GREEN, modifier = Modifier.fillMaxWidth(), icon = GameIcons.Play)
                 Spacer(Modifier.height(10.dp))
-                GameButton("How to Play", onHowTo, style = ButtonStyle.BLUE, modifier = Modifier.fillMaxWidth(), icon = GameIcons.Book)
+                GameButton(stringResource(R.string.mania_how_to_play), onHowTo, style = ButtonStyle.BLUE, modifier = Modifier.fillMaxWidth(), icon = GameIcons.Book)
                 Spacer(Modifier.height(14.dp))
-                ToggleRow("Music", ui.settings.musicVolume > 0.01f) { on -> scope.launch { app.settings.update { it.copy(musicVolume = if (on) 0.6f else 0f) } } }
-                ToggleRow("Sound effects", ui.settings.sfxVolume > 0.01f) { on -> scope.launch { app.settings.update { it.copy(sfxVolume = if (on) 0.9f else 0f) } } }
-                ToggleRow("Haptics", ui.settings.haptics) { on -> scope.launch { app.settings.update { it.copy(haptics = on) } } }
+                ToggleRow(stringResource(R.string.mania_music), ui.settings.musicVolume > 0.01f) { on -> scope.launch { app.settings.update { it.copy(musicVolume = if (on) 0.6f else 0f) } } }
+                ToggleRow(stringResource(R.string.mania_sfx), ui.settings.sfxVolume > 0.01f) { on -> scope.launch { app.settings.update { it.copy(sfxVolume = if (on) 0.9f else 0f) } } }
+                ToggleRow(stringResource(R.string.mania_haptics), ui.settings.haptics) { on -> scope.launch { app.settings.update { it.copy(haptics = on) } } }
                 Spacer(Modifier.height(14.dp))
-                GameButton(if (isHost) "End Game" else if (isNet) "Leave Game" else "Quit to Home", {
+                GameButton(if (isHost) stringResource(R.string.mania_end_game) else if (isNet) stringResource(R.string.mania_leave_game) else stringResource(R.string.mania_quit_home), {
                     if (ui.settings.confirmExit || isNet) confirmQuit = true else onQuit()
                 }, style = ButtonStyle.RED, modifier = Modifier.fillMaxWidth(), icon = GameIcons.Lobby)
             }
@@ -269,9 +272,9 @@ fun RoundResultOverlay(r: ResultInfo.Round, s: GameState, human: Int, onNext: ((
             Modifier.fillMaxWidth().statusBarsPadding().navigationBarsPadding().padding(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            OutlinedTitle(if (won) "Round won!" else "${s.players[r.winnerId].name} wins the round", fontSize = if (won) 38.sp else 26.sp)
+            OutlinedTitle(if (won) stringResource(R.string.mania_round_won) else stringResource(R.string.mania_round_winner, s.players[r.winnerId].name), fontSize = if (won) 38.sp else 26.sp)
             Spacer(Modifier.height(6.dp))
-            Text("+${r.points} points", color = CM.GoldLight, fontWeight = FontWeight.Black, fontSize = 20.sp)
+            Text(pluralStringResource(R.plurals.mania_round_points, r.points, r.points), color = CM.GoldLight, fontWeight = FontWeight.Black, fontSize = 20.sp)
             Spacer(Modifier.height(16.dp))
             GlassPanel(Modifier.fillMaxWidth()) {
                 val order = r.scores.sortedByDescending { it.second }
@@ -283,18 +286,18 @@ fun RoundResultOverlay(r: ResultInfo.Round, s: GameState, human: Int, onNext: ((
                         AvatarBadge(AvatarRef.emoji(p.setup.avatar), size = 38.dp, ringColor = AvatarRef.color(p.setup.avatar))
                         Spacer(Modifier.width(10.dp))
                         Column(Modifier.weight(1f)) {
-                            Text(p.name + if (id == human) " (You)" else "", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                            Text(if (p.eliminated) "Overloaded" else "${hand.size} cards left", color = CM.TextDim, fontSize = 11.sp)
+                            Text(if (id == human) stringResource(R.string.mania_name_you, p.name) else p.name, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                            Text(if (p.eliminated) stringResource(R.string.mania_overloaded) else pluralStringResource(R.plurals.mania_cards_left, hand.size, hand.size), color = CM.TextDim, fontSize = 11.sp)
                         }
                         Text("$score", color = if (id == r.winnerId) CM.Emerald else Color.White, fontWeight = FontWeight.Black, fontSize = 18.sp)
                     }
                 }
                 Spacer(Modifier.height(4.dp))
-                Text("First to ${r.target} wins the match", color = CM.TextMuted, fontSize = 12.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
+                Text(stringResource(R.string.mania_first_to_wins, r.target), color = CM.TextMuted, fontSize = 12.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
             }
             Spacer(Modifier.height(20.dp))
             if (onNext != null) {
-                GameButton("Next Round", onNext, style = ButtonStyle.GOLD, modifier = Modifier.fillMaxWidth(), icon = GameIcons.Play)
+                GameButton(stringResource(R.string.mania_next_round), onNext, style = ButtonStyle.GOLD, modifier = Modifier.fillMaxWidth(), icon = GameIcons.Play)
             } else {
                 WaitingForHost()
             }
@@ -358,16 +361,16 @@ fun MatchResultOverlay(
                 }
             }
             OutlinedTitle(
-                if (r.humanWon) "VICTORY!" else "${s.players[r.winnerId].name} wins!",
+                if (r.humanWon) stringResource(R.string.mania_victory) else stringResource(R.string.mania_player_wins, s.players[r.winnerId].name),
                 fontSize = if (r.humanWon) 48.sp else 32.sp,
                 modifier = Modifier.scale(appear.value)
             )
             Spacer(Modifier.height(4.dp))
             Text(
                 when {
-                    r.humanWon && r.lastStanding -> "Last one standing!"
-                    r.humanWon -> "You emptied your hand first."
-                    else -> "You finished #${r.place}. So close!"
+                    r.humanWon && r.lastStanding -> stringResource(R.string.mania_last_standing)
+                    r.humanWon -> stringResource(R.string.mania_emptied_first)
+                    else -> stringResource(R.string.mania_finished_place, r.place)
                 },
                 color = CM.TextDim, fontSize = 15.sp, fontWeight = FontWeight.Bold
             )
@@ -396,14 +399,14 @@ fun MatchResultOverlay(
                             Spacer(Modifier.width(6.dp))
                             Text("+$coins", color = CM.GoldLight, fontWeight = FontWeight.Black, fontSize = 24.sp)
                         }
-                        Text("Coins", color = CM.TextDim, fontSize = 12.sp)
+                        Text(stringResource(R.string.mania_coins), color = CM.TextDim, fontSize = 12.sp)
                     }
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text("+${reward?.xp ?: 0}", color = Color(0xFFC0A6FF), fontWeight = FontWeight.Black, fontSize = 24.sp)
                         Text("XP", color = CM.TextDim, fontSize = 12.sp)
                     }
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("Lv ${profile.level}", color = Color.White, fontWeight = FontWeight.Black, fontSize = 24.sp)
+                        Text(stringResource(R.string.mania_level_short, profile.level), color = Color.White, fontWeight = FontWeight.Black, fontSize = 24.sp)
                         val (prog, _, _) = Leveling.progress(profile.xp)
                         Box(Modifier.width(70.dp).height(6.dp).clip(RoundedCornerShape(50)).background(Color(0x33FFFFFF))) {
                             Box(Modifier.fillMaxWidth(prog.coerceIn(0.02f, 1f)).height(6.dp).clip(RoundedCornerShape(50)).background(Brush.horizontalGradient(listOf(CM.Violet, CM.Rose))))
@@ -412,7 +415,7 @@ fun MatchResultOverlay(
                 }
                 if (reward != null && reward.levelAfter > reward.levelBefore) {
                     Spacer(Modifier.height(10.dp))
-                    Text("LEVEL UP! You reached level ${reward.levelAfter}", color = CM.Emerald, fontWeight = FontWeight.Black, fontSize = 15.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
+                    Text(stringResource(R.string.mania_level_up, reward.levelAfter), color = CM.Emerald, fontWeight = FontWeight.Black, fontSize = 15.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
                 }
                 reward?.newAchievements?.forEach { a ->
                     Spacer(Modifier.height(8.dp))
@@ -423,7 +426,7 @@ fun MatchResultOverlay(
                         Text(a.icon, fontSize = 26.sp)
                         Spacer(Modifier.width(10.dp))
                         Column(Modifier.weight(1f)) {
-                            Text("Achievement: ${a.title}", color = CM.GoldLight, fontWeight = FontWeight.Black, fontSize = 13.sp)
+                            Text(stringResource(R.string.mania_achievement, a.title), color = CM.GoldLight, fontWeight = FontWeight.Black, fontSize = 13.sp)
                             Text(a.description, color = CM.TextDim, fontSize = 11.sp)
                         }
                         Text("+${a.reward}", color = CM.GoldLight, fontWeight = FontWeight.Black, fontSize = 13.sp)
@@ -438,8 +441,8 @@ fun MatchResultOverlay(
                         Text("${i + 1}", color = CM.GoldLight, fontWeight = FontWeight.Black, modifier = Modifier.width(22.dp))
                         Text(AvatarRef.emoji(p.setup.avatar), fontSize = 18.sp)
                         Spacer(Modifier.width(8.dp))
-                        Text(p.name + if (id == human) " (You)" else "", color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
-                        Text(if (id == r.winnerId) "WIN" else "${p.hand.size} cards", color = if (id == r.winnerId) CM.Emerald else CM.TextDim, fontSize = 12.sp, fontWeight = FontWeight.Black)
+                        Text(if (id == human) stringResource(R.string.mania_name_you, p.name) else p.name, color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
+                        Text(if (id == r.winnerId) stringResource(R.string.mania_win) else pluralStringResource(R.plurals.mania_cards, p.hand.size, p.hand.size), color = if (id == r.winnerId) CM.Emerald else CM.TextDim, fontSize = 12.sp, fontWeight = FontWeight.Black)
                         if (s.config.targetScore > 0) {
                             Spacer(Modifier.width(10.dp))
                             Text("$score", color = Color.White, fontWeight = FontWeight.Black, fontSize = 13.sp)
@@ -449,9 +452,9 @@ fun MatchResultOverlay(
             }
             Spacer(Modifier.height(18.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                GameButton(if (onPlayAgain == null) "Leave" else "Home", onHome, style = ButtonStyle.PURPLE, modifier = Modifier.weight(1f), icon = GameIcons.Lobby)
-                if (onRoom != null) GameButton("Room", onRoom, style = ButtonStyle.BLUE, modifier = Modifier.weight(1f))
-                if (r.daily == null && onPlayAgain != null) GameButton(if (onRoom != null) "Rematch" else "Play Again", onPlayAgain, style = ButtonStyle.GOLD, modifier = Modifier.weight(1.4f), icon = GameIcons.Refresh)
+                GameButton(if (onPlayAgain == null) stringResource(R.string.mania_leave) else stringResource(R.string.mania_home), onHome, style = ButtonStyle.PURPLE, modifier = Modifier.weight(1f), icon = GameIcons.Lobby)
+                if (onRoom != null) GameButton(stringResource(R.string.mania_room), onRoom, style = ButtonStyle.BLUE, modifier = Modifier.weight(1f))
+                if (r.daily == null && onPlayAgain != null) GameButton(if (onRoom != null) stringResource(R.string.mania_rematch) else stringResource(R.string.mania_play_again), onPlayAgain, style = ButtonStyle.GOLD, modifier = Modifier.weight(1.4f), icon = GameIcons.Refresh)
             }
         }
     }
@@ -459,12 +462,12 @@ fun MatchResultOverlay(
 
 @Composable
 private fun WaitingForHost() {
-    val pulse = rememberPulse(700)
+    val pulse by rememberPulse(700)
     Box(
         Modifier.fillMaxWidth().clip(RoundedCornerShape(50)).background(Color(0x33FFFFFF)).padding(vertical = 14.dp),
         contentAlignment = Alignment.Center
     ) {
-        Text("Waiting for the host…", color = CM.GoldLight.copy(alpha = 0.6f + 0.4f * pulse), fontWeight = FontWeight.Black, fontSize = 16.sp)
+        Text(stringResource(R.string.mania_waiting_host), color = CM.GoldLight, fontWeight = FontWeight.Black, fontSize = 16.sp, modifier = Modifier.graphicsLayer { alpha = 0.6f + 0.4f * pulse })
     }
 }
 
@@ -472,18 +475,30 @@ private fun WaitingForHost() {
 fun EndedDialog(reason: String, onOk: () -> Unit) {
     Scrim(0.85f) {
         JewelPanel(Modifier.padding(horizontal = 32.dp).fillMaxWidth(), rim = Rim.RUBY, fill = PanelFill.NIGHT, padding = 20.dp) {
-            OutlinedTitle("Game over", fontSize = 30.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
+            OutlinedTitle(stringResource(R.string.mania_game_over), fontSize = 30.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
             Spacer(Modifier.height(10.dp))
-            Text(reason, color = CM.Text, fontSize = 15.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+            Text(localizedEndReason(reason), color = CM.Text, fontSize = 15.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
             Spacer(Modifier.height(18.dp))
-            GameButton("OK", onOk, style = ButtonStyle.GOLD, modifier = Modifier.fillMaxWidth(), icon = GameIcons.Lobby)
+            GameButton(stringResource(R.string.mania_ok), onOk, style = ButtonStyle.GOLD, modifier = Modifier.fillMaxWidth(), icon = GameIcons.Lobby)
         }
     }
 }
 
+/** End reasons arrive over the network in English (protocol text); show the known ones in the player's language. */
+@Composable
+private fun localizedEndReason(reason: String): String = when (reason) {
+    "The host left the game." -> stringResource(R.string.mania_end_host_left)
+    "The host closed the room." -> stringResource(R.string.mania_end_host_closed)
+    "You were removed from the room." -> stringResource(R.string.mania_end_removed)
+    "Lost connection to the host." -> stringResource(R.string.mania_end_lost_connection)
+    "The room is closed." -> stringResource(R.string.mania_end_room_closed)
+    "You're not in a room any more." -> stringResource(R.string.mania_end_not_in_room)
+    else -> reason
+}
+
 @Composable
 private fun Trophy() {
-    val pulse = rememberPulse(1100)
+    val pulse by rememberPulse(1100)
     Canvas(Modifier.size(120.dp).graphicsLayer { scaleX = 1f + pulse * 0.04f; scaleY = 1f + pulse * 0.04f }) {
         val w = size.width
         val h = size.height

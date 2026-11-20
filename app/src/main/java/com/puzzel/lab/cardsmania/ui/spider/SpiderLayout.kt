@@ -25,15 +25,20 @@ class SpiderLayout(
     val leftHanded: Boolean = false,
 ) {
     companion object {
-        const val MAX_UP = 0.45f
+        // 0.48 (was 0.45) keeps the visible strip of a face-up card ~21dp now that the side margins make cards a bit narrower
+        const val MAX_UP = 0.48f
         const val MIN_UP = 0.28f
         const val DOWN = 0.13f
         /** How far (dp) above a column's first face-up card a touch still counts as that card. */
         const val FACE_UP_SNAP_DP = 14f
     }
 
-    val margin = 2f * density
-    val gap = 2f * density
+    /**
+     * Space between the table and the screen edges. 10dp keeps the cards off the rounded screen corners and leaves room
+     * for the stock's deal-count badge, which pokes ~9dp past the card's outer edge.
+     */
+    val margin = 10f * density
+    val gap = 3f * density
     val pitch: Float get() = cardW + gap
     val cardW = (width - 2 * margin - 9 * gap) / 10f
     val cardH = cardW * 1.4f
