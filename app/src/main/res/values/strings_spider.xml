@@ -25,8 +25,8 @@
     <string name="spider_level_medium">Medium</string>
     <string name="spider_level_hard">Hard</string>
     <string name="spider_suits_1_desc">Spades only · every deal is winnable</string>
-    <string name="spider_suits_2_desc">Spades &amp; hearts · a real challenge</string>
-    <string name="spider_suits_4_desc">All four suits · for Spider masters</string>
+    <string name="spider_suits_2_desc">Spades &amp; hearts · hard deals, always winnable</string>
+    <string name="spider_suits_4_desc">All four suits · toughest deals, always winnable</string>
     <plurals name="spider_suit_count">
         <item quantity="one">%d Suit</item>
         <item quantity="other">%d Suits</item>
@@ -71,8 +71,6 @@
     <string name="spider_tap_target">Tap, then target</string>
     <string name="spider_tap_target_desc">Tap cards to pick them up, then tap the column to place them. Drag works too.</string>
     <string name="spider_smart_tap_desc">Tap cards to send them to the best spot. Tap again to try the next spot. Drag works too.</string>
-    <string name="spider_idle_hints">Idle hints</string>
-    <string name="spider_idle_hints_desc">Gently show a good move after 25 seconds</string>
     <string name="spider_left_handed">Left-handed layout</string>
     <string name="spider_left_handed_desc">Stock and finished runs on the left</string>
     <string name="spider_show_timer">Show timer</string>

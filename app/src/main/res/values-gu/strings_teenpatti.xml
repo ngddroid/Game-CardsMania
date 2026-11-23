@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Lobby, profile, how-to chips -->
+    <string name="shell_game_teenpatti">ત્રણ પત્તી</string>
+    <string name="shell_tag_teenpatti">3–6 · શ્રેષ્ઠ 3 પત્તાં જીતે</string>
+    <string name="shell_blurb_teenpatti">બ્લાઇન્ડ કે જોઈને રમો · ફક્ત ટેબલ ચિપ્સ</string>
+    <string name="shell_chip_teenpatti">પત્તી</string>
+    <string name="mania_howto_chip_teenpatti">ત્રણ પત્તી</string>
+
+    <!-- Setup screen -->
+    <string name="tp_title">ત્રણ પત્તી</string>
+    <string name="tp_continue_title">મેચ ચાલુ રાખો</string>
+    <string name="tp_continue_sub">તમારી સેવ કરેલી ત્રણ પત્તી મેચ ખોલો</string>
+    <string name="tp_section_players">ખેલાડીઓ</string>
+    <string name="tp_hands_label">એક મેચમાં હાથ</string>
+    <string name="tp_hands_n">%1$d હાથ</string>
+    <string name="tp_chips_note">અનલિમિટેડ ટેબલ: તમે છોડો ત્યાં સુધી એક પછી એક હાથ. દરેકને %1$d ચિપ્સ મળે છે અને બૂટ %2$d છે; જેની ચિપ્સ પૂરી થાય તેને નવો સ્ટેક મળે. ચિપ્સ ટેબલ પર જ રહે છે; દરેક જીતેલા હાથ પર સિક્કા મળે છે.</string>
+    <string name="tp_section_rules">નિયમો</string>
+    <string name="tp_sideshow">સાઇડ શો</string>
+    <string name="tp_sideshow_desc">જોઈને રમતો ખેલાડી પોતાની પહેલાંના (જોઈને રમતા) ખેલાડીને ખાનગીમાં પત્તાં સરખાવવા કહી શકે</string>
+    <string name="tp_a23">A-2-3 બીજું શ્રેષ્ઠ</string>
+    <string name="tp_a23_desc">ચાલુ: A-2-3, A-K-Q ની તરત નીચે. બંધ: A-2-3 સૌથી નાનો સિક્વન્સ</string>
+    <string name="tp_section_table">ટેબલ</string>
+    <string name="tp_bots">બૉટ</string>
+    <string name="tp_deal_cards">પત્તાં વહેંચો</string>
+    <string name="tp_hero_title">ત્રણ પત્તાં. એક વિજેતા.</string>
+    <string name="tp_hero_sub">બ્લાઇન્ડ કે જોઈને · ચાલ, રેઝ, શો</string>
+
+    <!-- Game screen -->
+    <string name="tp_shuffling">પત્તાં ચીપાય છે…</string>
+    <string name="tp_cd_pause">થોભો</string>
+    <string name="tp_cd_emote">ઇમોજી</string>
+    <string name="tp_cd_rankings">હાથની રેન્કિંગ</string>
+    <string name="tp_top_title">%1$s · હાથ %2$d/%3$d</string>
+    <string name="tp_top_sub">બૂટ %1$d · દાવ %2$d</string>
+    <string name="tp_pot">પૉટ %1$d</string>
+    <string name="tp_you">તમે</string>
+    <string name="tp_player">ખેલાડી</string>
+    <string name="tp_dealer">D</string>
+    <string name="tp_tag_blind">બ્લાઇન્ડ</string>
+    <string name="tp_tag_seen">જોયું</string>
+    <string name="tp_tag_packed">પેક</string>
+    <string name="tp_tag_out">બહાર</string>
+    <string name="tp_tap_to_see">પત્તાં જોવા તેના પર ટેપ કરો</string>
+    <string name="tp_status_your_turn">તમારો વારો</string>
+    <string name="tp_status_reply">સાઇડ શો માગ્યો — તમારો જવાબ</string>
+    <string name="tp_status_thinking">%1$s વિચારે છે…</string>
+    <string name="tp_status_packed">તમે પેક કર્યું · આ હાથ જુઓ</string>
+    <string name="tp_status_out">ચિપ્સ પૂરી · જોઈ રહ્યા છો</string>
+    <string name="tp_btn_see">જુઓ</string>
+    <string name="tp_btn_pack">પેક</string>
+    <string name="tp_btn_blind">બ્લાઇન્ડ %1$d</string>
+    <string name="tp_btn_chaal">ચાલ %1$d</string>
+    <string name="tp_btn_raise">રેઝ %1$d</string>
+    <string name="tp_btn_show">શો %1$d</string>
+    <string name="tp_btn_sideshow">સાઇડ શો %1$d</string>
+    <string name="tp_btn_all_in">ઑલ ઇન %1$d</string>
+    <string name="tp_side_title">સાઇડ શો?</string>
+    <string name="tp_side_body">%1$s તમારી સાથે પત્તાં સરખાવવા માગે છે. નાનો હાથ પેક થશે (બરાબરી પર %1$s પેક થશે).</string>
+    <string name="tp_side_accept">મંજૂર</string>
+    <string name="tp_side_decline">ના પાડો</string>
+    <string name="tp_side_waiting">%1$s ના જવાબની રાહ…</string>
+    <string name="tp_toast_time_up">સમય પૂરો — તમે પેક કર્યું</string>
+    <string name="tp_saved_note">તમારી મેચ સેવ છે — પછીથી ત્રણ પત્તીમાંથી ચાલુ રાખો.</string>
+
+    <!-- Table pops -->
+    <string name="tp_pop_hand">હાથ %1$d/%2$d</string>
+    <string name="tp_pop_seen">જોયું</string>
+    <string name="tp_pop_blind">બ્લાઇન્ડ %1$d</string>
+    <string name="tp_pop_chaal">ચાલ %1$d</string>
+    <string name="tp_pop_raise">રેઝ %1$d!</string>
+    <string name="tp_pop_pack">પેક</string>
+    <string name="tp_pop_sideshow_ask">સાઇડ શો?</string>
+    <string name="tp_pop_sideshow_no">ના પાડી</string>
+    <string name="tp_pop_sideshow_lost">સાઇડ શો હાર્યા</string>
+    <string name="tp_pop_show">શો!</string>
+    <string name="tp_pop_all_in">ઑલ ઇન!</string>
+
+    <!-- Hand kinds -->
+    <string name="tp_rankings_title">હાથની રેન્કિંગ</string>
+    <string name="tp_kind_trail">ટ્રેલ</string>
+    <string name="tp_kind_pure">પ્યોર સિક્વન્સ</string>
+    <string name="tp_kind_sequence">સિક્વન્સ</string>
+    <string name="tp_kind_color">કલર</string>
+    <string name="tp_kind_pair">જોડી</string>
+    <string name="tp_kind_high">હાઈ કાર્ડ</string>
+    <string name="tp_kind_trail_desc">એક જેવાં ત્રણ પત્તાં. A-A-A સૌથી શ્રેષ્ઠ હાથ છે</string>
+    <string name="tp_kind_pure_desc">સળંગ ત્રણ પત્તાં, એક જ સૂટનાં</string>
+    <string name="tp_kind_sequence_desc">સળંગ ત્રણ પત્તાં, અલગ સૂટ</string>
+    <string name="tp_kind_color_desc">એક જ સૂટનાં ત્રણ પત્તાં, સળંગ નહીં</string>
+    <string name="tp_kind_pair_desc">એક જેવાં બે પત્તાં</string>
+    <string name="tp_kind_high_desc">આમાંનું કંઈ નહીં: સૌથી મોટું પત્તું ગણાય</string>
+    <string name="tp_rankings_a23_second">A-K-Q સૌથી ઊંચો સિક્વન્સ છે, પછી A-2-3. સૂટથી બરાબરી તૂટતી નથી.</string>
+    <string name="tp_rankings_a23_low">A-K-Q સૌથી ઊંચો અને A-2-3 સૌથી નાનો સિક્વન્સ છે. સૂટથી બરાબરી તૂટતી નથી.</string>
+    <string name="tp_close">બંધ કરો</string>
+
+    <!-- Result -->
+    <string name="tp_result_win">ટેબલ ચેમ્પિયન!</string>
+    <string name="tp_result_over">મેચ પૂરી</string>
+    <string name="tp_result_place">તમે %2$d માંથી %1$s સ્થાને રહ્યા</string>
+    <plurals name="tp_result_hands">
+        <item quantity="one">%1$d હાથ જીત્યો</item>
+        <item quantity="other">%1$d હાથ જીત્યા</item>
+    </plurals>
+    <string name="tp_result_coins_note">ટેબલ ચિપ્સ ટેબલ પર જ રહે છે. સિક્કા તમારા સ્થાન માટે છે.</string>
+
+    <!-- Profile stats -->
+    <string name="tp_stat_blind_wins">બ્લાઇન્ડ જીત</string>
+    <string name="tp_stat_biggest_pot">સૌથી મોટો પૉટ</string>
+    <string name="tp_stat_best_hand">શ્રેષ્ઠ હાથ</string>
+
+    <!-- Achievements -->
+    <string name="data_ach_tp_win_title">સ્ટેક બિલ્ડર</string>
+    <string name="data_ach_tp_win_desc">ત્રણ પત્તી ટેબલ પર 4,000 ચિપ્સ સુધી પહોંચો.</string>
+    <string name="data_ach_tp_trail_title">ટ્રેલ!</string>
+    <string name="data_ach_tp_trail_desc">ત્રણ પત્તીમાં એક જેવાં ત્રણ પત્તાં મેળવો.</string>
+    <string name="data_ach_tp_pure_title">પ્યોર રન</string>
+    <string name="data_ach_tp_pure_desc">ત્રણ પત્તીમાં પ્યોર સિક્વન્સ મેળવો.</string>
+    <string name="data_ach_tp_blind_title">બ્લાઇન્ડ નસીબ</string>
+    <string name="data_ach_tp_blind_desc">પત્તાં જોયા વગર ત્રણ પત્તીનો એક હાથ જીતો.</string>
+    <string name="data_ach_tp_bluff_title">પથ્થર ચહેરો</string>
+    <string name="data_ach_tp_bluff_desc">ફક્ત હાઈ કાર્ડ સાથે ત્રણ પત્તીનો એક હાથ જીતો.</string>
+    <string name="data_ach_tp_expert_title">હાઈ રોલર</string>
+    <string name="data_ach_tp_expert_desc">એક્સપર્ટ બૉટ સામે ત્રણ પત્તીનો શો જીતો.</string>
+
+    <!-- How to play -->
+    <string name="tp_howto_name">ત્રણ પત્તી</string>
+    <string name="tp_howto_tagline">દરેકને ત્રણ પત્તાં — શ્રેષ્ઠ હાથ પૉટ લઈ જાય.</string>
+    <string name="tp_howto_pill">3 થી 6 ખેલાડી · ફક્ત ટેબલ ચિપ્સ</string>
+    <string name="tp_howto_goal_title">લક્ષ્ય</string>
+    <string name="tp_howto_goal_1">શ્રેષ્ઠ ત્રણ પત્તાંથી પૉટ જીતો — અથવા પેક ન કરનાર છેલ્લા ખેલાડી બનો.</string>
+    <string name="tp_howto_goal_2">તમે છોડો ત્યાં સુધી ટેબલ ચાલે છે. બધા સરખી ચિપ્સથી શરૂ કરે છે, જેની ચિપ્સ પૂરી થાય તેને નવો સ્ટેક મળે, અને ચિપ્સ ટેબલની બહાર જતી નથી.</string>
+    <string name="tp_howto_deal_title">દરેક હાથ</string>
+    <string name="tp_howto_deal_1">બધા બૂટ પૉટમાં નાખે છે અને ત્રણ પત્તાં ઊંધાં મળે છે.</string>
+    <string name="tp_howto_deal_2">રમત ડીલરની ડાબી બાજુથી ફરે છે.</string>
+    <string name="tp_howto_deal_3">તમે બ્લાઇન્ડ (જોયા વગર) રમી શકો અથવા ગમે ત્યારે જુઓ દબાવી પત્તાં જોઈ શકો. એકવાર જોયાં પછી તમે જોઈને જ રમો.</string>
+    <string name="tp_howto_bet_title">તમારો વારો</string>
+    <string name="tp_howto_bet_1">ચાલ: બ્લાઇન્ડ ખેલાડી હાલનો દાવ આપે; જોઈને રમનાર દાવનો બમણો.</string>
+    <string name="tp_howto_bet_2">રેઝ: તેનો બમણો આપો, અને બધા માટે દાવ બમણો થાય (એક મર્યાદા સુધી).</string>
+    <string name="tp_howto_bet_3">પેક: હાથ છોડી દો. નાખેલી ચિપ્સ પૉટમાં જ રહે છે.</string>
+    <string name="tp_howto_bet_4">બ્લાઇન્ડ રમવું સસ્તું છે, પણ તમારી પાસે શું છે તે ખબર નથી.</string>
+    <string name="tp_howto_bet_5">ચાલ જેટલી ચિપ્સ ન હોય તો ઑલ ઇન જઈ શકો: બાકી બધા હાથ એકસાથે ખુલે છે.</string>
+    <string name="tp_howto_show_title">શો અને સાઇડ શો</string>
+    <string name="tp_howto_show_1">શો: જ્યારે ફક્ત બે ખેલાડી બચે, એક ચાલ આપી બંને હાથ સરખાવો. સારો હાથ પૉટ લઈ જાય; બરાબરી પર શો માગનાર હારે.</string>
+    <string name="tp_howto_show_2">સાઇડ શો: તમે જોઈને રમતા હો અને ત્રણ કે વધુ ખેલાડી બચ્યા હોય ત્યારે, એક ચાલ આપી તમારી પહેલાંના જોઈને રમતા ખેલાડીને ખાનગીમાં પત્તાં સરખાવવા કહો. મંજૂર થાય તો નાનો હાથ પેક થાય (બરાબરી પર તમે). તેઓ ના પણ પાડી શકે.</string>
+    <string name="tp_howto_show_3">બાકીના બધા પેક કરે ત્યારે છેલ્લો ખેલાડી શો વગર પૉટ લઈ જાય.</string>
+    <string name="tp_howto_rank_title">હાથની રેન્કિંગ</string>
+    <string name="tp_howto_rank_1">શ્રેષ્ઠથી: ટ્રેલ (એક જેવાં ત્રણ) · પ્યોર સિક્વન્સ · સિક્વન્સ · કલર · જોડી · હાઈ કાર્ડ.</string>
+    <string name="tp_howto_rank_2">A-K-Q સૌથી ઊંચો સિક્વન્સ છે. મૂળભૂત રીતે A-2-3 બીજા ક્રમે છે; સેટઅપમાં તેને સૌથી નાનો બનાવી શકો.</string>
+    <string name="tp_howto_rank_3">એક જ પ્રકારના હાથમાં સૌથી મોટું પત્તું સરખાવો, પછી બીજું. સૂટથી બરાબરી તૂટતી નથી.</string>
+    <string name="tp_howto_tips_title">ટિપ્સ</string>
+    <string name="tp_howto_tips_1">જોડી કે તેથી ઉપર મજબૂત હાથ છે: લગભગ ચારમાંથી ત્રણ હાથ ફક્ત હાઈ કાર્ડ હોય છે.</string>
+    <string name="tp_howto_tips_2">જુઓ કોણ પત્તાં જોયા પછી પણ ચાલ ચાલુ રાખે છે — ઘણીવાર તેમની પાસે કંઈક સારું હોય છે.</string>
+    <string name="tp_howto_tips_3">વહેલું પેક કરવું સસ્તું છે. દાવ વધે ત્યારે નબળા હાથ પાછળ ન દોડો.</string>
+    <string name="tp_howto_ex_1">રાણીની ટ્રેલ: તેને ફક્ત મોટી ટ્રેલ હરાવી શકે.</string>
+    <string name="tp_howto_ex_2">અલગ સૂટમાં A-2-3: એક સિક્વન્સ, મૂળભૂત રીતે ફક્ત A-K-Q થી નીચે.</string>
+
+    <!-- Variations -->
+    <string name="tp_section_variant">વેરિએશન</string>
+    <string name="tp_var_classic">ક્લાસિક</string>
+    <string name="tp_var_muflis">મુફલિસ</string>
+    <string name="tp_var_joker">જોકર</string>
+    <string name="tp_var_lowest">લો જોકર</string>
+    <string name="tp_var_ak47">AK47</string>
+    <string name="tp_var_999">999</string>
+    <string name="tp_var_4x">4× બૂટ</string>
+    <string name="tp_var_mixed">મિક્સ</string>
+    <string name="tp_var_classic_desc">ક્લાસિક: શ્રેષ્ઠ ત્રણ પત્તાં જીતે.</string>
+    <string name="tp_var_muflis_desc">મુફલિસ: બધું ઊંધું: સૌથી નાનો હાથ જીતે. ટ્રેલ સૌથી નબળો અને અલગ સૂટનો 5-3-2 સૌથી સારો.</string>
+    <string name="tp_var_joker_desc">જોકર: વહેંચ્યા પછી એક પત્તું ખુલ્લું કરાય છે. એ નંબરનાં બધાં પત્તાં જોકર છે અને કોઈ પણ પત્તાની જગ્યા લઈ શકે.</string>
+    <string name="tp_var_lowest_desc">લો જોકર: દરેક હાથનું સૌથી નાનું પત્તું જોકર છે (તેની જોડી હોય તો બંને).</string>
+    <string name="tp_var_ak47_desc">AK47: દરેક એક્કો, બાદશાહ, 4 અને 7 જોકર છે.</string>
+    <string name="tp_var_999_desc">999: દસ્સો અને ચિત્રવાળાં પત્તાં 0, એક્કો 1. તમારાં પત્તાં સૌથી મોટી સંખ્યા બનાવે; 999 ની સૌથી નજીક જીતે.</string>
+    <string name="tp_var_4x_desc">4× બૂટ: ક્લાસિક નિયમો, પણ બૂટ ચાર ગણો, તેથી દરેક પૉટ મોટો શરૂ થાય.</string>
+    <string name="tp_var_mixed_desc">મિક્સ: દરેક હાથમાં અલગ વેરિએશન રમાય.</string>
+    <string name="tp_hint_muflis">સૌથી નાનો હાથ જીતે</string>
+    <string name="tp_hint_joker">દરેક %1$s જોકર છે</string>
+    <string name="tp_hint_lowest">સૌથી નાનું પત્તું જોકર છે</string>
+    <string name="tp_hint_ak47">A · K · 4 · 7 જોકર છે</string>
+    <string name="tp_hint_999">999 ની સૌથી નજીક જીતે</string>
+    <string name="tp_hint_4x">4× બૂટ</string>
+    <string name="tp_score_999">સ્કોર %1$d</string>
+    <string name="tp_howto_var_wild">જોકર પત્તાં પર સોનેરી ★ હોય છે અને તે હંમેશાં એ પત્તું બને જેનાથી તમારો શ્રેષ્ઠ હાથ બને. ટેબલ પર દેખાતા હાથના નામમાં તે ગણાઈ ગયાં હોય છે.</string>
+    <string name="tp_winner">વિજેતા</string>
+    <string name="tp_won_round">%1$s એ આ રાઉન્ડ જીત્યો</string>
+    <string name="tp_you_won_round">તમે આ રાઉન્ડ જીત્યા!</string>
+    <string name="tp_top_title_endless">%1$s · હાથ %2$d</string>
+    <string name="tp_pop_hand_n">હાથ %1$d</string>
+    <string name="tp_toast_refill">ચિપ્સ પૂરી: લો %1$d ચિપ્સનો નવો સ્ટેક</string>
+    <string name="tp_toast_new_player">%1$s ટેબલ છોડી ગયા · %2$s આવી બેઠા</string>
+    <string name="tp_stat_best_stack">સૌથી મોટો સ્ટેક</string>
+</resources>

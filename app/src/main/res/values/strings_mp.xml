@@ -31,14 +31,14 @@
 
     <!-- Hub -->
     <string name="mp_title">Multiplayer</string>
-    <string name="mp_err_permission">Cards Mania needs permission to find phones on your Wi-Fi.</string>
+    <string name="mp_err_permission">Mindi &amp; Mania needs permission to find phones on your Wi-Fi.</string>
     <string name="mp_play_with_friends">Play with friends</string>
     <string name="mp_hub_intro">Everyone joins the same Wi-Fi. One phone hosts a room, the others join it — no internet needed.</string>
     <string name="mp_host_room">Host a Room</string>
     <string name="mp_host_room_sub">You choose the mode, seats and bots</string>
     <string name="mp_join_room">Join a Room</string>
     <string name="mp_join_room_sub">Find a room nearby or enter its code</string>
-    <string name="mp_permission_note">Android will ask to let Cards Mania find devices on your network. It\'s only used to connect phones in the same room.</string>
+    <string name="mp_permission_note">Android will ask to let Mindi &amp; Mania find devices on your network. It\'s only used to connect phones in the same room.</string>
     <string name="mp_how_it_works">HOW IT WORKS</string>
     <string name="mp_step_1">1. Connect every phone to the same Wi-Fi (or to one phone\'s hotspot).</string>
     <string name="mp_step_2">2. One player taps Host a Room and picks the mode, seats and bots.</string>
@@ -160,4 +160,12 @@
     <string name="mp_reject_version">Different app version — please update both phones.</string>
     <string name="mp_reject_started">This game has already started.</string>
     <string name="mp_reject_full">The room is full.</string>
+    <string name="mp_tp_tagline">Teen Patti for friends: play blind or seen, chaal, show — an endless table with table chips only.</string>
+    <string name="mp_rummy_tagline">13-card Points Rummy for friends: make your sequences and declare first — an endless table.</string>
+    <string name="mp_tp_room_line">Teen Patti · %1$d players</string>
+    <string name="mp_rummy_room_line">Rummy · %1$d players</string>
+    <string name="mp_sum_players">%1$d players</string>
+    <string name="mp_endless">Endless table</string>
+    <string name="mp_timer_note_tp">When time runs out, that player packs (a sideshow request is declined).</string>
+    <string name="mp_timer_note_rummy">When time runs out, that player draws from the closed pile and throws the same card back.</string>
 </resources>

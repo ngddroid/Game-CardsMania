@@ -24,7 +24,6 @@
     <!-- Game screen -->
     <string name="bhabhi_shuffling">Shuffling…</string>
     <string name="bhabhi_cd_pause">Pause</string>
-    <string name="bhabhi_cd_hint">Hint</string>
     <string name="bhabhi_cd_emote">Emote</string>
     <string name="bhabhi_top_title">BHABHI · %1$d PLAYERS</string>
     <plurals name="bhabhi_top_trick">
@@ -46,27 +45,21 @@
     <string name="bhabhi_status_tap_again">Tap again or swipe up to play</string>
     <string name="bhabhi_status_open">You have the A♠ — open the game with it</string>
     <string name="bhabhi_status_lead">Your lead — any card</string>
-    <string name="bhabhi_status_thulla">No %1$s? Throw any card — THULLA!</string>
-    <string name="bhabhi_status_no_suit_safe">No %1$s? Throw any card (first round is safe)</string>
-    <string name="bhabhi_status_follow">Follow %1$s %2$s</string>
     <string name="bhabhi_status_your_turn">Your turn</string>
     <string name="bhabhi_status_thinking">%1$s is thinking…</string>
 
     <!-- Suit names (shown in the UI only; the engine keeps English) -->
-    <string name="bhabhi_suit_spades">Spades</string>
-    <string name="bhabhi_suit_hearts">Hearts</string>
-    <string name="bhabhi_suit_diamonds">Diamonds</string>
-    <string name="bhabhi_suit_clubs">Clubs</string>
 
     <!-- Toasts -->
     <string name="bhabhi_toast_time_up">Time\'s up! A card was played for you</string>
     <string name="bhabhi_toast_open">Open the game with the A♠</string>
-    <string name="bhabhi_toast_follow">Follow suit: play a %1$s card</string>
 
     <!-- Table pop-ups -->
     <string name="bhabhi_pop_you_have_ace">YOU HAVE THE A♠</string>
     <string name="bhabhi_pop_ace_opens">A♠ OPENS</string>
     <string name="bhabhi_pop_thulla">THULLA!</string>
+    <string name="bhabhi_pop_wrong_thulla">WRONG THULLA! +%1$d</string>
+    <string name="bhabhi_pop_you_wrong_thulla">WRONG THULLA! YOU GET +%1$d</string>
     <string name="bhabhi_pop_you_pick_up">YOU PICK UP +%1$d</string>
     <string name="bhabhi_pop_pick_up">PICK UP +%1$d</string>
     <string name="bhabhi_pop_you_got_away">YOU GOT AWAY! %1$s</string>

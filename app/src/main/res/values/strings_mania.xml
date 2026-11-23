@@ -291,6 +291,7 @@
     <string name="mania_howto_bhabhi_trick_2">If everyone follows suit, the trick is thrown away and nobody keeps those cards. The highest card of the led suit leads next.</string>
     <string name="mania_howto_bhabhi_trick_3">If you can\'t follow suit, play any other card: that\'s a THULLA. The trick stops right there, and whoever played the highest card of the led suit must pick up every card of that trick.</string>
     <string name="mania_howto_bhabhi_trick_4">The player who picked up leads the next trick.</string>
+    <string name="mania_howto_bhabhi_trick_5">Wrong thulla: if you still have the led suit but play another suit, the trick is not cut (your card is just thrown in) and you are fined 5 cards — the other players each hand you one in turn. Nobody warns you, so check your hand!</string>
     <string name="mania_howto_bhabhi_out_title">Getting out</string>
     <string name="mania_howto_bhabhi_out_1">Play your last card and you\'re out — unless it lands in a trick that you have to pick up.</string>
     <string name="mania_howto_bhabhi_out_2">If the highest card\'s owner has no cards left, the next player with cards leads.</string>

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "367310602907",
+    "project_id": "shree-hari-jewellers-owner",
+    "storage_bucket": "shree-hari-jewellers-owner.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:367310602907:android:ee63314d874c63ce53bc3e",
+        "android_client_info": {
+          "package_name": "com.ngdstudio.mindimania"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDDY2CTi8-fy5nb58tKr6s1YhM0r1Bm4IM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

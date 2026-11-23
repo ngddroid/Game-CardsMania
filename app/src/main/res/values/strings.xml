@@ -1,3 +1,6 @@
 <resources>
-    <string name="app_name">Cards Mania</string>
+    <!-- Full name: system app list, recent apps, share subject, legal pages. -->
+    <string name="app_name">Mindi &amp; Mania: Color Card Game</string>
+    <!-- Under the home-screen icon (only ~12 characters fit there). -->
+    <string name="app_name_short">Mindi &amp; Mania</string>
 </resources>

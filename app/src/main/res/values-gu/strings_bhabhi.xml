@@ -24,7 +24,6 @@
     <!-- Game screen -->
     <string name="bhabhi_shuffling">પત્તાં ચીપાય છે…</string>
     <string name="bhabhi_cd_pause">થોભો</string>
-    <string name="bhabhi_cd_hint">સંકેત</string>
     <string name="bhabhi_cd_emote">ઇમોજી</string>
     <string name="bhabhi_top_title">ભાભી · %1$d ખેલાડી</string>
     <plurals name="bhabhi_top_trick">
@@ -46,27 +45,21 @@
     <string name="bhabhi_status_tap_again">રમવા ફરી ટૅપ કરો અથવા ઉપર સ્વાઇપ કરો</string>
     <string name="bhabhi_status_open">તમારી પાસે A♠ છે — એનાથી ગેમ શરૂ કરો</string>
     <string name="bhabhi_status_lead">તમારો દાવ — કોઈ પણ પત્તું</string>
-    <string name="bhabhi_status_thulla">%1$s નથી? કોઈ પણ પત્તું નાખો — ઠુલ્લા!</string>
-    <string name="bhabhi_status_no_suit_safe">%1$s નથી? કોઈ પણ પત્તું નાખો (પહેલો રાઉન્ડ સેફ છે)</string>
-    <string name="bhabhi_status_follow">%1$s %2$s જ નાખો</string>
     <string name="bhabhi_status_your_turn">તમારો વારો</string>
     <string name="bhabhi_status_thinking">%1$s વિચારે છે…</string>
 
     <!-- Suit names (shown in the UI only; the engine keeps English) -->
-    <string name="bhabhi_suit_spades">કાળી</string>
-    <string name="bhabhi_suit_hearts">લાલ</string>
-    <string name="bhabhi_suit_diamonds">ચોકટ</string>
-    <string name="bhabhi_suit_clubs">ફૂલી</string>
 
     <!-- Toasts -->
     <string name="bhabhi_toast_time_up">સમય પૂરો! તમારા બદલે એક પત્તું રમાઈ ગયું</string>
     <string name="bhabhi_toast_open">A♠ થી ગેમ શરૂ કરો</string>
-    <string name="bhabhi_toast_follow">એ જ રંગ નાખો: %1$sનું પત્તું રમો</string>
 
     <!-- Table pop-ups -->
     <string name="bhabhi_pop_you_have_ace">તમારી પાસે A♠ છે</string>
     <string name="bhabhi_pop_ace_opens">A♠ થી શરૂઆત</string>
     <string name="bhabhi_pop_thulla">ઠુલ્લા!</string>
+    <string name="bhabhi_pop_wrong_thulla">ખોટો ઠુલ્લા! +%1$d</string>
+    <string name="bhabhi_pop_you_wrong_thulla">ખોટો ઠુલ્લા! તમને +%1$d પત્તાં</string>
     <string name="bhabhi_pop_you_pick_up">તમે ઉપાડ્યાં +%1$d</string>
     <string name="bhabhi_pop_pick_up">ઉપાડ્યાં +%1$d</string>
     <string name="bhabhi_pop_you_got_away">તમે બચી ગયા! %1$s</string>

@@ -25,8 +25,8 @@
     <string name="spider_level_medium">મીડિયમ</string>
     <string name="spider_level_hard">મુશ્કેલ</string>
     <string name="spider_suits_1_desc">ફક્ત કાળી · દરેક ડીલ જીતી શકાય</string>
-    <string name="spider_suits_2_desc">કાળી અને લાલ · ખરી ચેલેન્જ</string>
-    <string name="spider_suits_4_desc">ચારેય સૂટ · સ્પાઇડરના ઉસ્તાદો માટે</string>
+    <string name="spider_suits_2_desc">કાળી અને લાલ · અઘરી ડીલ, હંમેશાં જીતી શકાય</string>
+    <string name="spider_suits_4_desc">ચારેય સૂટ · સૌથી અઘરી ડીલ, હંમેશાં જીતી શકાય</string>
     <plurals name="spider_suit_count">
         <item quantity="one">%d સૂટ</item>
         <item quantity="other">%d સૂટ</item>
@@ -71,8 +71,6 @@
     <string name="spider_tap_target">ટૅપ, પછી જગ્યા</string>
     <string name="spider_tap_target_desc">પત્તાં ઉપાડવા ટૅપ કરો, પછી મૂકવા માટે કૉલમ પર ટૅપ કરો. ડ્રૅગ પણ ચાલે છે.</string>
     <string name="spider_smart_tap_desc">પત્તાં પર ટૅપ કરો, તે સૌથી સારી જગ્યાએ જશે. આગલી જગ્યા માટે ફરી ટૅપ કરો. ડ્રૅગ પણ ચાલે છે.</string>
-    <string name="spider_idle_hints">આપમેળે સંકેત</string>
-    <string name="spider_idle_hints_desc">25 સેકન્ડ પછી હળવેથી એક સારી ચાલ બતાવો</string>
     <string name="spider_left_handed">ડાબા હાથવાળો લેઆઉટ</string>
     <string name="spider_left_handed_desc">સ્ટોક અને પૂરા સેટ ડાબી બાજુ</string>
     <string name="spider_show_timer">ટાઇમર બતાવો</string>

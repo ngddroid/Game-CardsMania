@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Debug builds only: test hooks that never ship in release. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <!-- adb shell am broadcast -n com.ngdstudio.mindimania/.notify.DebugReminderReceiver -->
+        <receiver
+            android:name=".notify.DebugReminderReceiver"
+            android:exported="true" />
+        <!-- adb shell am broadcast -n com.ngdstudio.mindimania/.notify.DebugTokenReceiver ; adb logcat -d -s FCMToken -->
+        <receiver
+            android:name=".notify.DebugTokenReceiver"
+            android:exported="true" />
+        <!-- adb shell am broadcast -n com.ngdstudio.mindimania/.debug.DebugUnlockAllReceiver -->
+        <receiver
+            android:name=".debug.DebugUnlockAllReceiver"
+            android:exported="true" />
+    </application>
+</manifest>

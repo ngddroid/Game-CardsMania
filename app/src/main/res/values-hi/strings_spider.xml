@@ -25,8 +25,8 @@
     <string name="spider_level_medium">मीडियम</string>
     <string name="spider_level_hard">कठिन</string>
     <string name="spider_suits_1_desc">सिर्फ़ हुकुम · हर डील जीती जा सकती है</string>
-    <string name="spider_suits_2_desc">हुकुम और पान · असली चुनौती</string>
-    <string name="spider_suits_4_desc">चारों सूट · स्पाइडर उस्तादों के लिए</string>
+    <string name="spider_suits_2_desc">हुकुम और पान · कठिन डील, हमेशा जीती जा सकती है</string>
+    <string name="spider_suits_4_desc">चारों सूट · सबसे कठिन डील, हमेशा जीती जा सकती है</string>
     <plurals name="spider_suit_count">
         <item quantity="one">%d सूट</item>
         <item quantity="other">%d सूट</item>
@@ -71,8 +71,6 @@
     <string name="spider_tap_target">टैप, फिर जगह</string>
     <string name="spider_tap_target_desc">पत्तों को उठाने के लिए टैप करें, फिर रखने के लिए कॉलम पर टैप करें। ड्रैग भी चलता है।</string>
     <string name="spider_smart_tap_desc">पत्तों पर टैप करें, वे सबसे अच्छी जगह चले जाएँगे। अगली जगह के लिए फिर टैप करें। ड्रैग भी चलता है।</string>
-    <string name="spider_idle_hints">अपने-आप संकेत</string>
-    <string name="spider_idle_hints_desc">25 सेकंड बाद धीरे से एक अच्छी चाल दिखाएँ</string>
     <string name="spider_left_handed">बाएँ हाथ वाला लेआउट</string>
     <string name="spider_left_handed_desc">स्टॉक और पूरे सेट बाईं ओर</string>
     <string name="spider_show_timer">टाइमर दिखाएँ</string>

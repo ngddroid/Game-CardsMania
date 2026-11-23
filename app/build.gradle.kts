@@ -2,16 +2,21 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
+    // Firebase: reads app/google-services.json (Firebase console → Project settings → your Android app)
+    alias(libs.plugins.google.services)
+    // uploads R8 mapping files for release builds so crash reports show real class and method names
+    alias(libs.plugins.firebase.crashlytics)
 }
 
 android {
-    namespace = "com.puzzel.lab.cardsmania"
+    namespace = "com.ngdstudio.mindimania"
     compileSdk {
         version = release(37)
     }
 
     defaultConfig {
-        applicationId = "com.puzzel.lab.cardsmania"
+        // Play Store app ID: permanent once uploaded. The Kotlin code uses the same package (namespace).
+        applicationId = "com.ngdstudio.mindimania"
         minSdk = 24
         targetSdk = 37
         versionCode = 1
@@ -65,6 +70,14 @@ dependencies {
     implementation(libs.androidx.profileinstaller)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.coroutines.android)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.crashlytics)
+    implementation(libs.firebase.messaging)
+    // daily reminder notifications
+    implementation(libs.androidx.work.runtime.ktx)
+    // Google Play in-app updates
+    implementation(libs.play.app.update.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)

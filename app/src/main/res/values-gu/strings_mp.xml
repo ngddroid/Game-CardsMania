@@ -31,14 +31,14 @@
 
     <!-- Hub -->
     <string name="mp_title">મલ્ટિપ્લેયર</string>
-    <string name="mp_err_permission">Cards Mania ને તમારા Wi-Fi પર ફોન શોધવાની પરવાનગી જોઈએ.</string>
+    <string name="mp_err_permission">Mindi &amp; Mania ને તમારા Wi-Fi પર ફોન શોધવાની પરવાનગી જોઈએ.</string>
     <string name="mp_play_with_friends">મિત્રો સાથે રમો</string>
     <string name="mp_hub_intro">બધા એક જ Wi-Fi સાથે જોડાય. એક ફોન રૂમ હોસ્ટ કરે, બાકીના એમાં જોડાય — ઇન્ટરનેટની જરૂર નથી.</string>
     <string name="mp_host_room">રૂમ હોસ્ટ કરો</string>
     <string name="mp_host_room_sub">મોડ, સીટો અને બોટ તમે પસંદ કરો</string>
     <string name="mp_join_room">રૂમમાં જોડાઓ</string>
     <string name="mp_join_room_sub">નજીકનો રૂમ શોધો અથવા એનો કોડ નાખો</string>
-    <string name="mp_permission_note">Android પૂછશે કે Cards Mania તમારા નેટવર્ક પર ડિવાઇસ શોધી શકે કે નહીં. એનો ઉપયોગ ફક્ત એક રૂમના ફોન જોડવા માટે થાય છે.</string>
+    <string name="mp_permission_note">Android પૂછશે કે Mindi &amp; Mania તમારા નેટવર્ક પર ડિવાઇસ શોધી શકે કે નહીં. એનો ઉપયોગ ફક્ત એક રૂમના ફોન જોડવા માટે થાય છે.</string>
     <string name="mp_how_it_works">કેવી રીતે ચાલે છે</string>
     <string name="mp_step_1">1. બધા ફોન એક જ Wi-Fi સાથે જોડો (અથવા કોઈ એક ફોનના હોટસ્પોટ સાથે).</string>
     <string name="mp_step_2">2. એક ખેલાડી \"રૂમ હોસ્ટ કરો\" દબાવીને મોડ, સીટો અને બોટ પસંદ કરે.</string>
@@ -160,4 +160,12 @@
     <string name="mp_reject_version">ઍપનું વર્ઝન અલગ છે — બંને ફોન અપડેટ કરો.</string>
     <string name="mp_reject_started">આ ગેમ પહેલેથી શરૂ થઈ ગઈ છે.</string>
     <string name="mp_reject_full">રૂમ ભરેલો છે.</string>
+    <string name="mp_tp_tagline">મિત્રો સાથે ત્રણ પત્તી: બ્લાઇન્ડ કે જોઈને, ચાલ, શો — અનલિમિટેડ ટેબલ, ફક્ત ટેબલ ચિપ્સ.</string>
+    <string name="mp_rummy_tagline">મિત્રો સાથે 13 પત્તાંની પોઇન્ટ રમી: સિક્વન્સ બનાવો અને પહેલા ડિક્લેર કરો — અનલિમિટેડ ટેબલ.</string>
+    <string name="mp_tp_room_line">ત્રણ પત્તી · %1$d ખેલાડી</string>
+    <string name="mp_rummy_room_line">રમી · %1$d ખેલાડી</string>
+    <string name="mp_sum_players">%1$d ખેલાડી</string>
+    <string name="mp_endless">અનલિમિટેડ ટેબલ</string>
+    <string name="mp_timer_note_tp">સમય પૂરો થાય ત્યારે તે ખેલાડી પેક કરે છે (સાઇડશોની વિનંતી નકારાય છે).</string>
+    <string name="mp_timer_note_rummy">સમય પૂરો થાય ત્યારે તે ખેલાડી બંધ ઢગલામાંથી પત્તું લઈ એ જ પત્તું પાછું ફેંકે છે.</string>
 </resources>

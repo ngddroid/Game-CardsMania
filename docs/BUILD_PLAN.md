@@ -1,7 +1,7 @@
 # Cards Mania — Game Design & Single-Phase Build Plan
 
 > Status: **awaiting your approval**. Nothing below has been built yet.
-> Project: `com.puzzel.lab.cardsmania` · Kotlin + Jetpack Compose · AGP 9.4.1 · minSdk 24 · targetSdk 37
+> Project: `com.ngdstudio.mindimania` · Kotlin + Jetpack Compose · AGP 9.4.1 · minSdk 24 · targetSdk 37
 
 ---
 
@@ -417,7 +417,7 @@ highlight banner plays for 1.2 s, for example *"Lumi stacked +18 on you!"*.
 ## 8. Architecture
 
 ```
-app/src/main/java/com/puzzel/lab/cardsmania/
+app/src/main/java/com/ngdstudio/mindimania/
 ├─ CardsManiaApp.kt                 Application + AppContainer (manual DI)
 ├─ MainActivity.kt                  single activity, splash install, NavHost
 ├─ engine/                          PURE KOTLIN, no Android imports, fully unit-tested

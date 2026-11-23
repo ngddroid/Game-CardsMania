@@ -5,7 +5,7 @@
     <string name="shell_tab_events">ઇવેન્ટ્સ</string>
     <string name="shell_tab_collection">કલેક્શન</string>
     <string name="shell_tab_profile">પ્રોફાઇલ</string>
-    <string name="shell_exit_title">Cards Mania છોડવું છે?</string>
+    <string name="shell_exit_title">Mindi &amp; Mania છોડવું છે?</string>
     <string name="shell_exit_body">તમારી પ્રોગ્રેસ સેવ છે. તમારી ડેઇલી ગિફ્ટ માટે જલ્દી પાછા આવજો!</string>
     <string name="shell_exit_stay">રહો</string>
     <string name="shell_exit_exit">નીકળો</string>
@@ -15,13 +15,13 @@
     <string name="shell_lobby_pick_game">ગેમ પસંદ કરો</string>
     <string name="shell_lobby_quick_play">ક્વિક પ્લે</string>
     <string name="shell_lobby_quick_hint">છેલ્લા સેટઅપ સાથે સીધા %1$s રમો</string>
-    <string name="shell_lobby_indian_intro">🪔  ભારતની મીંડી અને ભાભી, સાથે સોલો સ્પાઇડર</string>
+    <string name="shell_lobby_indian_intro">🪔  ભારતની મીંડી, ત્રણ પત્તી અને ભાભી, સાથે સોલો સ્પાઇડર</string>
     <string name="shell_lobby_badge_new">નવું</string>
     <string name="shell_lobby_play_friends">મિત્રો સાથે રમો</string>
     <string name="shell_section_card_mania">કાર્ડ મેનિયા</string>
     <string name="shell_section_card_mania_sub">ક્લાસિક · મર્સિલેસ · ફ્લિપ</string>
     <string name="shell_section_indian_card">ભારતીય કાર્ડ</string>
-    <string name="shell_section_indian_card_sub">મીંડી · ભાભી · સ્પાઇડર</string>
+    <string name="shell_section_indian_card_sub">મીંડી · ત્રણ પત્તી · ભાભી · સ્પાઇડર</string>
     <string name="shell_quick_open">ખોલો!</string>
     <string name="shell_quick_daily_gift">ડેઇલી ગિફ્ટ</string>
     <string name="shell_quick_challenges">ચેલેન્જ</string>
@@ -140,7 +140,7 @@
     <string name="shell_stat_mendikots">મેન્ડીકોટ</string>
     <string name="shell_stat_whitewashes">વ્હાઇટવૉશ</string>
     <string name="shell_stat_tens">જીતેલા 10</string>
-    <string name="shell_onb1_title">Cards Mania માં\nસ્વાગત છે</string>
+    <string name="shell_onb1_title">Mindi &amp; Mania માં\nસ્વાગત છે</string>
     <string name="shell_onb1_body">રત્નો, સ્ટેક અને સરપ્રાઇઝથી ભરેલું એક શાનદાર કાર્ડ-ગેમ કલેક્શન. ગેમ પસંદ કરો, ટેબલ જીતો, ઇનામ મેળવો!</string>
     <string name="shell_onb2_title">6 ગેમ\nએકમાં</string>
     <string name="shell_onb2_body">રંગ મેળવવાની ટક્કર માટે ક્લાસિક, મર્સિલેસ અને ફ્લિપ મેનિયા, આરામ માટે સ્પાઇડર સોલિટેર, મીંડી — 10 ના પત્તાંની ટીમ ગેમ — અને ભાભી, જેમાં છેલ્લે સુધી પત્તાં રાખનાર હારે છે.</string>
@@ -195,10 +195,10 @@
     <string name="shell_settings_haptics_sub">ખાસ પળોએ વાઇબ્રેટ કરો</string>
     <string name="shell_settings_support">મદદ</string>
     <string name="shell_how_to_play">કેવી રીતે રમવું</string>
-    <string name="shell_settings_rate">Cards Mania ને રેટ કરો</string>
+    <string name="shell_settings_rate">Mindi &amp; Mania ને રેટ કરો</string>
     <string name="shell_settings_share">મિત્રો સાથે શેર કરો</string>
     <string name="shell_settings_legal">કાનૂની</string>
-    <string name="shell_terms">સેવાની શરતો</string>
+    <string name="shell_terms">નિયમો અને શરતો</string>
     <string name="shell_privacy">પ્રાઇવસી પૉલિસી</string>
     <string name="shell_settings_danger">જોખમી ઝોન</string>
     <string name="shell_settings_danger_body">આ ડિવાઇસ પર તમારા સિક્કા, લેવલ, અનલૉક, આંકડા અને સેટિંગ્સ ભૂંસી નાખો.</string>
@@ -208,8 +208,8 @@
     <string name="shell_reset_title">પ્રોગ્રેસ રીસેટ કરવી છે?</string>
     <string name="shell_reset_body">આનાથી તમારી પ્રોફાઇલ, સિક્કા, અનલૉક, સિદ્ધિઓ, આંકડા, સેવ ગેમ અને સેટિંગ્સ કાયમ માટે ભૂંસાઈ જશે. આ પાછું નહીં થઈ શકે.</string>
     <string name="shell_reset_confirm">રીસેટ</string>
-    <string name="shell_share_text">મારી સાથે Cards Mania રમો — પત્તાં મેળવો, સ્ટેક કરો, ઉલટાવો અને જીતો! %1$s</string>
-    <string name="shell_share_chooser">Cards Mania શેર કરો</string>
+    <string name="shell_share_text">મારી સાથે Mindi &amp; Mania રમો — પત્તાં મેળવો, સ્ટેક કરો, ઉલટાવો અને જીતો! %1$s</string>
+    <string name="shell_share_chooser">Mindi &amp; Mania શેર કરો</string>
     <string name="shell_hud_level">લેવલ %1$d</string>
     <string name="shell_hud_get_coins">સિક્કા મેળવો</string>
     <string name="shell_toast_achievement">સિદ્ધિ: %1$s</string>
@@ -246,4 +246,25 @@
         <item quantity="one">+%1$d સિક્કો</item>
         <item quantity="other">+%1$d સિક્કા</item>
     </plurals>
+
+    <!-- Notifications, privacy and Play updates -->
+    <string name="notif_channel_reminders">રોજનું રિમાઇન્ડર</string>
+    <string name="notif_channel_reminders_desc">તમારી ગિફ્ટ, ડેઇલી ચેલેન્જ કે ઝડપી ગેમ વિશે દિવસમાં એક રિમાઇન્ડર</string>
+    <string name="notif_channel_news">સમાચાર અને ઇવેન્ટ્સ</string>
+    <string name="notif_channel_news_desc">Mindi &amp; Mania ની નવી ગેમ્સ, ઇવેન્ટ્સ અને અપડેટ્સ</string>
+    <string name="notif_gift_title">🎁 તમારી ડેઇલી ગિફ્ટ તૈયાર છે</string>
+    <string name="notif_gift_body">Mindi &amp; Mania ખોલો અને %1$d મફત સિક્કા મેળવો.</string>
+    <string name="notif_daily_title">🕷️ આજની સ્પાઇડર ચેલેન્જ રાહ જુએ છે</string>
+    <string name="notif_daily_body">આજની ડીલ ઉકેલો અને તમારી ડેઇલી સ્ટ્રીક ચાલુ રાખો.</string>
+    <string name="notif_play_title">🃏 ટેબલ તૈયાર છે</string>
+    <string name="notif_play_body">મીંડી કે ભાભીની એક ઝડપી ગેમ થઈ જાય?</string>
+    <string name="shell_settings_notifications">નોટિફિકેશન</string>
+    <string name="shell_settings_reminders">રોજનું રિમાઇન્ડર</string>
+    <string name="shell_settings_reminders_sub">દિવસમાં એક વાર (સાંજે) ગિફ્ટ કે ડેઇલી ચેલેન્જની યાદ</string>
+    <string name="shell_settings_news">સમાચાર અને ઇવેન્ટ્સ</string>
+    <string name="shell_settings_news_sub">નવી ગેમ્સ, ઇવેન્ટ્સ અને અપડેટ્સ</string>
+    <string name="shell_settings_share_data">ઉપયોગ અને ક્રેશ ડેટા શેર કરો</string>
+    <string name="shell_settings_share_data_sub">અનામી આંકડા અને ક્રેશ રિપોર્ટ્સથી અમને ભૂલો સુધારવામાં મદદ મળે છે</string>
+    <string name="update_ready">નવું વર્ઝન તૈયાર છે</string>
+    <string name="update_restart">રીસ્ટાર્ટ</string>
 </resources>

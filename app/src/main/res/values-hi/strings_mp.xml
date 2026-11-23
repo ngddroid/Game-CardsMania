@@ -31,14 +31,14 @@
 
     <!-- Hub -->
     <string name="mp_title">मल्टीप्लेयर</string>
-    <string name="mp_err_permission">Cards Mania को आपके Wi-Fi पर फ़ोन ढूँढने की अनुमति चाहिए।</string>
+    <string name="mp_err_permission">Mindi &amp; Mania को आपके Wi-Fi पर फ़ोन ढूँढने की अनुमति चाहिए।</string>
     <string name="mp_play_with_friends">दोस्तों के साथ खेलें</string>
     <string name="mp_hub_intro">सब एक ही Wi-Fi से जुड़ें। एक फ़ोन रूम होस्ट करे, बाकी उसमें जुड़ें — इंटरनेट की ज़रूरत नहीं।</string>
     <string name="mp_host_room">रूम होस्ट करें</string>
     <string name="mp_host_room_sub">मोड, सीटें और बॉट आप चुनें</string>
     <string name="mp_join_room">रूम में जुड़ें</string>
     <string name="mp_join_room_sub">पास का रूम ढूँढें या उसका कोड डालें</string>
-    <string name="mp_permission_note">Android पूछेगा कि Cards Mania आपके नेटवर्क पर डिवाइस ढूँढ सकता है या नहीं। इसका इस्तेमाल सिर्फ़ एक रूम के फ़ोन जोड़ने के लिए होता है।</string>
+    <string name="mp_permission_note">Android पूछेगा कि Mindi &amp; Mania आपके नेटवर्क पर डिवाइस ढूँढ सकता है या नहीं। इसका इस्तेमाल सिर्फ़ एक रूम के फ़ोन जोड़ने के लिए होता है।</string>
     <string name="mp_how_it_works">कैसे काम करता है</string>
     <string name="mp_step_1">1. सभी फ़ोन एक ही Wi-Fi से जोड़ें (या किसी एक फ़ोन के हॉटस्पॉट से)।</string>
     <string name="mp_step_2">2. एक खिलाड़ी \"रूम होस्ट करें\" दबाकर मोड, सीटें और बॉट चुने।</string>
@@ -160,4 +160,12 @@
     <string name="mp_reject_version">ऐप का वर्शन अलग है — दोनों फ़ोन अपडेट करें।</string>
     <string name="mp_reject_started">यह गेम पहले ही शुरू हो चुका है।</string>
     <string name="mp_reject_full">रूम भरा हुआ है।</string>
+    <string name="mp_tp_tagline">दोस्तों के साथ तीन पत्ती: ब्लाइंड या देखकर, चाल, शो — अनलिमिटेड टेबल, सिर्फ़ टेबल चिप्स।</string>
+    <string name="mp_rummy_tagline">दोस्तों के साथ 13 पत्तों की पॉइंट्स रमी: सीक्वेंस बनाएँ और पहले डिक्लेयर करें — अनलिमिटेड टेबल।</string>
+    <string name="mp_tp_room_line">तीन पत्ती · %1$d खिलाड़ी</string>
+    <string name="mp_rummy_room_line">रमी · %1$d खिलाड़ी</string>
+    <string name="mp_sum_players">%1$d खिलाड़ी</string>
+    <string name="mp_endless">अनलिमिटेड टेबल</string>
+    <string name="mp_timer_note_tp">समय खत्म होने पर वह खिलाड़ी पैक कर देता है (साइडशो का अनुरोध मना हो जाता है)।</string>
+    <string name="mp_timer_note_rummy">समय खत्म होने पर वह खिलाड़ी बंद ढेर से पत्ता उठाकर वही पत्ता वापस फेंक देता है।</string>
 </resources>

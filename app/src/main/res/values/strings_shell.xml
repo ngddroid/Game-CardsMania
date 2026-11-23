@@ -5,7 +5,7 @@
     <string name="shell_tab_events">Events</string>
     <string name="shell_tab_collection">Collection</string>
     <string name="shell_tab_profile">Profile</string>
-    <string name="shell_exit_title">Leave Cards Mania?</string>
+    <string name="shell_exit_title">Leave Mindi &amp; Mania?</string>
     <string name="shell_exit_body">Your progress is saved. Come back soon for your daily gift!</string>
     <string name="shell_exit_stay">Stay</string>
     <string name="shell_exit_exit">Exit</string>
@@ -15,13 +15,13 @@
     <string name="shell_lobby_pick_game">PICK A GAME</string>
     <string name="shell_lobby_quick_play">QUICK PLAY</string>
     <string name="shell_lobby_quick_hint">Jump into %1$s with your last setup</string>
-    <string name="shell_lobby_indian_intro">🪔  Mindi and Bhabhi from India, plus solo Spider</string>
+    <string name="shell_lobby_indian_intro">🪔  Mindi, Teen Patti and Bhabhi from India, plus solo Spider</string>
     <string name="shell_lobby_badge_new">NEW</string>
     <string name="shell_lobby_play_friends">PLAY WITH FRIENDS</string>
     <string name="shell_section_card_mania">Card Mania</string>
     <string name="shell_section_card_mania_sub">Classic · Merciless · Flip</string>
     <string name="shell_section_indian_card">Indian Card</string>
-    <string name="shell_section_indian_card_sub">Mindi · Bhabhi · Spider</string>
+    <string name="shell_section_indian_card_sub">Mindi · Teen Patti · Bhabhi · Spider</string>
     <string name="shell_quick_open">OPEN!</string>
     <string name="shell_quick_daily_gift">Daily Gift</string>
     <string name="shell_quick_challenges">Challenges</string>
@@ -140,7 +140,7 @@
     <string name="shell_stat_mendikots">Mendikots</string>
     <string name="shell_stat_whitewashes">Whitewashes</string>
     <string name="shell_stat_tens">10s captured</string>
-    <string name="shell_onb1_title">Welcome to\nCards Mania</string>
+    <string name="shell_onb1_title">Welcome to\nMindi &amp; Mania</string>
     <string name="shell_onb1_body">A dazzling card-game collection full of gems, stacks and surprises. Pick a game, beat the table, collect the rewards!</string>
     <string name="shell_onb2_title">6 Games\nin One</string>
     <string name="shell_onb2_body">Classic, Merciless and Flip Mania for color-matching battles, Spider Solitaire to relax, Mindi — the team game of 10s — and Bhabhi, where the last one holding cards loses.</string>
@@ -195,10 +195,10 @@
     <string name="shell_settings_haptics_sub">Vibrate on key moments</string>
     <string name="shell_settings_support">Support</string>
     <string name="shell_how_to_play">How to Play</string>
-    <string name="shell_settings_rate">Rate Cards Mania</string>
+    <string name="shell_settings_rate">Rate Mindi &amp; Mania</string>
     <string name="shell_settings_share">Share with friends</string>
     <string name="shell_settings_legal">Legal</string>
-    <string name="shell_terms">Terms of Service</string>
+    <string name="shell_terms">Terms &amp; Conditions</string>
     <string name="shell_privacy">Privacy Policy</string>
     <string name="shell_settings_danger">Danger Zone</string>
     <string name="shell_settings_danger_body">Erase your coins, levels, unlocks, stats and settings on this device.</string>
@@ -208,8 +208,8 @@
     <string name="shell_reset_title">Reset Progress?</string>
     <string name="shell_reset_body">This permanently deletes your profile, coins, unlocks, achievements, stats, saved game and settings. This cannot be undone.</string>
     <string name="shell_reset_confirm">RESET</string>
-    <string name="shell_share_text">Join me in Cards Mania — match, stack and flip your way to victory! %1$s</string>
-    <string name="shell_share_chooser">Share Cards Mania</string>
+    <string name="shell_share_text">Join me in Mindi &amp; Mania — match, stack and flip your way to victory! %1$s</string>
+    <string name="shell_share_chooser">Share Mindi &amp; Mania</string>
     <string name="shell_hud_level">Level %1$d</string>
     <string name="shell_hud_get_coins">Get coins</string>
     <string name="shell_toast_achievement">Achievement: %1$s</string>
@@ -246,4 +246,25 @@
         <item quantity="one">+%1$d coin</item>
         <item quantity="other">+%1$d coins</item>
     </plurals>
+
+    <!-- Notifications, privacy and Play updates -->
+    <string name="notif_channel_reminders">Daily reminders</string>
+    <string name="notif_channel_reminders_desc">One reminder a day about your gift, the daily challenge or a quick game</string>
+    <string name="notif_channel_news">News &amp; events</string>
+    <string name="notif_channel_news_desc">New games, events and updates from Mindi &amp; Mania</string>
+    <string name="notif_gift_title">🎁 Your daily gift is ready</string>
+    <string name="notif_gift_body">Open Mindi &amp; Mania and collect %1$d free coins.</string>
+    <string name="notif_daily_title">🕷️ Today\'s Spider challenge is waiting</string>
+    <string name="notif_daily_body">Solve today\'s deal and keep your daily streak going.</string>
+    <string name="notif_play_title">🃏 The table is ready</string>
+    <string name="notif_play_body">How about a quick game of Mindi or Bhabhi?</string>
+    <string name="shell_settings_notifications">Notifications</string>
+    <string name="shell_settings_reminders">Daily reminder</string>
+    <string name="shell_settings_reminders_sub">One note a day (evening) about your gift or the daily challenge</string>
+    <string name="shell_settings_news">News &amp; events</string>
+    <string name="shell_settings_news_sub">New games, events and updates</string>
+    <string name="shell_settings_share_data">Share usage &amp; crash data</string>
+    <string name="shell_settings_share_data_sub">Anonymous statistics and crash reports help us fix bugs</string>
+    <string name="update_ready">A new version is ready</string>
+    <string name="update_restart">Restart</string>
 </resources>

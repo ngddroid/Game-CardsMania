@@ -7,8 +7,8 @@
 # Macrobenchmark journey and run ./gradlew :app:generateBaselineProfile on a device.
 
 # all app classes, and their methods as Hot + Startup + Post-startup
-Lcom/puzzel/lab/cardsmania/**;
-HSPLcom/puzzel/lab/cardsmania/**;->**(**)**
+Lcom/ngdstudio/mindimania/**;
+HSPLcom/ngdstudio/mindimania/**;->**(**)**
 
 # kotlinx.serialization (save files, profile, multiplayer messages)
 Lkotlinx/serialization/**;

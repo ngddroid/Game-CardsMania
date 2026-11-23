@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Lobby, profile, how-to chips -->
+    <string name="shell_game_teenpatti">तीन पत्ती</string>
+    <string name="shell_tag_teenpatti">3–6 · सबसे अच्छे 3 पत्ते जीतें</string>
+    <string name="shell_blurb_teenpatti">ब्लाइंड या देखकर खेलें · सिर्फ़ टेबल चिप्स</string>
+    <string name="shell_chip_teenpatti">पत्ती</string>
+    <string name="mania_howto_chip_teenpatti">तीन पत्ती</string>
+
+    <!-- Setup screen -->
+    <string name="tp_title">तीन पत्ती</string>
+    <string name="tp_continue_title">मैच जारी रखें</string>
+    <string name="tp_continue_sub">अपना सेव किया हुआ तीन पत्ती मैच खोलें</string>
+    <string name="tp_section_players">खिलाड़ी</string>
+    <string name="tp_hands_label">एक मैच में हाथ</string>
+    <string name="tp_hands_n">%1$d हाथ</string>
+    <string name="tp_chips_note">अनलिमिटेड टेबल: जब तक आप न छोड़ें, एक के बाद एक हाथ। सबको %1$d चिप्स मिलते हैं और बूट %2$d है; जिसके चिप्स खत्म हों उसे नया स्टैक मिलता है। चिप्स टेबल पर ही रहते हैं; हर जीते हाथ पर सिक्के मिलते हैं।</string>
+    <string name="tp_section_rules">नियम</string>
+    <string name="tp_sideshow">साइड शो</string>
+    <string name="tp_sideshow_desc">देखकर खेलने वाला खिलाड़ी अपने से पहले वाले (देखकर खेलने वाले) खिलाड़ी से चुपचाप पत्ते मिलाने को कह सकता है</string>
+    <string name="tp_a23">A-2-3 दूसरा सबसे अच्छा</string>
+    <string name="tp_a23_desc">चालू: A-2-3, A-K-Q के ठीक नीचे। बंद: A-2-3 सबसे छोटा सीक्वेंस</string>
+    <string name="tp_section_table">टेबल</string>
+    <string name="tp_bots">बॉट</string>
+    <string name="tp_deal_cards">पत्ते बाँटें</string>
+    <string name="tp_hero_title">तीन पत्ते। एक विजेता।</string>
+    <string name="tp_hero_sub">ब्लाइंड या देखकर · चाल, रेज़, शो</string>
+
+    <!-- Game screen -->
+    <string name="tp_shuffling">पत्ते फेंटे जा रहे हैं…</string>
+    <string name="tp_cd_pause">रोकें</string>
+    <string name="tp_cd_emote">इमोजी</string>
+    <string name="tp_cd_rankings">हाथों की रैंकिंग</string>
+    <string name="tp_top_title">%1$s · हाथ %2$d/%3$d</string>
+    <string name="tp_top_sub">बूट %1$d · दाँव %2$d</string>
+    <string name="tp_pot">पॉट %1$d</string>
+    <string name="tp_you">आप</string>
+    <string name="tp_player">खिलाड़ी</string>
+    <string name="tp_dealer">D</string>
+    <string name="tp_tag_blind">ब्लाइंड</string>
+    <string name="tp_tag_seen">देखा</string>
+    <string name="tp_tag_packed">पैक</string>
+    <string name="tp_tag_out">बाहर</string>
+    <string name="tp_tap_to_see">पत्ते देखने के लिए उन पर टैप करें</string>
+    <string name="tp_status_your_turn">आपकी बारी</string>
+    <string name="tp_status_reply">साइड शो माँगा गया — आपका जवाब</string>
+    <string name="tp_status_thinking">%1$s सोच रहे हैं…</string>
+    <string name="tp_status_packed">आपने पैक किया · यह हाथ देखें</string>
+    <string name="tp_status_out">चिप्स खत्म · देख रहे हैं</string>
+    <string name="tp_btn_see">देखें</string>
+    <string name="tp_btn_pack">पैक</string>
+    <string name="tp_btn_blind">ब्लाइंड %1$d</string>
+    <string name="tp_btn_chaal">चाल %1$d</string>
+    <string name="tp_btn_raise">रेज़ %1$d</string>
+    <string name="tp_btn_show">शो %1$d</string>
+    <string name="tp_btn_sideshow">साइड शो %1$d</string>
+    <string name="tp_btn_all_in">ऑल इन %1$d</string>
+    <string name="tp_side_title">साइड शो?</string>
+    <string name="tp_side_body">%1$s आपसे पत्ते मिलाना चाहते हैं। छोटा हाथ पैक होगा (बराबरी पर %1$s पैक होंगे)।</string>
+    <string name="tp_side_accept">मंज़ूर</string>
+    <string name="tp_side_decline">मना करें</string>
+    <string name="tp_side_waiting">%1$s के जवाब का इंतज़ार…</string>
+    <string name="tp_toast_time_up">समय खत्म — आपने पैक किया</string>
+    <string name="tp_saved_note">आपका मैच सेव है — बाद में तीन पत्ती से जारी रखें।</string>
+
+    <!-- Table pops -->
+    <string name="tp_pop_hand">हाथ %1$d/%2$d</string>
+    <string name="tp_pop_seen">देखा</string>
+    <string name="tp_pop_blind">ब्लाइंड %1$d</string>
+    <string name="tp_pop_chaal">चाल %1$d</string>
+    <string name="tp_pop_raise">रेज़ %1$d!</string>
+    <string name="tp_pop_pack">पैक</string>
+    <string name="tp_pop_sideshow_ask">साइड शो?</string>
+    <string name="tp_pop_sideshow_no">मना किया</string>
+    <string name="tp_pop_sideshow_lost">साइड शो हारे</string>
+    <string name="tp_pop_show">शो!</string>
+    <string name="tp_pop_all_in">ऑल इन!</string>
+
+    <!-- Hand kinds -->
+    <string name="tp_rankings_title">हाथों की रैंकिंग</string>
+    <string name="tp_kind_trail">ट्रेल</string>
+    <string name="tp_kind_pure">प्योर सीक्वेंस</string>
+    <string name="tp_kind_sequence">सीक्वेंस</string>
+    <string name="tp_kind_color">कलर</string>
+    <string name="tp_kind_pair">जोड़ी</string>
+    <string name="tp_kind_high">हाई कार्ड</string>
+    <string name="tp_kind_trail_desc">एक जैसे तीन पत्ते। A-A-A सबसे अच्छा हाथ है</string>
+    <string name="tp_kind_pure_desc">लगातार तीन पत्ते, एक ही रंग (सूट) के</string>
+    <string name="tp_kind_sequence_desc">लगातार तीन पत्ते, अलग-अलग सूट</string>
+    <string name="tp_kind_color_desc">एक ही सूट के तीन पत्ते, लगातार नहीं</string>
+    <string name="tp_kind_pair_desc">एक जैसे दो पत्ते</string>
+    <string name="tp_kind_high_desc">इनमें से कुछ नहीं: सबसे बड़ा पत्ता गिना जाता है</string>
+    <string name="tp_rankings_a23_second">A-K-Q सबसे ऊँचा सीक्वेंस है, फिर A-2-3। सूट से बराबरी नहीं टूटती।</string>
+    <string name="tp_rankings_a23_low">A-K-Q सबसे ऊँचा और A-2-3 सबसे छोटा सीक्वेंस है। सूट से बराबरी नहीं टूटती।</string>
+    <string name="tp_close">बंद करें</string>
+
+    <!-- Result -->
+    <string name="tp_result_win">टेबल चैंपियन!</string>
+    <string name="tp_result_over">मैच खत्म</string>
+    <string name="tp_result_place">आप %2$d में से %1$s स्थान पर रहे</string>
+    <plurals name="tp_result_hands">
+        <item quantity="one">%1$d हाथ जीता</item>
+        <item quantity="other">%1$d हाथ जीते</item>
+    </plurals>
+    <string name="tp_result_coins_note">टेबल चिप्स टेबल पर ही रहते हैं। सिक्के आपके स्थान के लिए हैं।</string>
+
+    <!-- Profile stats -->
+    <string name="tp_stat_blind_wins">ब्लाइंड जीत</string>
+    <string name="tp_stat_biggest_pot">सबसे बड़ा पॉट</string>
+    <string name="tp_stat_best_hand">सबसे अच्छा हाथ</string>
+
+    <!-- Achievements -->
+    <string name="data_ach_tp_win_title">स्टैक बिल्डर</string>
+    <string name="data_ach_tp_win_desc">तीन पत्ती टेबल पर 4,000 चिप्स तक पहुँचें।</string>
+    <string name="data_ach_tp_trail_title">ट्रेल!</string>
+    <string name="data_ach_tp_trail_desc">तीन पत्ती में एक जैसे तीन पत्ते पाएँ।</string>
+    <string name="data_ach_tp_pure_title">प्योर रन</string>
+    <string name="data_ach_tp_pure_desc">तीन पत्ती में प्योर सीक्वेंस पाएँ।</string>
+    <string name="data_ach_tp_blind_title">ब्लाइंड किस्मत</string>
+    <string name="data_ach_tp_blind_desc">पत्ते देखे बिना तीन पत्ती का एक हाथ जीतें।</string>
+    <string name="data_ach_tp_bluff_title">पत्थर चेहरा</string>
+    <string name="data_ach_tp_bluff_desc">सिर्फ़ हाई कार्ड के साथ तीन पत्ती का एक हाथ जीतें।</string>
+    <string name="data_ach_tp_expert_title">हाई रोलर</string>
+    <string name="data_ach_tp_expert_desc">एक्सपर्ट बॉट के खिलाफ़ तीन पत्ती का शो जीतें।</string>
+
+    <!-- How to play -->
+    <string name="tp_howto_name">तीन पत्ती</string>
+    <string name="tp_howto_tagline">सबको तीन पत्ते — सबसे अच्छा हाथ पॉट ले जाता है।</string>
+    <string name="tp_howto_pill">3 से 6 खिलाड़ी · सिर्फ़ टेबल चिप्स</string>
+    <string name="tp_howto_goal_title">लक्ष्य</string>
+    <string name="tp_howto_goal_1">सबसे अच्छे तीन पत्तों से पॉट जीतें — या आखिरी खिलाड़ी बनें जिसने पैक नहीं किया।</string>
+    <string name="tp_howto_goal_2">टेबल तब तक चलती है जब तक आप न छोड़ें। सब बराबर चिप्स से शुरू करते हैं, जिसके चिप्स खत्म हों उसे नया स्टैक मिलता है, और चिप्स टेबल से बाहर नहीं जाते।</string>
+    <string name="tp_howto_deal_title">हर हाथ</string>
+    <string name="tp_howto_deal_1">सब बूट पॉट में डालते हैं और तीन पत्ते उल्टे मिलते हैं।</string>
+    <string name="tp_howto_deal_2">खेल डीलर के बाएँ से शुरू होकर घूमता है।</string>
+    <string name="tp_howto_deal_3">आप ब्लाइंड (बिना देखे) खेल सकते हैं या कभी भी देखें दबाकर पत्ते देख सकते हैं। एक बार देख लिया तो आप देखकर ही खेलेंगे।</string>
+    <string name="tp_howto_bet_title">आपकी बारी</string>
+    <string name="tp_howto_bet_1">चाल: ब्लाइंड खिलाड़ी मौजूदा दाँव देता है; देखकर खेलने वाला दाँव का दोगुना।</string>
+    <string name="tp_howto_bet_2">रेज़: उसका दोगुना दें, और सबके लिए दाँव दोगुना हो जाता है (एक सीमा तक)।</string>
+    <string name="tp_howto_bet_3">पैक: हाथ छोड़ दें। जो चिप्स डाल चुके, वे पॉट में ही रहते हैं।</string>
+    <string name="tp_howto_bet_4">ब्लाइंड खेलना सस्ता है, पर आपको पता नहीं कि आपके पास क्या है।</string>
+    <string name="tp_howto_bet_5">अगर चाल के चिप्स नहीं हैं, तो ऑल इन जा सकते हैं: बचे हुए सभी हाथ एक साथ खुलते हैं।</string>
+    <string name="tp_howto_show_title">शो और साइड शो</string>
+    <string name="tp_howto_show_1">शो: जब सिर्फ़ दो खिलाड़ी बचें, एक चाल देकर दोनों हाथ मिलाएँ। बेहतर हाथ पॉट ले जाता है; बराबरी पर शो माँगने वाला हारता है।</string>
+    <string name="tp_howto_show_2">साइड शो: जब आप देखकर खेल रहे हों और तीन या ज़्यादा खिलाड़ी बचे हों, एक चाल देकर अपने से पहले वाले देखकर खेलने वाले खिलाड़ी से चुपचाप पत्ते मिलाने को कहें। मंज़ूर होने पर छोटा हाथ पैक होता है (बराबरी पर आप)। वे मना भी कर सकते हैं।</string>
+    <string name="tp_howto_show_3">जब बाकी सब पैक कर दें, तो आखिरी खिलाड़ी बिना शो किए पॉट ले जाता है।</string>
+    <string name="tp_howto_rank_title">हाथों की रैंकिंग</string>
+    <string name="tp_howto_rank_1">सबसे अच्छे से: ट्रेल (एक जैसे तीन) · प्योर सीक्वेंस · सीक्वेंस · कलर · जोड़ी · हाई कार्ड।</string>
+    <string name="tp_howto_rank_2">A-K-Q सबसे ऊँचा सीक्वेंस है। डिफ़ॉल्ट रूप से A-2-3 दूसरे नंबर पर है; सेटअप में इसे सबसे छोटा बना सकते हैं।</string>
+    <string name="tp_howto_rank_3">एक ही तरह के हाथों में सबसे बड़ा पत्ता मिलाएँ, फिर अगला। सूट से बराबरी नहीं टूटती।</string>
+    <string name="tp_howto_tips_title">सुझाव</string>
+    <string name="tp_howto_tips_1">जोड़ी या उससे ऊपर मज़बूत हाथ है: लगभग हर चार में से तीन हाथ सिर्फ़ हाई कार्ड होते हैं।</string>
+    <string name="tp_howto_tips_2">देखिए कौन पत्ते देखने के बाद भी चाल चलता रहता है — अक्सर उनके पास कुछ अच्छा होता है।</string>
+    <string name="tp_howto_tips_3">जल्दी पैक करना सस्ता है। दाँव बढ़ने पर कमज़ोर हाथ के पीछे न भागें।</string>
+    <string name="tp_howto_ex_1">बेगम का ट्रेल: इसे सिर्फ़ इससे बड़ा ट्रेल हरा सकता है।</string>
+    <string name="tp_howto_ex_2">अलग सूट में A-2-3: एक सीक्वेंस, डिफ़ॉल्ट में सिर्फ़ A-K-Q से नीचे।</string>
+
+    <!-- Variations -->
+    <string name="tp_section_variant">वेरिएशन</string>
+    <string name="tp_var_classic">क्लासिक</string>
+    <string name="tp_var_muflis">मुफ़लिस</string>
+    <string name="tp_var_joker">जोकर</string>
+    <string name="tp_var_lowest">लो जोकर</string>
+    <string name="tp_var_ak47">AK47</string>
+    <string name="tp_var_999">999</string>
+    <string name="tp_var_4x">4× बूट</string>
+    <string name="tp_var_mixed">मिक्स</string>
+    <string name="tp_var_classic_desc">क्लासिक: सबसे अच्छे तीन पत्ते जीतते हैं।</string>
+    <string name="tp_var_muflis_desc">मुफ़लिस: सब उल्टा: सबसे छोटा हाथ जीतता है। ट्रेल सबसे कमज़ोर और अलग सूट का 5-3-2 सबसे अच्छा।</string>
+    <string name="tp_var_joker_desc">जोकर: बाँटने के बाद एक पत्ता सीधा खोला जाता है। उस नंबर के सभी पत्ते जोकर हैं और किसी भी पत्ते की जगह ले सकते हैं।</string>
+    <string name="tp_var_lowest_desc">लो जोकर: हर हाथ का सबसे छोटा पत्ता जोकर है (उसकी जोड़ी हो तो दोनों)।</string>
+    <string name="tp_var_ak47_desc">AK47: हर इक्का, बादशाह, 4 और 7 जोकर है।</string>
+    <string name="tp_var_999_desc">999: दहला और तस्वीर वाले पत्ते 0, इक्का 1। आपके पत्ते सबसे बड़ी संख्या बनाते हैं; 999 के सबसे पास वाला जीतता है।</string>
+    <string name="tp_var_4x_desc">4× बूट: क्लासिक नियम, पर बूट चार गुना, इसलिए हर पॉट बड़ा शुरू होता है।</string>
+    <string name="tp_var_mixed_desc">मिक्स: हर हाथ में अलग वेरिएशन खेला जाता है।</string>
+    <string name="tp_hint_muflis">सबसे छोटा हाथ जीतेगा</string>
+    <string name="tp_hint_joker">हर %1$s जोकर है</string>
+    <string name="tp_hint_lowest">सबसे छोटा पत्ता जोकर है</string>
+    <string name="tp_hint_ak47">A · K · 4 · 7 जोकर हैं</string>
+    <string name="tp_hint_999">999 के सबसे पास जीतेगा</string>
+    <string name="tp_hint_4x">4× बूट</string>
+    <string name="tp_score_999">स्कोर %1$d</string>
+    <string name="tp_howto_var_wild">जोकर पत्तों पर सुनहरा ★ होता है और वे हमेशा वह पत्ता बनते हैं जिससे आपका सबसे अच्छा हाथ बने। टेबल पर दिखे हाथ के नाम में वे पहले से गिने जाते हैं।</string>
+    <string name="tp_winner">विजेता</string>
+    <string name="tp_won_round">%1$s ने यह राउंड जीता</string>
+    <string name="tp_you_won_round">आपने यह राउंड जीता!</string>
+    <string name="tp_top_title_endless">%1$s · हाथ %2$d</string>
+    <string name="tp_pop_hand_n">हाथ %1$d</string>
+    <string name="tp_toast_refill">चिप्स खत्म: लीजिए %1$d चिप्स का नया स्टैक</string>
+    <string name="tp_toast_new_player">%1$s टेबल से गए · %2$s आ बैठे</string>
+    <string name="tp_stat_best_stack">सबसे बड़ा स्टैक</string>
+</resources>

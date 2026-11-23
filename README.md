@@ -1,6 +1,6 @@
-# Cards Mania — Developer Guide
+# Mindi & Mania: Color Card Game — Developer Guide
 
-Cards Mania is an Android card-game collection written in Kotlin with Jetpack Compose. It contains **six games**:
+Mindi & Mania: Color Card Game (formerly Cards Mania; app ID `com.ngdstudio.mindimania`, which must never change once uploaded to Play) is an Android card-game collection written in Kotlin with Jetpack Compose. It contains **eight games**:
 
 | Game | Players | Code name | Rules code | Screen code |
 |---|---|---|---|---|
@@ -9,9 +9,11 @@ Cards Mania is an Android card-game collection written in Kotlin with Jetpack Co
 | Flip Mania | 2–6 | `GameMode.ECLIPSE` | `engine/` | `ui/game/` |
 | Spider Solitaire | 1 | — | `spider/` | `ui/spider/` |
 | Mindi (team trick game) | 4, 6 or 8, bots or Wi-Fi friends | — | `mindi/` | `ui/mindi/` |
-| Bhabhi (last one holding cards loses) | 3–8, bots | — | `bhabhi/` | `ui/bhabhi/` |
-
-Everything works offline. Multiplayer uses only the local Wi-Fi network (no servers, no internet). All card art,
+| Bhabhi (last one holding cards loses) | 3–8, bots or Wi-Fi friends | — | `bhabhi/` | `ui/bhabhi/` |
+| Teen Patti (best three cards, table chips) | 3–6, bots | — | `teenpatti/` | `ui/teenpatti/` |
+| Rummy (13-card Points Rummy, table chips) | 2–6, bots | — | `rummy/` | `ui/rummy/` |
+ 
+Every game works offline. Multiplayer uses only the local Wi-Fi network (no game servers). The only online parts are Firebase (analytics, crash reports, push) and Play in-app updates, see "Firebase, notifications and updates". All card art,
 tables and icons are drawn in code; the only bundled assets are sounds, two fonts and two legal pages.
 
 This guide explains how the code is organised, how one tap travels through the app, and how to change things safely.
@@ -35,6 +37,8 @@ Read §1–§5 first; after that, jump to the section for the part you're workin
 8. [Spider Solitaire](#8-spider-solitaire)
 9. [Mindi](#9-mindi)
 10. [Bhabhi](#10-bhabhi)
+    * [Teen Patti](#10a-teen-patti)
+    * [Rummy](#10b-rummy)
 11. [Wi-Fi multiplayer](#11-wi-fi-multiplayer)
 12. [Saved data, profile and rewards](#12-saved-data-profile-and-rewards)
 13. [UI system: theme, fonts, design kit, full screen, back button](#13-ui-system-theme-fonts-design-kit-full-screen-back-button)
@@ -50,7 +54,8 @@ Read §1–§5 first; after that, jump to the section for the part you're workin
 
 | Item | Value |
 |---|---|
-| Package / applicationId | `com.puzzel.lab.cardsmania` |
+| applicationId (Play Store ID) | `com.ngdstudio.mindimania` (permanent once uploaded) |
+| Code package / namespace | `com.ngdstudio.mindimania` (internal only; players never see it) |
 | Language / UI | Kotlin 2.2.10, Jetpack Compose (BOM 2026.02.01), Material 3, Navigation Compose |
 | Build | AGP 9.4.1 (built-in Kotlin, no `kotlin-android` plugin), Gradle 9.6, Kotlin serialization plugin |
 | SDK | `minSdk 24`, `compileSdk 37`, `targetSdk 37` |
@@ -72,7 +77,7 @@ Build, test and install:
 adb install -r app/build/outputs/apk/debug/app-debug.apk
 ```
 
-* Test reports: `app/build/test-results/testDebugUnitTest/*.xml` (87 tests in 10 suites, §15).
+* Test reports: `app/build/test-results/testDebugUnitTest/*.xml` (141 tests in 17 suites, §15).
 * With several devices connected, pick one with `adb -s <serial>` (`adb devices` lists them).
 * Release signing is **not** configured yet; add a `signingConfig` before publishing.
 
@@ -187,7 +192,8 @@ setup?mode=…    spider?daily=…   mindi_setup    mp_hub         settings     
 
 | Route | Screen | Opened from |
 |---|---|---|
-| `splash` | `ui/splash/SplashScreen` | app start |
+| `studio` | `ui/splash/StudioIntroScreen` | app start: NG Studio intro (~3.9 s, tap skips after 1.2 s), same as Balls Adventure; layers `res/drawable-nodpi/ngi_*.png` |
+| `splash` | `ui/splash/SplashScreen` | after the studio intro |
 | `language?first=` | `ui/language/LanguageScreen` (English / हिन्दी / ગુજરાતી) | first launch, right after the splash (`first=true`, no back); Settings → Language |
 | `onboarding` | `ui/onboarding/OnboardingScreen` (4 pages, no skip button) | first run |
 | `profile_setup` | `ui/onboarding/ProfileSetupScreen` | after onboarding |
@@ -284,7 +290,7 @@ cards. The search bots (Genius / Expert) re-deal the hidden cards at random befo
 
 ## 6. Folder map
 
-All Kotlin paths are under `app/src/main/java/com/puzzel/lab/cardsmania/`.
+All Kotlin paths are under `app/src/main/java/com/ngdstudio/mindimania/`.
 
 ### App shell
 
@@ -352,8 +358,8 @@ All Kotlin paths are under `app/src/main/java/com/puzzel/lab/cardsmania/`.
 | `ui/splash`, `ui/onboarding`, `ui/settings`, `ui/legal`, `ui/howto` | Splash, onboarding + profile setup, settings, Terms/Privacy WebView, How to Play (all 6 games) |
 
 **The lobby (`HomeTab`)** groups the games into two tabs (`LobbySection`), switched with `SectionTabs`:
-**Card Mania** (Classic, Merciless and Flip Mania + Quick Play) and **Indian Card** (Mindi, Bhabhi and Spider
-Solitaire). The Multiplayer tile sits below both tabs under "Play with friends". The chosen tab is kept in
+**Indian Card** first, which is where the lobby opens (Mindi, Rummy, Teen Patti, Bhabhi and Spider Solitaire), then **Card Mania**
+(Classic, Merciless and Flip Mania + Quick Play). The Multiplayer tile sits below both tabs under "Play with friends". The chosen tab is kept in
 `AppContainer.lobbySection` while the app runs. `WideGameTile` grows with its text, so large font settings never cut
 off the PLAY ribbon.
 
@@ -365,7 +371,7 @@ off the PLAY ribbon.
 | `app/src/main/res/values*/strings_*.xml` | All on-screen text: English in `values/`, Hindi in `values-hi/`, Gujarati in `values-gu/` (§13.6) |
 | `app/src/main/res/raw/` | 29 sound effects and 3 music loops (FLAC; 3 tiny clips WAV), generated by `tools/gen_audio.py` |
 | `app/src/main/res/drawable/` | Vector app icon layers and splash icon (generated by `tools/gen_icon.py`) |
-| `app/src/main/assets/terms.html`, `privacy.html` | Legal pages (WebView, JavaScript off). **Contain placeholders** (`[Your Company]`, `[contact@yourcompany.com]`, `[Your Jurisdiction]`) |
+| `app/src/main/assets/legal/` | Privacy Policy (`privacy_policy.html`), Terms & Conditions (`terms_conditions.html`), website home (`index.html`), `legal.css`, logos and the Lilita One font. Same layout as Balls Adventure; shown in a WebView (JavaScript off) and uploaded as-is as the website. Company NGENDEV TECHNOLABS LLP (NG Studio), store.ngdtechnolab@gmail.com, Indian law / Rajkot courts. |
 | `app/src/main/AndroidManifest.xml` | Portrait activity, splash theme, network + vibrate permissions |
 | `app/src/test/java/...` | All unit, simulation and multiplayer tests (§15) |
 | `tools/` | `gen_audio.py`, `gen_icon.py`, `icon.svg`, `play_store_icon_512.png` |
@@ -446,6 +452,19 @@ GameScreen ── key(gameKey) ── GameContent
 | `hints`, `nextHint`, `stuck` | Hint system: scored moves → deal → none (stuck = no useful move and an empty stock) |
 | `SpiderSolver.greedyWins`, `winnableSeed` | Find deals the hint system can win (all 1-suit games and every daily) |
 | `SpiderSolver.finishMoves` | Search for a full solution once every card is face up (Auto Finish) |
+| `SpiderDealSolver.solve` | Full-knowledge solver (sees face-down cards and the stock) used only to grade deals; `effort` = positions looked at before the win |
+| `SpiderDeals.SUITS_2`, `SUITS_4` | Generated graded deals (200 / 150 seeds): every one can be won, none is easy |
+
+**Deals.** 1 suit: `SpiderSolver.winnableSeed` (the hint system can win it). 2 and 4 suits: a random seed from
+`SpiderDeals` that is not in `SpiderProfile.recentDeals` (the last `SpiderRules.RECENT_DEALS` = 60 graded deals played).
+`SpiderDeals.kt` is generated, not hand-written: `SpiderDealGenerator` (a test that only runs with `SPIDER_GENERATE=1`)
+solves candidate seeds with `SpiderDealSolver` (staged search: look for moves that turn a card up, empty a column or
+finish a run, try the best few depth first, deal onto the best arrangements when stuck; a breadth-first pass, then a
+deeper best-first pass) until it has twice the wanted number of winnable deals, and keeps the hardest half by solver
+effort. Rebuild it with
+`SPIDER_GENERATE=1 ./gradlew :app:testDebugUnitTest --rerun --tests '*SpiderDealGenerator*'` (tens of minutes).
+`SpiderGradedDealsTest` re-solves a sample, so a change to the deal shuffle in `SpiderEngine.newGame` (which would
+change what every seed deals) fails the tests instead of silently shipping unchecked deals.
 
 ### 8.2 Screen (`ui/spider/`)
 
@@ -453,16 +472,19 @@ GameScreen ── key(gameKey) ── GameContent
   face-up cards as far as the tallest column allows (up to 45% of a card visible), and touch is forgiving: column hit
   areas include the gaps, tapping below a column means its bottom card, and touching above the movable run snaps to the
   run's first card. `leftHanded` mirrors the stock and completed piles.
-* **`SpiderViewModel`** handles moves, deals, unlimited undo, hints, the 25-second idle hint, Auto Finish, the timer
+* **`SpiderViewModel`** handles moves, deals, unlimited undo, hints (only from the Hint button), Auto Finish, the timer
   (paused in the background or while a dialog is open), saving, stats and rewards.
 * **Two control styles** (Theme dialog, `SpiderProfile.selectMode`):
   * *Smart tap*: tapping a run sends it to the best spot; tapping the same run again tries the next spot.
-  * *Tap, then target*: the run lifts and valid columns glow; tap a column to move there.
-  * Dragging works in both. While dragging, valid columns glow and drops snap within ~1.3 card widths.
+  * *Tap, then target*: the run lifts and glows gold; tap a column to move there.
+  * Dragging works in both; drops snap to a valid column within ~1.3 card widths.
+  * **No hints on a card:** picking up or dragging a run never shows where it can go (no green columns, nothing
+    dimmed), and there is no automatic idle hint. Hints appear only when the player presses Hint.
+    (`SpiderProfile.idleHint` is unused and kept only so saved profiles still load.)
 * **Animation:** `SpiderFrame(state, events, kind)` with `FrameKind` NEW_GAME, RESTORE, MOVE, DEAL, COLLECT, UNDO. A
   finished run is shown landing first, then flies to the completed pile.
 * **Dialogs** (`SpiderDialog`): NEW_GAME (1/2/4 suits, replay), DAILY (calendar with bronze/silver/gold month tiers),
-  LOOK (backgrounds, four-color suits, controls, idle hint, timer, left-handed), RULES, STUCK, STATS, plus the win
+  LOOK (backgrounds, four-color suits, controls, timer, left-handed), RULES, STUCK, STATS, plus the win
   dialog.
 * **Art:** `PlayingCardArt.face(rank, suit, fourColor)` draws standard cards (rank 1 = Ace, suits 0–3 = ♠ ♥ ♦ ♣) and
   is also used by Mindi. `SpiderBackgrounds.render(bg, w, h)` draws the 8 table backgrounds.
@@ -533,6 +555,13 @@ A traditional Indian shedding game (also called Thulla or Get Away). You against
 * Emptying your hand gets you out (`Out(seat, place)`, `state.out` keeps the order). The last player holding cards is
   the **Bhabhi** (`BhabhiPhase.GameOver(loser)`). If everyone left runs out on the same trick, whoever played its
   highest card is the Bhabhi. If the next leader is already out, the next seat with cards leads (`nextActive`).
+* **Wrong thulla** (`isWrongThulla`): the game never blocks another suit (`playableCards` = the whole hand, except the
+  A♠ on the opening lead; `legalCards` = the correct moves, used by bots). Playing another suit while you still hold the
+  led suit does not cut the trick: the card is just thrown in and play goes on. You are fined `PENALTY_CARDS` (5) cards:
+  `fine` goes round from your left, each other player holding 2+ cards hands over one random card (nobody gives their
+  last), so fewer than 5 when nobody can spare one. Event `Penalty(seat, given)`; the cards are public (`known`), the
+  fined seat's `voids` lose those suits, and a wrong thulla never adds a void. Applies on the safe first trick too.
+  Bots never play one.
 * House rule `BhabhiSetup.safeFirstTrick` (on by default): no thulla on the opening spade trick; off-suit cards are
   just thrown away.
 * Public information the bots may use lives in the state: `voids` (suits a seat showed it lacks), `known` (cards
@@ -560,25 +589,171 @@ A traditional Indian shedding game (also called Thulla or Get Away). You against
 * **`BhabhiSetupScreen`:** hero, Continue game, players 3–8, the safe-first-round rule, bot level, turn timer. Saves
   the setup in `Profile.bhabhi.setup`. Reuses `ToggleRow` from the Mindi setup.
 * **`BhabhiScreen`:** top bar (trick number, cards thrown away), a strip with the finishing order so far, seats with
-  card counts (medals once out, a red BHABHI tag at the end), status pill (follow / THULLA prompts), hint and emote
-  buttons, and a **FINISH** button once you are out (`fastForward`: the bots finish at 3× speed; offline only, since in a
+  card counts (medals once out, a red BHABHI tag at the end), status pill (whose turn; **no hints**: it never names
+  the suit to play or says you can thulla), an emote button (there is no Hint button), and a **FINISH** button once you are out (`fastForward`: the bots finish at 3× speed; offline only, since in a
   Wi-Fi game friends are still playing). Result screen lists
   the full finishing order; back = pause menu (or home after the game).
 * **`BhabhiLayout`** is Mindi's geometry plus room for a second hand row: hands grow after pickups, so `handSlots` uses
   up to 16 cards per row and stacks rows.
+* No card in your hand glows, lifts or dims to show what follows suit; only the card you picked is raised.
 * **`BhabhiWorld`** animates the deal, plays, thrown-away tricks (gather, turn over, fade), pickups (fly to the taker,
-  or into your hand), getting out (medal burst) and the Bhabhi reveal.
-* **`BhabhiViewModel`** (local, or HOST/GUEST in a Wi-Fi room like Mindi, §11.4): pumps `BStep`s, bots, turn timer, hint (`BhabhiBot.hint`), save/resume
+  or into your hand), wrong-thulla fines (WRONG THULLA! +5, cards fly from each giver), getting out (medal burst) and the Bhabhi reveal.
+* **`BhabhiViewModel`** (local, or HOST/GUEST in a Wi-Fi room like Mindi, §11.4): pumps `BStep`s, bots, turn timer (a timed-out turn is played correctly for you), save/resume
   (`bhabhi_save.json`), rewards: coins by finishing place × bot multiplier (20 for the Bhabhi), XP, stats
   (`BhabhiStats`), achievements `bhabhi_escape`, `bhabhi_first`, `bhabhi_thulla`, `bhabhi_clean`, `bhabhi_big`,
   `bhabhi_expert`.
 
 ---
 
+## 10a. Teen Patti
+
+Three-card Indian game for 3–6 players against bots (no Wi-Fi play yet). **Table chips only:** everyone starts a match
+with `START_CHIPS` (2000); chips never leave the match, are never bought or sold, and only decide the finishing
+order. Coins and XP come from the finishing place, like Bhabhi. Keep it that way: selling chips or turning them into
+coins would make this real gambling and change the store rating.
+
+### 10a.1 Rules (`teenpatti/TeenPattiEngine.kt`)
+
+* **Endless table (the game's mode):** `TeenPattiSetup.hands = 0` (`state.endless`). Hand after hand until the player
+  quits (pause → Quit; Continue resumes the same table). Before each deal, anyone below the boot gets a fresh
+  `START_CHIPS` stack (`TPEvent.Refilled`): a broke bot leaves and a new character sits down, a broke player is topped
+  up. There is no match end and no result screen; the ViewModel settles every hand instead (`settleHand`: coins for a
+  hand won, scaled by bot level, XP, `TeenPattiStats`, achievements). A fixed `hands` count still works (tests, old saves).
+
+* A fixed-length match (`hands` > 0, not offered in the UI any more) ends after that many hands, or early when one
+  player or fewer can still pay the boot; most chips wins (`state.ranking`).
+* Each hand (`nextHand`): every seat with at least `BOOT` (20) pays it and gets 3 cards. The dealer moves to the next
+  seat still in; play starts on its left.
+* Blind vs seen: `TPAction.See` is allowed at any time (not only on your turn) and does not end the turn.
+  `chaalCost` = stake (blind) or 2 × stake (seen); a raise pays double and doubles the stake, capped at `MAX_STAKE`.
+* Show (exactly 2 left): pay a chaal, compare; a tie goes against the asker. Sideshow (setup switch; asker seen,
+  3+ left, previous active seat seen): pay a chaal, `phase = Sideshow(from, to)`, `to` must send `SideshowReply`;
+  the lower hand packs, a tie packs the asker.
+* All in: only when you can't afford a chaal. Puts in your last chips and shows every hand still in at once; equal
+  best hands split the pot. This keeps the engine free of side pots.
+* Ranking (`score`): kind × 100 000 + tiebreak; suits never break ties. A-K-Q is the top run; A-2-3 is second
+  (`a23Second`, default) or lowest. `percentile` ranks a hand among all 22 100 (table built once).
+* `options(state, seat)` returns what a seat may do and the cost of each move; the buttons and the bots both use it.
+* **Variations** (`TeenPattiSetup.variant`, `TPVariant`; the hand being played is `state.variant`):
+  Classic · Muflis (lowest hand wins: `handScore` negates the classic score) · Joker (a card turned up after the deal,
+  `state.joker`; its rank is wild) · Low Joker (each hand's lowest rank is wild) · AK47 (A, K, 4, 7 wild) · 999
+  (10/pictures 0, A 1, best 3-digit number wins) · 4× Boot (`state.boot` = 80; falls back to Classic when fewer than
+  two can pay) · Mixed (a random playable variation each hand). Wilds are resolved by `bestWithWilds` (3 wilds = A-A-A,
+  2 = trail of the third card, 1 = best of 26 substitutions). These are traditional house rules; branded modes from
+  other apps are deliberately left out.
+* `strength(state, seat)` = percentile among all 22 100 hands *in that variation* (tables cached per variation,
+  A-2-3 rule and joker rank), so bots judge Muflis, wilds and 999 by their own odds.
+
+### 10a.2 Bots (`teenpatti/TeenPattiBot.kt`)
+
+* Blind for a few rounds while it's cheap, then `See`. Seen: win chance ≈ percentile ^ (opponents + pressure), where
+  pressure grows with seen opponents who keep paying. Weighed against pot odds and the bot's own stack; long hands
+  make weak hands give up. Easy misreads its hand and bluffs more; Expert reads the betting hardest.
+* Measured, 4 players, 10 hands, seat 0 vs three Normal bots (start 2000): Easy ≈ 1885 chips, Normal ≈ 1981,
+  Hard ≈ 2082, Expert ≈ 2171 (`TeenPattiBotTest`). The game is mostly luck, so the gaps are small by design.
+
+### 10a.3 Screen (`ui/teenpatti/`)
+
+* **`TeenPattiSetupScreen`:** hero, Continue, players 3–6, hands, variation (8 chips + description), Sideshow and A-2-3 switches, bot level, turn
+  timer, hand-rankings sheet (ⓘ). Saves the setup in `Profile.teenPatti.setup`.
+* **Landscape:** the `teenpatti` route calls `LandscapeWhileShown()` (`nav/AppNavHost.kt`), which sets
+  `SCREEN_ORIENTATION_SENSOR_LANDSCAPE` while the table is on screen and portrait again when it leaves (setup, How to
+  Play and the lobby stay portrait). `MainActivity` handles orientation in `configChanges`, so turning never recreates
+  it; the table just gets a new size, `TeenPattiLayout` switches to its landscape geometry (`landscape = width > height`:
+  title top-left, opponents on an arc, my cards bottom-centre, buttons bottom-right, side insets for a camera cutout)
+  and a new `TeenPattiWorld` redraws the table as it is via a `Restored` step. Dialogs scroll and stay ≤ 480 dp wide.
+* **The dealer:** the middle of the table holds only the dealer and the pot total under her. She is drawn in code
+  (`DealerLady.kt`, `drawDealer`): long dark hair, a red dress with a gold necklace, hands on the rail around the deck.
+  She's painted on the table canvas between the felt (`TeenPattiWorld.drawBase`) and the cards (`drawTop`), so dealt
+  cards and pops fly over her; cards are dealt from her hands (`layout.dealerHands`). She blinks off the clock
+  (`DealerClock`), so the idle table only wakes for a blink. The status line ("Your turn", "… won this round") lives in
+  the button area, the variation rule is the third line of the top-left title, and the joker card sits top-left.
+* **My seat (landscape):** straight under the dealer, like sitting across from her. Centre column: dealer → pot total
+  → my avatar → my three cards. One row at the avatar's height on each side: left `[hand name] [BLIND/SEEN or WINNER]`,
+  right `[name] [chips]` (`MySeatLandscape`, `layout.mySeat` / `myLabelRight` / `myInfoLeft`). The emote button moves
+  to the top-right next to ⓘ. My wild cards only peek up 0.2 card at the reveal (`wildLift`), opponents' opened rows
+  are clamped above my area, and side seats stay above the button area. Checked at 420 and 480 dpi (≈411 / 360 dp tall).
+* **Pace:** bots think 1.5–2.5 s per move, and the table no longer speeds up after the player packs.
+* **`TeenPattiScreen`:** seats with chips, BLIND/SEEN/PACKED/OUT tags and a dealer badge; pot in the middle; my three
+  big cards (tap them or SEE to look; the hand's name shows once seen); buttons SEE · SHOW or SIDESHOW · PACK · CHAAL ·
+  RAISE (or ALL IN); a sideshow prompt when a bot asks me; result screen ranked by chips. The top bar names the
+  hand's variation, a pill under the pot gives its rule ("A · K · 4 · 7 ARE WILD"), the joker card sits above the pot,
+  wild cards carry a gold ★ (bottom-left) and hand names include wilds. Face-up cards (mine, and hands shown at
+  the end) lie flat side by side (`spread` = 1.08 card widths apart) so every rank and suit is fully visible;
+  opponents' face-down cards stay a compact fan.
+  SEE is a green badge on my face-down cards (not in the button bar). During play a seen hand stays as dealt (wild
+  cards carry the ★). **The reveal** (show / all-in): the cards turn up, then each wild card rises half a card and
+  slips behind the row while the card it plays as flips into its place with a gold frame
+  (`TeenPattiEngine.wildsAs` → `TeenPattiWorld.swapWilds`), so the row reads as the hand that counts (A♠ K♣ 9♠ →
+  9♥ 9♦ 9♠ = trail). Lifts downward when there's no room above. The winner gets a WINNER ribbon, every opened seat
+  keeps its hand name (TRAIL, PAIR, Score 963) under its chips, the status pill says "Momo won this round", and the
+  variation hint hides so nothing covers the swapped cards. The table waits 2.3 s after a showdown before dealing.
+* **`TeenPattiWorld`** animates the deal, boot and bet chips flying to the pot, packs, the private sideshow reveal
+  (only when I'm in it), showdown flips with hand names, and the pot flying to the winner. `popAt` keeps seat pops
+  on screen.
+* **`TeenPattiViewModel`:** same pump/bot/timer shape as Bhabhi. Seeing my cards while a bot thinks is applied
+  directly (the bot's move stays valid). After a hand it deals the next one; a timed-out turn packs (or declines a
+  sideshow). Save file `teenpatti_save.json`; achievements `tp_win`, `tp_trail`, `tp_pure`, `tp_blind`, `tp_bluff`,
+  `tp_expert`; stats in `TeenPattiStats`.
+
+---
+
+## 10b. Rummy
+
+13-card **Points Rummy** for 2–6 players against bots, landscape (`LandscapeWhileShown`), an endless table like Teen
+Patti. Table chips only (`START_CHIPS` 4000; each point lost costs `POINT_VALUE` 5 chips; broke players are refilled).
+
+### 10b.1 Rules (`rummy/RummyEngine.kt`, `rummy/RummyMelds.kt`)
+
+* Two decks + 2 printed jokers = 106 cards (`RCard`: rank 1..13, Ace = 1; printed joker rank 0). 13 cards each; one card is
+  cut face up (`state.cut`) and its rank is wild (`state.wild`; a cut printed joker makes Aces wild); one card starts
+  the open pile.
+* Turn: `PickClosed` / `PickOpen` (phase `Pick`) then `Discard` or `Declare` (phase `Discard`). `Drop` before picking:
+  20 points before your first pick, 40 later. An empty closed pile is rebuilt from the open pile (`Reshuffled`).
+* `Declare(card, groups)`: the groups (card ids) must cover the other 13 cards. Valid (`RummyMelds.evaluate`) =
+  every group valid, ≥ 2 sequences, ≥ 1 pure → phase `Showdown(declarer, pending)`: everyone still in sends
+  `Arrange(groups)` and loses that arrangement's points. Invalid → `WrongShow` (80 points, out of the hand, play goes on).
+  Last player standing wins too. `settle` pays points × `POINT_VALUE` (capped at what a loser has) to the winner.
+* Melds: pure sequence (no joker standing in; a wild-rank card in its own place is fine; A-2-3 and Q-K-A, no wrap),
+  impure sequence, set (3–4 cards, distinct suits), joker-only group. Points: A/K/Q/J 10, numbers face value, jokers 0,
+  cap 80; no pure → all cards count; a pure but < 2 sequences → all but the pure count; else only invalid groups count.
+* `RummyMelds.best(hand, wild)` searches the lowest-points arrangement: run windows and sets as templates, DFS over the
+  natural cards (each joins a meld or is left over), jokers fill gaps (printed first), leftovers split by suit.
+  `budget` caps the search; a 14-throw scan takes well under a second (`RummyEngineTest.bestIsFastEnoughForBots`).
+
+### 10b.2 Bots (`rummy/RummyBot.kt`)
+
+* Take the open card only when keeping it (and throwing something else) lowers their points by a margin; jokers always.
+* Throw the card whose removal leaves the fewest points, then the fewest neighbours, then the highest value; never the
+  card just taken; declare as soon as a throw leaves a valid hand. Hard/Expert drop hopeless openers; Expert won't
+  feed the next player's suit. Measured: hands end in ≈ 15 turns; decisions ≈ 10 ms on average.
+
+### 10b.3 Screen (`ui/rummy/`)
+
+* **Table** (`RummyScreen`, `RummyLayout`): felt + oval table; opponents round the rim (avatar, name plate, fanned
+  backs, DROPPED / WRONG SHOW / DECLARED / WINNER tags); open pile (left) and closed pile with the cut joker sideways
+  under it (tap to pick; they glow on my pick); the dashed **finish slot** (tap with one card selected = declare);
+  my plate on the table's edge (name, live `Points`, chips, turn timer); status line under the piles.
+* **My hand**: groups along the bottom with a bar under each — 1st Life / 2nd Life (green), Set (blue), Joker,
+  Invalid (red). Tap cards to select; GROUP makes a new group; tapping a bar moves the selected cards there; Sort
+  groups by suit; Grouping ON keeps the best arrangement automatically (any manual change turns it off). A suit mark
+  under each rank keeps overlapped cards readable (`RummyCardView(index = true)`); printed jokers are drawn in code;
+  wild-rank cards carry a gold J. DROP / DISCARD / DECLARE appear when they apply; an invalid declare asks first.
+* **Arrange screen** (someone declared): "ARRANGE YOUR CARDS AND DECLARE", Points Loss, Time Left (30 s), CLICK TO
+  DECLARE; my cards stay live. **Result**: every player's groups labelled pure / impure / set / invalid N, points,
+  Win/Lose chips, Chips Left; the next hand deals after 10 s (NEXT ROUND skips the wait; Home leaves).
+* `RummyViewModel`: step pump with flying cards (`RFly`), bots (0.9–1.6 s), turn timer (time's up: draw blind and
+  throw it back), save `rummy_save.json` (state, seats, my groups), rewards per hand, `RummyStats`, achievements
+  `rm_win`, `rm_fast`, `rm_clean`, `rm_expert`.
+
+---
+
 ## 11. Wi-Fi multiplayer
 
 Design notes: [`docs/MULTIPLAYER_PLAN.md`](docs/MULTIPLAYER_PLAN.md). Supports Mania (2–6 seats), Mindi
-(4, 6 or 8 seats) and Bhabhi (3–8 seats); empty seats are filled by bots. Spider is single-device only.
+(4, 6 or 8 seats), Bhabhi (3–8 seats), Teen Patti (3–6 seats, endless table, any variation) and Rummy (2–6
+seats); empty seats are filled by bots. Teen Patti and Rummy rooms need 6 or fewer people (the tiles are disabled
+otherwise). Spider is single-device only.
 
 ### 11.1 How rooms work
 
@@ -597,11 +772,11 @@ MultiplayerSession.hostRoom()                        MultiplayerSession.join(ip,
 
 | Direction | Messages |
 |---|---|
-| Guest → host | `Hello`, `Probe`, `Act` (Mania action), `MindiAct` (Mindi action), `BhabhiAct` (Bhabhi action), `Emote`, `Leave` |
-| Host → guest | `Welcome`, `Rejected`, `Lobby(RoomState)`, `Start` / `Sync` / `Steps` (Mania), `MindiStart` / `MindiSync` / `MindiSteps` (Mindi), `BhabhiStart` / `BhabhiSync` / `BhabhiSteps` (Bhabhi), `ActionRejected`, `Emote`, `Ended`, `Kicked` |
+| Guest → host | `Hello`, `Probe`, `Act` (Mania action), `MindiAct` (Mindi action), `BhabhiAct` (Bhabhi action), `TeenPattiAct`, `RummyAct`, `Emote`, `Leave` |
+| Host → guest | `Welcome`, `Rejected`, `Lobby(RoomState)`, `Start` / `Sync` / `Steps` (Mania), `MindiStart` / `MindiSync` / `MindiSteps` (Mindi), `BhabhiStart` / `BhabhiSync` / `BhabhiSteps` (Bhabhi), `TeenPattiStart` / `TeenPattiSync` / `TeenPattiSteps`, `RummyStart` / `RummySync` / `RummySteps`, `SeatsChanged` (bots that replaced broke players), `ActionRejected`, `Emote`, `Ended`, `Kicked` |
 | Both | `Ping` (heartbeat) |
 
-* **Settings** (`Net`): `PROTOCOL = 3` (v3 added Bhabhi rooms), ports 47820–47835, heartbeat 3 s, socket timeout 15 s, remote turn limit 30 s
+* **Settings** (`Net`): `PROTOCOL = 5` (v3 added Bhabhi rooms, v4 the Bhabhi wrong-thulla fine, v5 Teen Patti and Rummy rooms), ports 47820–47835, heartbeat 3 s, socket timeout 15 s, remote turn limit 30 s
   (then the host plays a safe move for that player). Mindi rooms can set their own turn timer.
 
 ### 11.2 The host decides everything
@@ -620,18 +795,25 @@ MultiplayerSession.hostRoom()                        MultiplayerSession.join(ip,
     unless the viewer owns it, and the random seed is zeroed.
   * **Bhabhi** (`BhabhiRedact`): other players' cards become placeholders (counts kept) and the seed is zeroed. The
     rest of the state is public (played, thrown-away and picked-up cards, voids), so hints work on a guest.
+  * **Teen Patti** (`TeenPattiRedact`): other hands are placeholders until they are opened (`state.shown`: a show or
+    the end-of-hand reveal). After an accepted sideshow, only the two players involved see each other's cards. Seed zeroed.
+  * **Rummy** (`RummyRedact`): other hands and the closed pile are placeholders (counts kept); a card someone else
+    draws blind stays hidden in `PickedClosed`. The open pile is public. All hands open on the result screen.
 * Tests assert that nothing secret ever reaches a guest (§15).
 
 ### 11.4 Host and guest inside the ViewModels
 
 * **HOST:** plays normally, but `enqueue()` also broadcasts each step (`broadcastSteps` / `broadcastMindi`). Remote
-  seats' moves arrive through `RoomHost.actions` / `mindiActions`. A disconnected remote seat is played by a bot (BOT
+  seats' moves arrive through `RoomHost.actions` / `mindiActions` / `bhabhiActions` / `tpActions` / `rummyActions`. A disconnected remote seat is played by a bot (BOT
   badge).
 * **GUEST:** receives `Steps` / `MindiSteps` and plays them through the same pump and animations. It keeps a local copy
   of the latest state only to highlight playable cards; `submit()` sends the move to the host instead of applying it.
   Next Hand / Rematch / Room are host-only; guests see "Waiting for the host…".
 * **Disconnects:** a dropped guest's seat is marked disconnected; the same device token can rejoin and receives a
   `Sync` / `MindiSync` snapshot. If the host leaves, everyone gets `Ended` ("The host left the game.").
+* **Teen Patti / Rummy:** a remote player who times out packs (Teen Patti; a sideshow request is declined) or draws
+  blind and throws that card back (Rummy). After a Rummy declaration each remote player gets the arrange time plus 2 s,
+  then the host submits their best grouping. Broke players are replaced by bots only; humans stay seated.
 * Multiplayer games are never saved for Continue; rewards are still given on each phone at the end.
 
 ### 11.5 Compatibility and permissions
@@ -642,7 +824,7 @@ MultiplayerSession.hostRoom()                        MultiplayerSession.join(ip,
 * Manifest: `INTERNET`, `ACCESS_NETWORK_STATE`, `ACCESS_WIFI_STATE`, `CHANGE_WIFI_MULTICAST_STATE`,
   `ACCESS_LOCAL_NETWORK`. On Android 17+, `ACCESS_LOCAL_NETWORK` is requested at runtime in `MultiplayerHubScreen`
   (`LocalNetworkPermission`).
-* The app never contacts the internet. If you ever add internet traffic (ads, analytics), update `privacy.html` and the
+* The app uses Firebase (analytics, crash reports, push) and Play updates. If you add other internet traffic (ads, new SDKs), update `assets/legal/privacy_policy.html` and the
   Play Data Safety form.
 
 ---
@@ -752,7 +934,7 @@ bar briefly, and the back gesture keeps working. Screens still read `WindowInset
 * **Adding text:** add the key to all three files of the area, then run `python3 tools/check_strings.py` (same keys,
   same `%1$s` placeholders, escaped apostrophes). Kept in English on purpose: the name "Cards Mania", bot names,
   "MANIA!", "XP", room codes, card rank letters, and messages that travel over the network are sent in the sender's
-  language. `terms.html` / `privacy.html` are still English only.
+  language. the legal pages in `assets/legal/` are English only.
 * Fonts: Lilita One and Nunito have no Devanagari or Gujarati letters, so Android draws those with its built-in
   fallback fonts.
 
@@ -768,7 +950,7 @@ bar briefly, and the back gesture keeps working. Screens still read `WindowInset
   to FLAC as above and delete each converted `.wav` (two files with one name break the build);
   `tools/gen_icon.py` rebuilds the icon from `tools/icon.svg`. Licensed files with the same names can replace them.
 * **Fonts:** `res/font/lilita_one.ttf` and `res/font/nunito.ttf`, SIL Open Font License; the license texts ship in
-  `assets/licenses/` and are credited in `privacy.html` / `terms.html`.
+  `assets/licenses/` and are credited in `assets/legal/terms_conditions.html`.
 
 ---
 
@@ -783,6 +965,7 @@ bar briefly, and the back gesture keeps working. Screens still read `WindowInset
 | `data/ProgressionTest` | Rewards, achievements, streaks, daily always the same for a date, gift cooldown, saving/loading a Mania game in every mode |
 | `spider/SpiderEngineTest` | 104-card decks, deal layout, move and group rules, run collection, scoring, dealing also fills empty columns, hints, 450 auto-played deals, daily deals always winnable |
 | `spider/SpiderLayoutTest` | Spider spacing, forgiving hit-testing, auto-finish |
+| `spider/SpiderGradedDealsTest` | Enough distinct graded deals, sampled deals still winnable, none won by the hint system alone, recent deals skipped |
 | `spider/SpiderRulesChecklistTest` | One test per Spider rule (setup, single and group moves, empty column, flip, dealing, completed runs, winning, 1/2/4 suits, score), plus 120 whole games re-checking every rule after each move |
 | `mindi/MindiEngineTest` | Deck sizes for every table, follow suit, trumps, Hide reveal + must-trump, Cut trump, revealed-suit follows aren't trumps, scoring + dealer rotation, partner teamwork, 1,000+ bot matches, Hard beats Easy, Expert plays legally |
 | `bhabhi/BhabhiEngineTest` | Deal for 3–8 players, A♠ opens, follow suit, thrown-away tricks, thulla pickup (later players don't play), safe first round on/off, getting out and the Bhabhi, everyone out on the same trick, next leader when the high card's owner is out, save/load, 1,080 bot games with every rule re-checked, Hard beats Easy, Expert only guesses hidden cards |
@@ -825,7 +1008,7 @@ with the code).
    bots, save/resume, rewards) and a screen.
 3. A route in `AppNavHost`, a `pending…` launch slot in `AppContainer`, a tile in the right `HomeTab` section
    (`LobbySection`), a How to Play tab, stats in
-   `ProfileTab`, achievements in `Catalog`, a line in `OnboardingScreen` and in `privacy.html` / `terms.html`.
+   `ProfileTab`, achievements in `Catalog`, a line in `OnboardingScreen` and in `assets/legal/privacy_policy.html` / `terms_conditions.html`.
 
 **Add an achievement or mission:** entry in `Achievements.all` or `Missions` (`data/Catalog.kt`), then its condition in
 `Progression.apply` (Mania), `SpiderViewModel.onWon` or `MindiViewModel.finishMatch`.
@@ -874,13 +1057,13 @@ sure back does something sensible (§13.5).
     `adb shell dumpsys window | grep mSystemGestureExclusion`.
 12. **Tables that redraw forever drain the battery.** Every game screen once redrew 120 times a second while idle
     (1.8 CPU cores on a Galaxy A07, on the lobby too). Measure with
-    `adb shell dumpsys gfxinfo com.puzzel.lab.cardsmania reset`, wait 10 s, then read "Total frames rendered".
+    `adb shell dumpsys gfxinfo com.ngdstudio.mindimania reset`, wait 10 s, then read "Total frames rendered".
 
 ---
 
 ## 18. Known gaps / TODO before release
 
-* Replace the placeholders in `terms.html` and `privacy.html` (company name, contact email, jurisdiction).
+* Upload `app/src/main/assets/legal/` as the website (e.g. Firebase Hosting) and put its `privacy_policy.html` link in Play Console.
 * Add release signing and run `./gradlew lint` (not run yet).
 * Coin-fly and toasts only work inside the lobby (`GameOverlayHost`); game screens use their own reward overlays.
   `ShuffleWipe` is built but not wired into navigation.
@@ -889,8 +1072,30 @@ sure back does something sensible (§13.5).
   * two physical phones on a home router (device tests used a phone plus the emulator)
   * Mindi with 6 or 8 players and the Cut / Open trump modes (covered by automated tests only)
 * A guest who loses the connection mid-game has to rejoin from Join a Room (no automatic reconnect).
+* Teen Patti is bots only (no Wi-Fi rooms, Daily Challenge or Events entry yet).
 * Bhabhi has no Daily Challenge or Events entry yet, and the optional "take a hand" house rule
   is not implemented.
 * After **Reset progress**, the default profile appears only after the app restarts.
 * `SpiderProfile.tapToMove` is stored but no longer used (replaced by `selectMode`).
 * Store listing: never mention or compare to other card-game brands; content rating target 13+ / Everyone.
+
+### Firebase, notifications and updates
+
+| Feature | Code | Notes |
+|---|---|---|
+| Analytics | `analytics/Analytics.kt` | `Analytics.event(name, "key" to value)`; screen views come from the nav listener in `AppNavHost`. Events: `game_start` (Spider), `game_end` (game, won, players/place, net, daily), `daily_gift`, `mp_host`, `mp_join`, `notif_permission`, `app_update_offer`, `app_update_flow`. User property `app_language`. |
+| Crashlytics | same object | Crash keys `screen`, `app_language`; `Analytics.recordError(t)` for caught problems. The Gradle plugin uploads the R8 mapping on release builds. |
+| Privacy switch | `Settings.shareData` | Settings → Legal → "Share usage & crash data" turns Analytics and Crashlytics collection off (Firebase remembers it). |
+| Daily reminder (local) | `notify/Reminders.kt` | WorkManager, every 24 h around 19:00; skipped if the app was opened in the last 8 h (`Settings.lastOpenAt`). Text: gift ready → today's Spider challenge → "the table is ready". Switch: Settings → Notifications → Daily reminder. Test it now (debug builds only, `src/debug`): `adb shell am broadcast -n com.ngdstudio.mindimania/.notify.DebugReminderReceiver`. Other debug-only commands: `.notify.DebugTokenReceiver` (prints the FCM token, `adb logcat -s FCMToken`) and `.debug.DebugUnlockAllReceiver` (unlocks every Collection item). |
+| Push (FCM) | `notify/PushService.kt` | Send from Firebase console → Messaging, to topic `all`, or `lang_en` / `lang_hi` / `lang_gu`. Channel `news`. Switch off = leave topics + delete token. |
+| Notification permission | `MainActivity.askForNotificationsOnce` | Android 13+: asked once after onboarding; turning a switch on in Settings asks again or opens the system page. |
+| In-app updates | `update/InAppUpdates.kt` | Play update priority 4–5 → immediate, otherwise flexible + "Restart" banner. Only for Play installs. |
+
+`app/google-services.json` must be for package `com.ngdstudio.mindimania`. Without Firebase every `Analytics` / `Push`
+call does nothing (checked with `FirebaseApp.getApps`). Library versions: Firebase BoM 35.1.0 (needs Kotlin ≥ 2.3,
+hence `kotlin = "2.3.21"`), google-services 4.5.0, Crashlytics plugin 3.0.8, WorkManager 2.12.0, app-update-ktx 2.1.0.
+Play Console Data safety must declare: app activity (app interactions), app info and performance (crash logs,
+diagnostics), device or other IDs; collected, not shared, optional (the player can turn it off).
+* App name: Play title and `app_name` = "Mindi & Mania: Color Card Game" (30 characters, the Play limit); the
+  home-screen label is `app_name_short` = "Mindi & Mania" (only ~12 characters fit under the icon). In-app sentences use
+  "Mindi & Mania". Never put another brand (or a look-alike spelling of one) in the name or listing.

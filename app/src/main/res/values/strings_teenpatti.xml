@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Lobby, profile, how-to chips -->
+    <string name="shell_game_teenpatti">Teen Patti</string>
+    <string name="shell_tag_teenpatti">3–6 · BEST 3 CARDS WIN</string>
+    <string name="shell_blurb_teenpatti">Play blind or seen · table chips only</string>
+    <string name="shell_chip_teenpatti">Patti</string>
+    <string name="mania_howto_chip_teenpatti">Teen Patti</string>
+
+    <!-- Setup screen -->
+    <string name="tp_title">Teen Patti</string>
+    <string name="tp_continue_title">Continue match</string>
+    <string name="tp_continue_sub">Pick up your saved Teen Patti match</string>
+    <string name="tp_section_players">Players</string>
+    <string name="tp_hands_label">Hands in a match</string>
+    <string name="tp_hands_n">%1$d hands</string>
+    <string name="tp_chips_note">Endless table: hand after hand until you leave. Everyone starts with %1$d chips and the boot is %2$d; anyone who runs out gets a fresh stack. Chips stay at the table; every hand you win earns coins.</string>
+    <string name="tp_section_rules">Rules</string>
+    <string name="tp_sideshow">Sideshow</string>
+    <string name="tp_sideshow_desc">A seen player may ask the seen player before them to compare cards privately</string>
+    <string name="tp_a23">A-2-3 is second best</string>
+    <string name="tp_a23_desc">On: A-2-3 ranks just below A-K-Q. Off: A-2-3 is the lowest sequence</string>
+    <string name="tp_section_table">Table</string>
+    <string name="tp_bots">Bots</string>
+    <string name="tp_deal_cards">DEAL CARDS</string>
+    <string name="tp_hero_title">Three cards. One winner.</string>
+    <string name="tp_hero_sub">Play blind or seen · chaal, raise, show</string>
+
+    <!-- Game screen -->
+    <string name="tp_shuffling">Shuffling…</string>
+    <string name="tp_cd_pause">Pause</string>
+    <string name="tp_cd_emote">Emote</string>
+    <string name="tp_cd_rankings">Hand rankings</string>
+    <string name="tp_top_title">%1$s · HAND %2$d/%3$d</string>
+    <string name="tp_top_sub">Boot %1$d · Stake %2$d</string>
+    <string name="tp_pot">POT %1$d</string>
+    <string name="tp_you">You</string>
+    <string name="tp_player">Player</string>
+    <string name="tp_dealer">D</string>
+    <string name="tp_tag_blind">BLIND</string>
+    <string name="tp_tag_seen">SEEN</string>
+    <string name="tp_tag_packed">PACKED</string>
+    <string name="tp_tag_out">OUT</string>
+    <string name="tp_tap_to_see">Tap your cards to see them</string>
+    <string name="tp_status_your_turn">Your turn</string>
+    <string name="tp_status_reply">Sideshow asked — your answer</string>
+    <string name="tp_status_thinking">%1$s is thinking…</string>
+    <string name="tp_status_packed">You packed · watching this hand</string>
+    <string name="tp_status_out">Out of chips · watching</string>
+    <string name="tp_btn_see">SEE</string>
+    <string name="tp_btn_pack">PACK</string>
+    <string name="tp_btn_blind">BLIND %1$d</string>
+    <string name="tp_btn_chaal">CHAAL %1$d</string>
+    <string name="tp_btn_raise">RAISE %1$d</string>
+    <string name="tp_btn_show">SHOW %1$d</string>
+    <string name="tp_btn_sideshow">SIDESHOW %1$d</string>
+    <string name="tp_btn_all_in">ALL IN %1$d</string>
+    <string name="tp_side_title">Sideshow?</string>
+    <string name="tp_side_body">%1$s wants to compare cards with you. The lower hand packs (on a tie, %1$s packs).</string>
+    <string name="tp_side_accept">ACCEPT</string>
+    <string name="tp_side_decline">DECLINE</string>
+    <string name="tp_side_waiting">Waiting for %1$s to answer…</string>
+    <string name="tp_toast_time_up">Time\'s up — you packed</string>
+    <string name="tp_saved_note">Your match is saved — continue it later from Teen Patti.</string>
+
+    <!-- Table pops -->
+    <string name="tp_pop_hand">Hand %1$d/%2$d</string>
+    <string name="tp_pop_seen">SEEN</string>
+    <string name="tp_pop_blind">Blind %1$d</string>
+    <string name="tp_pop_chaal">Chaal %1$d</string>
+    <string name="tp_pop_raise">RAISE %1$d!</string>
+    <string name="tp_pop_pack">PACK</string>
+    <string name="tp_pop_sideshow_ask">SIDESHOW?</string>
+    <string name="tp_pop_sideshow_no">Declined</string>
+    <string name="tp_pop_sideshow_lost">Lost the sideshow</string>
+    <string name="tp_pop_show">SHOW!</string>
+    <string name="tp_pop_all_in">ALL IN!</string>
+
+    <!-- Hand kinds -->
+    <string name="tp_rankings_title">Hand rankings</string>
+    <string name="tp_kind_trail">Trail</string>
+    <string name="tp_kind_pure">Pure sequence</string>
+    <string name="tp_kind_sequence">Sequence</string>
+    <string name="tp_kind_color">Colour</string>
+    <string name="tp_kind_pair">Pair</string>
+    <string name="tp_kind_high">High card</string>
+    <string name="tp_kind_trail_desc">Three of a kind. A-A-A is the best hand of all</string>
+    <string name="tp_kind_pure_desc">Three in a row, all the same suit</string>
+    <string name="tp_kind_sequence_desc">Three in a row, mixed suits</string>
+    <string name="tp_kind_color_desc">Three of one suit, not in a row</string>
+    <string name="tp_kind_pair_desc">Two of the same rank</string>
+    <string name="tp_kind_high_desc">None of the above: the highest card counts</string>
+    <string name="tp_rankings_a23_second">A-K-Q is the top sequence, then A-2-3. Suits never break a tie.</string>
+    <string name="tp_rankings_a23_low">A-K-Q is the top sequence and A-2-3 the lowest. Suits never break a tie.</string>
+    <string name="tp_close">CLOSE</string>
+
+    <!-- Result -->
+    <string name="tp_result_win">Table Champion!</string>
+    <string name="tp_result_over">Match over</string>
+    <string name="tp_result_place">You finished %1$s of %2$d</string>
+    <plurals name="tp_result_hands">
+        <item quantity="one">%1$d hand won</item>
+        <item quantity="other">%1$d hands won</item>
+    </plurals>
+    <string name="tp_result_coins_note">Table chips stay at the table. Coins are for where you finished.</string>
+
+    <!-- Profile stats -->
+    <string name="tp_stat_blind_wins">Blind wins</string>
+    <string name="tp_stat_biggest_pot">Biggest pot</string>
+    <string name="tp_stat_best_hand">Best hand</string>
+
+    <!-- Achievements -->
+    <string name="data_ach_tp_win_title">Stack Builder</string>
+    <string name="data_ach_tp_win_desc">Reach 4,000 chips at a Teen Patti table.</string>
+    <string name="data_ach_tp_trail_title">Trail!</string>
+    <string name="data_ach_tp_trail_desc">Be dealt three of a kind in Teen Patti.</string>
+    <string name="data_ach_tp_pure_title">Pure Run</string>
+    <string name="data_ach_tp_pure_desc">Be dealt a pure sequence in Teen Patti.</string>
+    <string name="data_ach_tp_blind_title">Blind Luck</string>
+    <string name="data_ach_tp_blind_desc">Win a Teen Patti hand without ever looking at your cards.</string>
+    <string name="data_ach_tp_bluff_title">Poker Face</string>
+    <string name="data_ach_tp_bluff_desc">Win a Teen Patti hand holding only a high card.</string>
+    <string name="data_ach_tp_expert_title">High Roller</string>
+    <string name="data_ach_tp_expert_desc">Win a Teen Patti show against Expert bots.</string>
+
+    <!-- How to play -->
+    <string name="tp_howto_name">Teen Patti</string>
+    <string name="tp_howto_tagline">Three cards each — the best hand takes the pot.</string>
+    <string name="tp_howto_pill">3 to 6 players · table chips only</string>
+    <string name="tp_howto_goal_title">Goal</string>
+    <string name="tp_howto_goal_1">Win pots by holding the best three cards — or by being the last player who hasn\'t packed.</string>
+    <string name="tp_howto_goal_2">The table goes on hand after hand until you leave. Everyone starts with the same chips, anyone who runs out gets a fresh stack, and chips never leave the table.</string>
+    <string name="tp_howto_deal_title">Each hand</string>
+    <string name="tp_howto_deal_1">Everyone puts the boot into the pot and gets three cards face down.</string>
+    <string name="tp_howto_deal_2">Play goes round from the dealer\'s left.</string>
+    <string name="tp_howto_deal_3">You can play BLIND (without looking) or tap SEE to look at your cards at any time. Once seen, you stay seen.</string>
+    <string name="tp_howto_bet_title">Your turn</string>
+    <string name="tp_howto_bet_1">CHAAL: a blind player pays the current stake; a seen player pays twice the stake.</string>
+    <string name="tp_howto_bet_2">RAISE: pay double that, and the stake doubles for everyone (up to a limit).</string>
+    <string name="tp_howto_bet_3">PACK: give up the hand. Chips you already put in stay in the pot.</string>
+    <string name="tp_howto_bet_4">Playing blind is cheaper, but you don\'t know what you hold.</string>
+    <string name="tp_howto_bet_5">If you can\'t afford a chaal, you can go ALL IN: every hand still in is shown at once.</string>
+    <string name="tp_howto_show_title">Show and sideshow</string>
+    <string name="tp_howto_show_1">SHOW: when only two players are left, pay a chaal to compare both hands. The better hand takes the pot; on a tie, the player who asked loses.</string>
+    <string name="tp_howto_show_2">SIDESHOW: when you are seen and three or more players are left, pay a chaal to ask the seen player before you to compare privately. If they accept, the lower hand packs (on a tie, you pack). They may decline.</string>
+    <string name="tp_howto_show_3">When everyone else packs, the last player takes the pot without showing.</string>
+    <string name="tp_howto_rank_title">Hand rankings</string>
+    <string name="tp_howto_rank_1">Best first: Trail (three of a kind) · Pure sequence · Sequence · Colour · Pair · High card.</string>
+    <string name="tp_howto_rank_2">A-K-Q is the top sequence. By default A-2-3 is second; you can make it the lowest in setup.</string>
+    <string name="tp_howto_rank_3">Inside a kind, compare the highest card, then the next. Suits never break a tie.</string>
+    <string name="tp_howto_tips_title">Tips</string>
+    <string name="tp_howto_tips_1">A pair or better is a strong hand: almost three hands in four are only a high card.</string>
+    <string name="tp_howto_tips_2">Watch who keeps paying after seeing their cards — they are often holding something.</string>
+    <string name="tp_howto_tips_3">Packing early is cheap. Don\'t chase a weak hand when the stake gets high.</string>
+    <string name="tp_howto_ex_1">A trail of Queens: only a higher trail beats it.</string>
+    <string name="tp_howto_ex_2">A-2-3 in mixed suits: a sequence, second only to A-K-Q by default.</string>
+
+    <!-- Variations -->
+    <string name="tp_section_variant">Variation</string>
+    <string name="tp_var_classic">Classic</string>
+    <string name="tp_var_muflis">Muflis</string>
+    <string name="tp_var_joker">Joker</string>
+    <string name="tp_var_lowest">Low Joker</string>
+    <string name="tp_var_ak47">AK47</string>
+    <string name="tp_var_999">999</string>
+    <string name="tp_var_4x">4× Boot</string>
+    <string name="tp_var_mixed">Mixed</string>
+    <string name="tp_var_classic_desc">Classic: the best three cards win.</string>
+    <string name="tp_var_muflis_desc">Muflis: everything is upside down: the lowest hand wins. A trail is the worst hand and 5-3-2 in mixed suits the best.</string>
+    <string name="tp_var_joker_desc">Joker: after the deal one card is turned face up. Every card of that rank is wild and can stand for any card.</string>
+    <string name="tp_var_lowest_desc">Low Joker: the lowest card in each hand is wild (both, if you hold a pair of them).</string>
+    <string name="tp_var_ak47_desc">AK47: every Ace, King, 4 and 7 is wild.</string>
+    <string name="tp_var_999_desc">999: tens and pictures count 0, Ace counts 1. Your cards make the biggest number they can; closest to 999 wins.</string>
+    <string name="tp_var_4x_desc">4× Boot: classic rules, but the boot is four times bigger, so every pot starts bigger.</string>
+    <string name="tp_var_mixed_desc">Mixed: a different variation is played every hand.</string>
+    <string name="tp_hint_muflis">LOWEST HAND WINS</string>
+    <string name="tp_hint_joker">EVERY %1$s IS WILD</string>
+    <string name="tp_hint_lowest">LOWEST CARD IS WILD</string>
+    <string name="tp_hint_ak47">A · K · 4 · 7 ARE WILD</string>
+    <string name="tp_hint_999">CLOSEST TO 999 WINS</string>
+    <string name="tp_hint_4x">4× BOOT</string>
+    <string name="tp_score_999">Score %1$d</string>
+    <string name="tp_howto_var_wild">Wild cards show a gold ★ and always count as whatever card makes your best hand. Hand names on the table already include them.</string>
+    <string name="tp_winner">WINNER</string>
+    <string name="tp_won_round">%1$s won this round</string>
+    <string name="tp_you_won_round">You won this round!</string>
+    <string name="tp_top_title_endless">%1$s · HAND %2$d</string>
+    <string name="tp_pop_hand_n">Hand %1$d</string>
+    <string name="tp_toast_refill">Out of chips: here\'s a fresh stack of %1$d</string>
+    <string name="tp_toast_new_player">%1$s left the table · %2$s sat down</string>
+    <string name="tp_stat_best_stack">Best stack</string>
+</resources>
