@@ -276,7 +276,8 @@ private fun SectionTabs(selected: Int, modifier: Modifier, onSelect: (Int) -> Un
                 }
                 Text(
                     stringResource(sec.subtitleRes), color = if (on) Color.White.copy(alpha = 0.92f) else CM.TextMuted,
-                    fontSize = 11.sp, maxLines = 1,
+                    fontSize = 11.sp, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                    modifier = Modifier.padding(horizontal = 6.dp),
                 )
             }
         }

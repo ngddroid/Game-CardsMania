@@ -47,7 +47,7 @@
     <string name="rm_wrong_title">Not a valid hand</string>
     <string name="rm_wrong_body">Your groups don\'t make a valid declaration: you need two sequences, one of them pure, and every card in a valid group. Declaring now costs 80 points.</string>
     <string name="rm_wrong_go">DECLARE ANYWAY</string>
-    <string name="rm_wrong_fix">KEEP PLAYING</string>
+    <string name="rm_wrong_fix">KEEP ARRANGING</string>
     <string name="rm_arrange_title">ARRANGE YOUR CARDS AND DECLARE</string>
     <string name="rm_points_loss">Points\nLoss</string>
     <string name="rm_time_left">Time\nLeft</string>
@@ -112,4 +112,5 @@
     <string name="rm_howto_points_4">Each point you lose costs chips; the winner collects them all.</string>
     <string name="rm_howto_ex_1">5♥ 6♥ 7♥: a pure sequence — your 1st life.</string>
     <string name="rm_howto_ex_2">10♣ 10♠ 10♥: a set of three tens.</string>
+    <string name="rm_status_declaring">%1$s is declaring… arranging their cards</string>
 </resources>

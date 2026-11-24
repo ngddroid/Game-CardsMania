@@ -15,13 +15,13 @@
     <string name="shell_lobby_pick_game">ગેમ પસંદ કરો</string>
     <string name="shell_lobby_quick_play">ક્વિક પ્લે</string>
     <string name="shell_lobby_quick_hint">છેલ્લા સેટઅપ સાથે સીધા %1$s રમો</string>
-    <string name="shell_lobby_indian_intro">🪔  ભારતની મીંડી, ત્રણ પત્તી અને ભાભી, સાથે સોલો સ્પાઇડર</string>
+    <string name="shell_lobby_indian_intro">🪔  ભારતની મીંડી, ત્રણ પત્તી, રમી અને ભાભી, સાથે સોલો સ્પાઇડર</string>
     <string name="shell_lobby_badge_new">નવું</string>
     <string name="shell_lobby_play_friends">મિત્રો સાથે રમો</string>
     <string name="shell_section_card_mania">કાર્ડ મેનિયા</string>
     <string name="shell_section_card_mania_sub">ક્લાસિક · મર્સિલેસ · ફ્લિપ</string>
     <string name="shell_section_indian_card">ભારતીય કાર્ડ</string>
-    <string name="shell_section_indian_card_sub">મીંડી · ત્રણ પત્તી · ભાભી · સ્પાઇડર</string>
+    <string name="shell_section_indian_card_sub">મીંડી · ત્રણ પત્તી · રમી</string>
     <string name="shell_quick_open">ખોલો!</string>
     <string name="shell_quick_daily_gift">ડેઇલી ગિફ્ટ</string>
     <string name="shell_quick_challenges">ચેલેન્જ</string>
@@ -142,8 +142,8 @@
     <string name="shell_stat_tens">જીતેલા 10</string>
     <string name="shell_onb1_title">Mindi &amp; Mania માં\nસ્વાગત છે</string>
     <string name="shell_onb1_body">રત્નો, સ્ટેક અને સરપ્રાઇઝથી ભરેલું એક શાનદાર કાર્ડ-ગેમ કલેક્શન. ગેમ પસંદ કરો, ટેબલ જીતો, ઇનામ મેળવો!</string>
-    <string name="shell_onb2_title">6 ગેમ\nએકમાં</string>
-    <string name="shell_onb2_body">રંગ મેળવવાની ટક્કર માટે ક્લાસિક, મર્સિલેસ અને ફ્લિપ મેનિયા, આરામ માટે સ્પાઇડર સોલિટેર, મીંડી — 10 ના પત્તાંની ટીમ ગેમ — અને ભાભી, જેમાં છેલ્લે સુધી પત્તાં રાખનાર હારે છે.</string>
+    <string name="shell_onb2_title">8 ગેમ\nએકમાં</string>
+    <string name="shell_onb2_body">મીંડી — 10 ના પત્તાંની ટીમ ગેમ — ત્રણ પત્તી, રમી અને ભાભી ભારતીય પત્તાંની મહેફિલમાંથી, રંગ મેળવવાની ટક્કર માટે ક્લાસિક, મર્સિલેસ અને ફ્લિપ મેનિયા, અને આરામ માટે સ્પાઇડર સોલિટેર.</string>
     <string name="shell_onb3_title">હરીફો અને ટીમો</string>
     <string name="shell_onb3_body">સરળથી જીનિયસ સુધીના સ્માર્ટ બોટ, મીંડીમાં ટીમ બનીને રમતા સાથી, અને મલ્ટિપ્લેયર રૂમમાં એક જ Wi-Fi પરના મિત્રો.</string>
     <string name="shell_onb4_title">ભેગું કરો અને\nજીતો</string>
@@ -257,7 +257,7 @@
     <string name="notif_daily_title">🕷️ આજની સ્પાઇડર ચેલેન્જ રાહ જુએ છે</string>
     <string name="notif_daily_body">આજની ડીલ ઉકેલો અને તમારી ડેઇલી સ્ટ્રીક ચાલુ રાખો.</string>
     <string name="notif_play_title">🃏 ટેબલ તૈયાર છે</string>
-    <string name="notif_play_body">મીંડી કે ભાભીની એક ઝડપી ગેમ થઈ જાય?</string>
+    <string name="notif_play_body">મીંડી, ત્રણ પત્તી કે રમીની એક ઝડપી ગેમ થઈ જાય?</string>
     <string name="shell_settings_notifications">નોટિફિકેશન</string>
     <string name="shell_settings_reminders">રોજનું રિમાઇન્ડર</string>
     <string name="shell_settings_reminders_sub">દિવસમાં એક વાર (સાંજે) ગિફ્ટ કે ડેઇલી ચેલેન્જની યાદ</string>

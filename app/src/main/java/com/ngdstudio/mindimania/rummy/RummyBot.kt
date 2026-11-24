@@ -20,6 +20,12 @@ object RummyBot {
                 val best = RummyMelds.best(s.hands[seat], s.wild)
                 return RAction.Arrange(seat, best.groups.map { g -> g.map { it.id } })
             }
+            is RPhase.Declaring -> {
+                // a bot standing in for a player who left mid-declaration: show the best arrangement
+                if (seat != ph.seat) return null
+                val best = RummyMelds.best(s.hands[seat], s.wild)
+                return RAction.Declare(seat, ph.card.id, best.groups.map { g -> g.map { it.id } })
+            }
             is RPhase.HandOver -> return null
             else -> Unit
         }

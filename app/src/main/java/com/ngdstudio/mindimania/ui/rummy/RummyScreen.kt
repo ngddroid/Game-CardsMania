@@ -177,8 +177,10 @@ fun RummyScreen(launch: RummyLaunch, vmKey: String, onExit: () -> Unit, onHowTo:
         TopButtons(s, layout, onPause = { showPause = true }, onRules = onHowTo, onEmote = { showEmotes = !showEmotes })
 
         val ph = s.phase
-        val arranging = ph is RPhase.Showdown && ui.me in ph.pending && ui.arrangeDeadline > 0
-        if (arranging) ArrangeOverlay(s, ui, layout, onDeclare = vm::arrange)
+        // someone declared and I lay out my cards, or my own card is in the finish slot and I arrange before declaring
+        val declaring = ph is RPhase.Declaring && ph.seat == ui.me && ui.arrangeDeadline > 0
+        val arranging = declaring || (ph is RPhase.Showdown && ui.me in ph.pending && ui.arrangeDeadline > 0)
+        if (arranging) ArrangeOverlay(s, ui, layout, onDeclare = if (declaring) vm::declareNow else vm::arrange)
         LeftControls(ui, layout, vm, enabled = s.hands[ui.me].isNotEmpty() && s.finish[ui.me] != Finish.DROP)
         MyHand(s, ui, layout, vm, drag)
         ActionButtons(s, ui, layout, vm)
@@ -416,7 +418,10 @@ private fun FinishSlot(s: RummyState, ui: RummyUi, L: RummyLayout, onDeclare: ()
         }
         // the four lines shrink with the slot on short screens
         val f = (hPx / density.density / 92f).coerceIn(0.6f, 1f)
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        val dc = s.phase as? RPhase.Declaring
+        // the card being declared with: face up for its owner, face down for everyone else
+        if (dc != null) RummyCardView(dc.card.takeIf { dc.seat == ui.me }, with(density) { L.pileW.toDp() }, dc.seat == ui.me, s.wild, ui.profile.cardBack, Modifier.rotate(-6f))
+        else Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(stringResource(R.string.rm_finish_1), color = Color.White, fontSize = (15 * f).sp, lineHeight = (17 * f).sp, fontWeight = FontWeight.Black)
             Text(stringResource(R.string.rm_finish_2), color = Color.White, fontSize = (10 * f).sp, lineHeight = (12 * f).sp, fontWeight = FontWeight.Bold)
             Text(stringResource(R.string.rm_finish_3), color = Color.White, fontSize = (15 * f).sp, lineHeight = (17 * f).sp, fontWeight = FontWeight.Black)
@@ -851,6 +856,7 @@ private fun StatusLine(s: RummyState, ui: RummyUi, L: RummyLayout) {
     val text = when {
         ph is RPhase.HandOver -> ""
         ph is RPhase.Showdown -> stringResource(R.string.rm_status_wait_show, ui.seats.getOrNull(ph.declarer)?.name ?: player)
+        ph is RPhase.Declaring -> if (ph.seat == me) "" else stringResource(R.string.rm_status_declaring, ui.seats.getOrNull(ph.seat)?.name ?: player)
         !ui.idle -> ""
         s.finish[me] == Finish.DROP || s.finish[me] == Finish.WRONG_SHOW -> stringResource(R.string.rm_status_out)
         s.turn == me && s.phase == RPhase.Pick -> stringResource(R.string.rm_status_pick)

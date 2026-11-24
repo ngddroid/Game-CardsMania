@@ -47,7 +47,7 @@
     <string name="rm_wrong_title">સાચો હાથ નથી</string>
     <string name="rm_wrong_body">તમારા ગ્રુપ સાચું ડિક્લેરેશન બનાવતા નથી: બે સિક્વન્સ જોઈએ, તેમાં એક પ્યોર, અને દરેક પત્તું સાચા ગ્રુપમાં. હમણાં ડિક્લેર કરવાથી 80 પોઇન્ટ કપાશે.</string>
     <string name="rm_wrong_go">તોય ડિક્લેર</string>
-    <string name="rm_wrong_fix">રમતા રહો</string>
+    <string name="rm_wrong_fix">પત્તાં ગોઠવતા રહો</string>
     <string name="rm_arrange_title">તમારાં પત્તાં ગોઠવો અને ડિક્લેર કરો</string>
     <string name="rm_points_loss">પોઇન્ટ\nનુકસાન</string>
     <string name="rm_time_left">બાકી\nસમય</string>
@@ -112,4 +112,5 @@
     <string name="rm_howto_points_4">દરેક ગુમાવેલો પોઇન્ટ ચિપ્સ લે છે; જીતનાર બધું લઈ જાય.</string>
     <string name="rm_howto_ex_1">5♥ 6♥ 7♥: પ્યોર સિક્વન્સ — તમારી પહેલી લાઇફ.</string>
     <string name="rm_howto_ex_2">10♣ 10♠ 10♥: ત્રણ દસ્સાનો સેટ.</string>
+    <string name="rm_status_declaring">%1$s ડિક્લેર કરી રહ્યા છે… પત્તાં ગોઠવે છે</string>
 </resources>

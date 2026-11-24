@@ -47,7 +47,7 @@
     <string name="rm_wrong_title">सही हाथ नहीं है</string>
     <string name="rm_wrong_body">आपके ग्रुप सही डिक्लेयरेशन नहीं बनाते: दो सीक्वेंस चाहिए, उनमें एक प्योर, और हर पत्ता किसी सही ग्रुप में। अभी डिक्लेयर करने पर 80 पॉइंट कटेंगे।</string>
     <string name="rm_wrong_go">फिर भी डिक्लेयर</string>
-    <string name="rm_wrong_fix">खेलते रहें</string>
+    <string name="rm_wrong_fix">पत्ते जमाते रहें</string>
     <string name="rm_arrange_title">अपने पत्ते सजाएँ और डिक्लेयर करें</string>
     <string name="rm_points_loss">पॉइंट\nनुकसान</string>
     <string name="rm_time_left">बचा\nसमय</string>
@@ -112,4 +112,5 @@
     <string name="rm_howto_points_4">हर खोया पॉइंट चिप्स लेता है; जीतने वाला सब ले जाता है।</string>
     <string name="rm_howto_ex_1">5♥ 6♥ 7♥: प्योर सीक्वेंस — आपकी पहली लाइफ।</string>
     <string name="rm_howto_ex_2">10♣ 10♠ 10♥: तीन दहलों का सेट।</string>
+    <string name="rm_status_declaring">%1$s डिक्लेयर कर रहे हैं… पत्ते जमा रहे हैं</string>
 </resources>

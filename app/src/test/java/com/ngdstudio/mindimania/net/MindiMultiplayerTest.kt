@@ -59,7 +59,7 @@ class MindiMultiplayerTest {
         val lobby = Net.decode(Net.encode(msgs.last())) as NetMsg.Lobby
         assertTrue(lobby.room.isMindi)
         assertEquals(8, lobby.room.maxSeats)
-        assertEquals(5, Net.PROTOCOL)
+        assertEquals(6, Net.PROTOCOL)
     }
 
     @Test

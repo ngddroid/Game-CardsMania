@@ -12,8 +12,8 @@ import kotlinx.serialization.Serializable
  *    printed joker makes Aces wild); one card starts the open pile; the rest is the closed pile.
  *  - On your turn pick the top of the closed or open pile, then discard one card (or declare with it).
  *  - Drop instead of picking: 20 points before your first pick in the hand, 40 later.
- *  - Declare: put a card in the finish slot and show your 13 as groups ([RummyMelds]). A valid declaration wins the
- *    hand; everyone still in then arranges their cards and loses the points of their arrangement. A wrong
+ *  - Declare: put a card in the finish slot ([RAction.StartDeclare]), arrange your 13 into groups ([RummyMelds]) and
+ *    show them ([RAction.Declare]; bots may do both at once). A valid declaration wins the hand; everyone still in then arranges their cards and loses the points of their arrangement. A wrong
  *    declaration costs [WRONG_SHOW] points and that player is out of the hand; play goes on.
  *  - If everyone else drops (or shows wrong), the last player in wins.
  * Each loser pays points × [POINT_VALUE] chips to the winner. Anyone below a full loss gets a fresh stack before the
@@ -29,6 +29,10 @@ sealed interface RPhase {
     /** [RummyState.turn] holds 14 cards: discard one or declare. */
     @Serializable @SerialName("discard")
     data object Discard : RPhase
+
+    /** [seat] put [card] in the finish slot and is arranging its 13 cards before showing them. */
+    @Serializable @SerialName("declaring")
+    data class Declaring(val seat: Int, val card: RCard) : RPhase
 
     /** [declarer] declared validly; [pending] seats still have to arrange their cards. */
     @Serializable @SerialName("show")
@@ -101,6 +105,10 @@ sealed interface REvent {
     @Serializable @SerialName("Wrong")
     data class WrongShow(val seat: Int, val card: RCard, val points: Int) : REvent
 
+    /** [seat] put [card] in the finish slot and is arranging before declaring. */
+    @Serializable @SerialName("DeclareStarted")
+    data class DeclareStarted(val seat: Int, val card: RCard) : REvent
+
     @Serializable @SerialName("Declared")
     data class Declared(val seat: Int, val card: RCard) : REvent
 
@@ -139,7 +147,14 @@ sealed interface RAction {
     @Serializable @SerialName("Drop")
     data class Drop(override val seat: Int) : RAction
 
-    /** Finish with [cardId]; [groups] = the other 13 cards as groups (card ids). */
+    /** Put [cardId] in the finish slot; then arrange and [Declare]. */
+    @Serializable @SerialName("StartDeclare")
+    data class StartDeclare(override val seat: Int, val cardId: Int) : RAction
+
+    /**
+     * Show [groups] (the 13 cards as groups of card ids) and finish with [cardId]: the card already in the finish slot,
+     * or (straight from the discard step) a card from the hand.
+     */
     @Serializable @SerialName("Declare")
     data class Declare(override val seat: Int, val cardId: Int, val groups: List<List<Int>>) : RAction
 
@@ -222,12 +237,23 @@ object RummyEngine {
             if (a.seat !in ph.pending) return "Nothing to arrange"
             return checkGroups(s.hands[a.seat], a.groups)
         }
+        if (ph is RPhase.Declaring) {
+            if (a !is RAction.Declare) return "Arrange your cards and declare"
+            if (a.seat != ph.seat) return "Not your turn"
+            if (a.cardId != ph.card.id) return "That isn't the card in the finish slot"
+            return checkGroups(s.hands[a.seat], a.groups)
+        }
         if (a is RAction.Arrange) return "Nobody has declared"
         if (a.seat != s.turn) return "Not your turn"
         return when (a) {
             is RAction.PickClosed, is RAction.PickOpen -> if (ph != RPhase.Pick) "You already picked" else if (a is RAction.PickOpen && s.open.isEmpty()) "The open pile is empty" else null
             is RAction.Drop -> if (ph != RPhase.Pick) "You can only drop before picking" else null
             is RAction.Discard -> if (ph != RPhase.Discard) "Pick a card first" else if (s.hands[a.seat].none { it.id == a.cardId }) "Not in your hand" else null
+            is RAction.StartDeclare -> when {
+                ph != RPhase.Discard -> "Pick a card first"
+                s.hands[a.seat].none { it.id == a.cardId } -> "Not in your hand"
+                else -> null
+            }
             is RAction.Declare -> when {
                 ph != RPhase.Discard -> "Pick a card first"
                 s.hands[a.seat].none { it.id == a.cardId } -> "Not in your hand"
@@ -289,9 +315,16 @@ object RummyEngine {
                 steps += RStep(REvent.Dropped(seat, pts), s)
                 lastStanding(s, steps)
             }
-            is RAction.Declare -> {
+            is RAction.StartDeclare -> {
                 val c = s.hands[seat].first { it.id == a.cardId }
-                val rest = s.hands[seat] - c
+                s = s.copy(hands = s.hands.set(seat, s.hands[seat] - c), phase = RPhase.Declaring(seat, c))
+                steps += RStep(REvent.DeclareStarted(seat, c), s)
+            }
+            is RAction.Declare -> {
+                val ph0 = s.phase
+                // the finish card is either already in the slot or still in the hand
+                val c = if (ph0 is RPhase.Declaring) ph0.card else s.hands[seat].first { it.id == a.cardId }
+                val rest = if (ph0 is RPhase.Declaring) s.hands[seat] else s.hands[seat] - c
                 val ev = RummyMelds.evaluate(groupsOf(rest, a.groups), s.wild)
                 if (!ev.valid) {
                     // a wrong show: 80 points, out of the hand; the card goes to the open pile and play goes on

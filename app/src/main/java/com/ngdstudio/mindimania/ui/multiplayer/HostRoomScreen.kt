@@ -181,14 +181,16 @@ fun HostRoomScreen(onClosed: () -> Unit, onStart: (game: RoomGame) -> Unit) {
                     BhabhiGameTile(room.isBhabhi, Modifier.fillMaxWidth()) {
                         update { if (it.isBhabhi) it else it.copy(game = RoomGame.BHABHI, seats = maxOf(it.bhabhi.players, it.players)) }
                     }
-                    Spacer(Modifier.height(10.dp))
-                    // Teen Patti and Rummy tables seat at most 6
-                    TeenPattiGameTile(room.isTeenPatti, Modifier.fillMaxWidth(), enabled = maniaAllowed) {
-                        update { if (it.isTeenPatti) it else it.copy(game = RoomGame.TEEN_PATTI, seats = maxOf(it.teenPatti.players, it.players).coerceAtMost(6)) }
-                    }
-                    Spacer(Modifier.height(10.dp))
-                    RummyGameTile(room.isRummy, Modifier.fillMaxWidth(), enabled = maniaAllowed) {
-                        update { if (it.isRummy) it else it.copy(game = RoomGame.RUMMY, seats = maxOf(it.rummy.players, it.players).coerceAtMost(6)) }
+                    // Teen Patti and Rummy tables seat at most 6 (switched off for now: Net.TEEN_PATTI_RUMMY_ROOMS)
+                    if (com.ngdstudio.mindimania.net.Net.TEEN_PATTI_RUMMY_ROOMS) {
+                        Spacer(Modifier.height(10.dp))
+                        TeenPattiGameTile(room.isTeenPatti, Modifier.fillMaxWidth(), enabled = maniaAllowed) {
+                            update { if (it.isTeenPatti) it else it.copy(game = RoomGame.TEEN_PATTI, seats = maxOf(it.teenPatti.players, it.players).coerceAtMost(6)) }
+                        }
+                        Spacer(Modifier.height(10.dp))
+                        RummyGameTile(room.isRummy, Modifier.fillMaxWidth(), enabled = maniaAllowed) {
+                            update { if (it.isRummy) it else it.copy(game = RoomGame.RUMMY, seats = maxOf(it.rummy.players, it.players).coerceAtMost(6)) }
+                        }
                     }
                     Spacer(Modifier.height(8.dp))
                     Text(

@@ -149,6 +149,7 @@ class MindiViewModel(app: Application) : AndroidViewModel(app) {
     fun start(launch: MindiLaunch) {
         if (started) return
         started = true
+        com.ngdstudio.mindimania.analytics.Analytics.event("game_start", "game" to "mindi", "net" to launch.net.name.lowercase(), "resume" to launch.resume)
         viewModelScope.launch {
             val s = c.settings.current()
             val p = c.profile.current()
@@ -378,6 +379,11 @@ class MindiViewModel(app: Application) : AndroidViewModel(app) {
         version++
         timerJob?.cancel()
         persist()
+        turnBuzz(when (val ph = s.phase) {
+            is MindiPhase.ChooseHidden -> ph.seat == me
+            MindiPhase.Play -> s.turn == me
+            else -> false
+        })
         when (val ph = s.phase) {
             is MindiPhase.HandOver -> {
                 _ui.update { it.copy(idle = true, handResult = ph.result, legal = emptySet()) }
@@ -408,6 +414,26 @@ class MindiViewModel(app: Application) : AndroidViewModel(app) {
                 }
             }
         }
+    }
+
+    /**
+     * Buzz when the turn passes to me (not again while it stays mine, e.g. a second step of the same turn), and once
+     * more if nothing has happened [TURN_REMIND_MS] later: I may have put the phone down.
+     */
+    private var turnBuzzed = false
+    private var turnRemind: kotlinx.coroutines.Job? = null
+
+    private fun turnBuzz(mine: Boolean) {
+        turnRemind?.cancel()
+        if (mine && !turnBuzzed) {
+            c.haptics.turn()
+            val v = version
+            turnRemind = viewModelScope.launch {
+                kotlinx.coroutines.delay(com.ngdstudio.mindimania.audio.Haptics.TURN_REMIND_MS)
+                if (version == v) c.haptics.turn()
+            }
+        }
+        turnBuzzed = mine
     }
 
     /** Someone else must act: guests just wait for the host; the host waits for remote players or runs a bot. */

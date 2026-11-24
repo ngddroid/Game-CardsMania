@@ -139,6 +139,8 @@ class RummyViewModel(app: Application) : AndroidViewModel(app) {
     private var myTurns = 0
     /** I won this hand by declaring (not because everyone else dropped). */
     private var iDeclared = false
+    /** A card lies in the finish slot (someone is arranging before declaring). */
+    private var finishInSlot = false
     private val queue = ArrayDeque<RStep>()
     private var pumpJob: Job? = null
     private var botJob: Job? = null
@@ -158,6 +160,7 @@ class RummyViewModel(app: Application) : AndroidViewModel(app) {
     fun start(launch: RummyLaunch) {
         if (started) return
         started = true
+        com.ngdstudio.mindimania.analytics.Analytics.event("game_start", "game" to "rummy", "net" to launch.net.name.lowercase(), "resume" to launch.resume)
         viewModelScope.launch {
             val s = c.settings.current()
             val p = c.profile.current()
@@ -399,6 +402,25 @@ class RummyViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     /** Someone else must move: guests wait for the host; the host waits for a remote player or runs a bot. */
+    /** Someone else is arranging before declaring: a friend on Wi-Fi gets the arrange time, a bot shows its best. */
+    private fun othersDeclaring(seat: Int) {
+        when {
+            net == NetRole.GUEST -> Unit
+            remoteConnected(seat) -> {
+                val v = version
+                timerJob = viewModelScope.launch {
+                    delay(ARRANGE_MS + 2000)
+                    if (version != v) return@launch
+                    val s = state ?: return@launch
+                    val ph = s.phase as? RPhase.Declaring ?: return@launch
+                    val best = withContext(Dispatchers.Default) { RummyMelds.best(s.hands[ph.seat], s.wild) }
+                    submit(RAction.Declare(ph.seat, ph.card.id, best.groups.map { g -> g.map { it.id } }))
+                }
+            }
+            else -> scheduleBot(seat, null)
+        }
+    }
+
     private fun othersTurn(seat: Int) {
         when {
             net == NetRole.GUEST -> Unit
@@ -421,6 +443,7 @@ class RummyViewModel(app: Application) : AndroidViewModel(app) {
         is REvent.Dropped -> 800
         is REvent.WrongShow -> 1400
         is REvent.Declared -> 1100
+        is REvent.DeclareStarted -> 600
         is REvent.Arranged -> 250
         is REvent.Reshuffled -> 700
         is REvent.HandWon -> 500
@@ -457,6 +480,7 @@ class RummyViewModel(app: Application) : AndroidViewModel(app) {
             is REvent.Dealt -> {
                 myTurns = 0
                 iDeclared = false
+                finishInSlot = false
                 dragged = false
                 pendingDrop = null
                 _ui.update { it.copy(selected = emptySet(), newCard = null, groups = emptyList(), nextHandAt = 0L, arrangeDeadline = 0L) }
@@ -502,8 +526,22 @@ class RummyViewModel(app: Application) : AndroidViewModel(app) {
                 c.sound.play(Sfx.WHOOSH, 0.6f)
                 if (e.seat != me) bump(e.seat, listOf("🙈", "😒", "🏳️").random(rnd), 0.6)
             }
+            is REvent.DeclareStarted -> {
+                if (e.seat == me) myFly(FlyPt.Hand, FlyPt.Finish, e.card, true) else fly(FlyPt.Seat(e.seat), FlyPt.Finish, e.card, false)
+                finishInSlot = true
+                c.sound.snap(0.8f)
+                if (e.seat == me) {
+                    _ui.update { it.copy(selected = emptySet(), newCard = null) }
+                    syncGroups(s)
+                }
+            }
             is REvent.WrongShow -> {
-                fly(if (e.seat == me) FlyPt.Hand else FlyPt.Seat(e.seat), FlyPt.Open, e.card, true)
+                fly(if (finishInSlot) FlyPt.Finish else if (e.seat == me) FlyPt.Hand else FlyPt.Seat(e.seat), FlyPt.Open, e.card, true)
+                finishInSlot = false
+                if (e.seat == me) {
+                    arrangeJob?.cancel()
+                    _ui.update { it.copy(arrangeDeadline = 0L, confirmWrong = null) }
+                }
                 c.sound.play(Sfx.ERROR, 0.8f)
                 c.haptics.medium()
                 if (e.seat == me) {
@@ -512,7 +550,13 @@ class RummyViewModel(app: Application) : AndroidViewModel(app) {
                 } else bump(e.seat, "🤦", 1.0)
             }
             is REvent.Declared -> {
-                fly(if (e.seat == me) FlyPt.Hand else FlyPt.Seat(e.seat), FlyPt.Finish, e.card, false)
+                // usually the card is already lying in the finish slot
+                if (!finishInSlot) fly(if (e.seat == me) FlyPt.Hand else FlyPt.Seat(e.seat), FlyPt.Finish, e.card, false)
+                finishInSlot = false
+                if (e.seat == me) {
+                    arrangeJob?.cancel()
+                    _ui.update { it.copy(arrangeDeadline = 0L, confirmWrong = null) }
+                }
                 c.sound.play(Sfx.PRISM, 0.8f)
                 c.haptics.medium()
                 if (e.seat == me) {
@@ -544,6 +588,12 @@ class RummyViewModel(app: Application) : AndroidViewModel(app) {
         version++
         timerJob?.cancel()
         persist()
+        // my turn, or someone declared and I must arrange my cards
+        turnBuzz(when (val ph = s.phase) {
+            is RPhase.HandOver -> false
+            is RPhase.Showdown -> me in ph.pending
+            else -> s.turn == me
+        })
         when (val ph = s.phase) {
             is RPhase.HandOver -> {
                 val at = System.currentTimeMillis() + NEXT_HAND_MS
@@ -558,6 +608,13 @@ class RummyViewModel(app: Application) : AndroidViewModel(app) {
                     delay(NEXT_HAND_MS)
                     if (version == v) nextHand()
                 }
+            }
+            is RPhase.Declaring -> {
+                _ui.update { it.copy(idle = true, turnDeadline = 0L) }
+                if (ph.seat == me) {
+                    // my card is in the finish slot: arrange, then declare (or the time runs out)
+                    if (_ui.value.arrangeDeadline == 0L) startArrangeTimer()
+                } else othersDeclaring(ph.seat)
             }
             is RPhase.Showdown -> {
                 _ui.update { it.copy(idle = true) }
@@ -582,6 +639,26 @@ class RummyViewModel(app: Application) : AndroidViewModel(app) {
                 }
             }
         }
+    }
+
+    /**
+     * Buzz when the turn passes to me (not again while it stays mine, e.g. a second step of the same turn), and once
+     * more if nothing has happened [TURN_REMIND_MS] later: I may have put the phone down.
+     */
+    private var turnBuzzed = false
+    private var turnRemind: kotlinx.coroutines.Job? = null
+
+    private fun turnBuzz(mine: Boolean) {
+        turnRemind?.cancel()
+        if (mine && !turnBuzzed) {
+            c.haptics.turn()
+            val v = version
+            turnRemind = viewModelScope.launch {
+                kotlinx.coroutines.delay(com.ngdstudio.mindimania.audio.Haptics.TURN_REMIND_MS)
+                if (version == v) c.haptics.turn()
+            }
+        }
+        turnBuzzed = mine
     }
 
     fun nextHand() {
@@ -649,8 +726,15 @@ class RummyViewModel(app: Application) : AndroidViewModel(app) {
         arrangeJob = viewModelScope.launch {
             delay(total)
             val s = state ?: return@launch
-            val ph = s.phase as? RPhase.Showdown ?: return@launch
-            if (me in ph.pending) arrange()
+            when (val ph = s.phase) {
+                is RPhase.Showdown -> if (me in ph.pending) arrange()
+                // time's up: declare the cards as they're arranged now
+                is RPhase.Declaring -> if (ph.seat == me) {
+                    _ui.update { it.copy(confirmWrong = null) }
+                    submit(RAction.Declare(me, ph.card.id, myGroupsFor(s.hands[me])))
+                }
+                else -> Unit
+            }
         }
     }
 
@@ -707,27 +791,32 @@ class RummyViewModel(app: Application) : AndroidViewModel(app) {
         if (canThrow()) submit(RAction.Discard(me, id))
     }
 
-    /** Finish with the selected card: asks first when the other 13 don't make a valid hand. */
+    /** Put the selected card in the finish slot; then I get [ARRANGE_MS] to arrange my 13 cards and declare them. */
     fun declare() {
         val id = _ui.value.selected.singleOrNull() ?: return
-        if (!canThrow()) return
+        if (canThrow()) submit(RAction.StartDeclare(me, id))
+    }
+
+    /** While declaring: show my cards as arranged now. Asks first when they don't make a valid hand. */
+    fun declareNow() {
         val s = state ?: return
-        val rest = s.hands[me].filter { it.id != id }
-        val groups = myGroupsFor(rest)
-        val ok = RummyMelds.evaluate(RummyEngine.groupsOf(rest, groups), s.wild).valid
+        val ph = s.phase as? RPhase.Declaring ?: return
+        if (ph.seat != me) return
+        val groups = myGroupsFor(s.hands[me])
+        val ok = RummyMelds.evaluate(RummyEngine.groupsOf(s.hands[me], groups), s.wild).valid
         if (!ok) {
-            _ui.update { it.copy(confirmWrong = id) }
+            _ui.update { it.copy(confirmWrong = ph.card.id) }
             return
         }
-        submit(RAction.Declare(me, id, groups))
+        submit(RAction.Declare(me, ph.card.id, groups))
     }
 
     fun confirmWrong(go: Boolean) {
-        val id = _ui.value.confirmWrong
         _ui.update { it.copy(confirmWrong = null) }
-        if (!go || id == null || !canThrow()) return
+        if (!go) return
         val s = state ?: return
-        submit(RAction.Declare(me, id, myGroupsFor(s.hands[me], exclude = id)))
+        val ph = s.phase as? RPhase.Declaring ?: return
+        if (ph.seat == me) submit(RAction.Declare(me, ph.card.id, myGroupsFor(s.hands[me])))
     }
 
     fun askDrop() {
@@ -923,7 +1012,7 @@ class RummyViewModel(app: Application) : AndroidViewModel(app) {
         val usedNoJoker = won && s.hands[me].none { RummyMelds.isJoker(it, s.wild) }
         val turns = myTurns
         val myFinish = s.finish.getOrNull(me)
-        com.ngdstudio.mindimania.analytics.Analytics.event("game_end", "game" to "rummy", "won" to won, "players" to s.players, "net" to "local")
+        com.ngdstudio.mindimania.analytics.Analytics.event("game_end", "game" to "rummy", "won" to won, "players" to s.players, "net" to net.name.lowercase())
         viewModelScope.launch {
             var earned: List<Achievement> = emptyList()
             val np = c.profile.update { p ->

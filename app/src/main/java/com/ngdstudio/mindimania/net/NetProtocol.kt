@@ -44,7 +44,13 @@ import kotlinx.serialization.json.Json
 
 object Net {
     /** v2: Mindi rooms. v3: Bhabhi rooms. v4: Bhabhi wrong-thulla fine (Penalty event). v5: Teen Patti and Rummy rooms. */
-    const val PROTOCOL = 5
+    const val PROTOCOL = 6
+
+    /**
+     * Teen Patti and Rummy rooms are switched off for now: the host can't pick them. Everything else (messages,
+     * redaction, host/guest play) stays in place and tested, so setting this to true offers them again.
+     */
+    const val TEEN_PATTI_RUMMY_ROOMS = false
     const val SERVICE_TYPE = "_cardsmania._tcp"
     const val PORT_BASE = 47820
     const val PORT_COUNT = 16
@@ -369,6 +375,7 @@ fun RAction.withSeat(seat: Int): RAction = when (this) {
     is RAction.PickOpen -> copy(seat = seat)
     is RAction.Discard -> copy(seat = seat)
     is RAction.Drop -> copy(seat = seat)
+    is RAction.StartDeclare -> copy(seat = seat)
     is RAction.Declare -> copy(seat = seat)
     is RAction.Arrange -> copy(seat = seat)
 }
@@ -387,17 +394,21 @@ object RummyRedact {
 
     fun state(s: RummyState, viewer: Int): RummyState {
         val open = s.phase is RPhase.HandOver
+        val ph = s.phase
         return s.copy(
             seed = 0L,
             hands = s.hands.mapIndexed { seat, hand ->
                 if (seat == viewer || open) hand else hand.mapIndexed { i, _ -> blank(PLACEHOLDER_BASE + seat * 1000 + i) }
             },
             closed = s.closed.mapIndexed { i, _ -> blank(PLACEHOLDER_BASE + 99_000 + i) },
+            // the card in the finish slot lies face down until it is declared
+            phase = if (ph is RPhase.Declaring && ph.seat != viewer) ph.copy(card = blank(PLACEHOLDER_BASE + 97_000)) else ph,
         )
     }
 
     fun event(e: REvent, viewer: Int): REvent = when (e) {
         is REvent.PickedClosed -> if (e.seat == viewer) e else e.copy(card = blank(PLACEHOLDER_BASE + 98_000))
+        is REvent.DeclareStarted -> if (e.seat == viewer) e else e.copy(card = blank(PLACEHOLDER_BASE + 97_000))
         else -> e
     }
 
@@ -409,6 +420,7 @@ object RummyRedact {
         val out = ArrayList<RCard>()
         s.hands.forEachIndexed { seat, hand -> if (seat != viewer) out += hand.filter { !isPlaceholder(it) } }
         out += s.closed.filter { !isPlaceholder(it) }
+        (s.phase as? RPhase.Declaring)?.takeIf { it.seat != viewer && !isPlaceholder(it.card) }?.let { out += it.card }
         return out
     }
 }

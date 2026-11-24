@@ -137,6 +137,10 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
     fun start(launch: GameLaunch?) {
         if (started) return
         started = true
+        com.ngdstudio.mindimania.analytics.Analytics.event(
+            "game_start", "game" to (launch?.config?.mode?.name?.lowercase() ?: "mania"),
+            "net" to (launch?.net ?: NetRole.LOCAL).name.lowercase(), "resume" to (launch?.resume == true), "daily" to (launch?.daily != null),
+        )
         viewModelScope.launch {
             val s = c.settings.current()
             val p = c.profile.current()
@@ -338,6 +342,7 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
         timerJob?.cancel()
         refreshUi()
         persist()
+        if (s.phase is Phase.RoundOver || s.phase is Phase.MatchOver) turnBuzz(false)
         when (val ph = s.phase) {
             is Phase.RoundOver -> {
                 showRoundResult(s, ph.winnerId, ph.points)
@@ -351,12 +356,33 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
         }
         scheduleCatches(s)
         val actor = s.actingPlayer
+        turnBuzz(actor == human)
         when {
             actor == human -> startTurnTimer()
             s.players[actor].isHuman && remoteConnected(actor) -> startRemoteTimer(actor)
             // bots, and remote players who dropped out (a bot plays for them)
             else -> scheduleBot(actor)
         }
+    }
+
+    /**
+     * Buzz when the turn passes to me (not again while it stays mine, e.g. a second step of the same turn), and once
+     * more if nothing has happened [TURN_REMIND_MS] later: I may have put the phone down.
+     */
+    private var turnBuzzed = false
+    private var turnRemind: kotlinx.coroutines.Job? = null
+
+    private fun turnBuzz(mine: Boolean) {
+        turnRemind?.cancel()
+        if (mine && !turnBuzzed) {
+            c.haptics.turn()
+            val v = version
+            turnRemind = viewModelScope.launch {
+                kotlinx.coroutines.delay(com.ngdstudio.mindimania.audio.Haptics.TURN_REMIND_MS)
+                if (version == v) c.haptics.turn()
+            }
+        }
+        turnBuzzed = mine
     }
 
     private fun guestIdle() {
@@ -366,6 +392,7 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
         version++
         timerJob?.cancel()
         refreshUi()
+        turnBuzz(s.phase !is Phase.RoundOver && s.phase !is Phase.MatchOver && s.actingPlayer == human)
         when (val ph = s.phase) {
             is Phase.RoundOver -> showRoundResult(s, ph.winnerId, ph.points)
             is Phase.MatchOver -> finishMatch(s, ph.winnerId)

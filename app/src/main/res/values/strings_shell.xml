@@ -15,13 +15,13 @@
     <string name="shell_lobby_pick_game">PICK A GAME</string>
     <string name="shell_lobby_quick_play">QUICK PLAY</string>
     <string name="shell_lobby_quick_hint">Jump into %1$s with your last setup</string>
-    <string name="shell_lobby_indian_intro">🪔  Mindi, Teen Patti and Bhabhi from India, plus solo Spider</string>
+    <string name="shell_lobby_indian_intro">🪔  Mindi, Teen Patti, Rummy and Bhabhi from India, plus solo Spider</string>
     <string name="shell_lobby_badge_new">NEW</string>
     <string name="shell_lobby_play_friends">PLAY WITH FRIENDS</string>
     <string name="shell_section_card_mania">Card Mania</string>
     <string name="shell_section_card_mania_sub">Classic · Merciless · Flip</string>
     <string name="shell_section_indian_card">Indian Card</string>
-    <string name="shell_section_indian_card_sub">Mindi · Teen Patti · Bhabhi · Spider</string>
+    <string name="shell_section_indian_card_sub">Mindi · Teen Patti · Rummy</string>
     <string name="shell_quick_open">OPEN!</string>
     <string name="shell_quick_daily_gift">Daily Gift</string>
     <string name="shell_quick_challenges">Challenges</string>
@@ -142,8 +142,8 @@
     <string name="shell_stat_tens">10s captured</string>
     <string name="shell_onb1_title">Welcome to\nMindi &amp; Mania</string>
     <string name="shell_onb1_body">A dazzling card-game collection full of gems, stacks and surprises. Pick a game, beat the table, collect the rewards!</string>
-    <string name="shell_onb2_title">6 Games\nin One</string>
-    <string name="shell_onb2_body">Classic, Merciless and Flip Mania for color-matching battles, Spider Solitaire to relax, Mindi — the team game of 10s — and Bhabhi, where the last one holding cards loses.</string>
+    <string name="shell_onb2_title">8 Games\nin One</string>
+    <string name="shell_onb2_body">Mindi — the team game of 10s — Teen Patti, Rummy and Bhabhi from the Indian card table, Classic, Merciless and Flip Mania for color-matching battles, and Spider Solitaire to relax.</string>
     <string name="shell_onb3_title">Rivals &amp; Teams</string>
     <string name="shell_onb3_body">Smart bots from Easy to Genius, partners who play as a team in Mindi, and friends on the same Wi-Fi in multiplayer rooms.</string>
     <string name="shell_onb4_title">Collect &amp;\nConquer</string>
@@ -257,7 +257,7 @@
     <string name="notif_daily_title">🕷️ Today\'s Spider challenge is waiting</string>
     <string name="notif_daily_body">Solve today\'s deal and keep your daily streak going.</string>
     <string name="notif_play_title">🃏 The table is ready</string>
-    <string name="notif_play_body">How about a quick game of Mindi or Bhabhi?</string>
+    <string name="notif_play_body">How about a quick game of Mindi, Teen Patti or Rummy?</string>
     <string name="shell_settings_notifications">Notifications</string>
     <string name="shell_settings_reminders">Daily reminder</string>
     <string name="shell_settings_reminders_sub">One note a day (evening) about your gift or the daily challenge</string>

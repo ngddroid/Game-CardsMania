@@ -137,6 +137,7 @@ class BhabhiViewModel(app: Application) : AndroidViewModel(app) {
     fun start(launch: BhabhiLaunch) {
         if (started) return
         started = true
+        com.ngdstudio.mindimania.analytics.Analytics.event("game_start", "game" to "bhabhi", "net" to launch.net.name.lowercase(), "resume" to launch.resume)
         viewModelScope.launch {
             val s = c.settings.current()
             val p = c.profile.current()
@@ -365,6 +366,7 @@ class BhabhiViewModel(app: Application) : AndroidViewModel(app) {
         version++
         timerJob?.cancel()
         persist()
+        turnBuzz(!s.isOver && s.turn == me)
         if (s.isOver) {
             _ui.update { it.copy(idle = true, legal = emptySet()) }
             finishGame(s)
@@ -378,6 +380,26 @@ class BhabhiViewModel(app: Application) : AndroidViewModel(app) {
             _ui.update { it.copy(idle = true, legal = emptySet(), turnDeadline = 0L) }
             othersTurn(s.turn)
         }
+    }
+
+    /**
+     * Buzz when the turn passes to me (not again while it stays mine, e.g. a second step of the same turn), and once
+     * more if nothing has happened [TURN_REMIND_MS] later: I may have put the phone down.
+     */
+    private var turnBuzzed = false
+    private var turnRemind: kotlinx.coroutines.Job? = null
+
+    private fun turnBuzz(mine: Boolean) {
+        turnRemind?.cancel()
+        if (mine && !turnBuzzed) {
+            c.haptics.turn()
+            val v = version
+            turnRemind = viewModelScope.launch {
+                kotlinx.coroutines.delay(com.ngdstudio.mindimania.audio.Haptics.TURN_REMIND_MS)
+                if (version == v) c.haptics.turn()
+            }
+        }
+        turnBuzzed = mine
     }
 
     private fun scheduleBot(seat: Int) {

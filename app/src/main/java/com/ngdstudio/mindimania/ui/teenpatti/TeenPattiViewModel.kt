@@ -152,6 +152,7 @@ class TeenPattiViewModel(app: Application) : AndroidViewModel(app) {
     fun start(launch: TeenPattiLaunch) {
         if (started) return
         started = true
+        com.ngdstudio.mindimania.analytics.Analytics.event("game_start", "game" to "teen_patti", "net" to launch.net.name.lowercase(), "resume" to launch.resume)
         viewModelScope.launch {
             val s = c.settings.current()
             val p = c.profile.current()
@@ -394,6 +395,7 @@ class TeenPattiViewModel(app: Application) : AndroidViewModel(app) {
         version++
         timerJob?.cancel()
         persist()
+        turnBuzz(!s.isOver && s.phase !is TPPhase.HandOver && s.turn == me)
         when {
             s.isOver -> {
                 _ui.update { it.copy(idle = true, options = TPOptions()) }
@@ -424,6 +426,26 @@ class TeenPattiViewModel(app: Application) : AndroidViewModel(app) {
                 othersTurn(s.turn)
             }
         }
+    }
+
+    /**
+     * Buzz when the turn passes to me (not again while it stays mine, e.g. a second step of the same turn), and once
+     * more if nothing has happened [TURN_REMIND_MS] later: I may have put the phone down.
+     */
+    private var turnBuzzed = false
+    private var turnRemind: kotlinx.coroutines.Job? = null
+
+    private fun turnBuzz(mine: Boolean) {
+        turnRemind?.cancel()
+        if (mine && !turnBuzzed) {
+            c.haptics.turn()
+            val v = version
+            turnRemind = viewModelScope.launch {
+                kotlinx.coroutines.delay(com.ngdstudio.mindimania.audio.Haptics.TURN_REMIND_MS)
+                if (version == v) c.haptics.turn()
+            }
+        }
+        turnBuzzed = mine
     }
 
     private fun scheduleBot(seat: Int) {
@@ -630,6 +652,8 @@ class TeenPattiViewModel(app: Application) : AndroidViewModel(app) {
         val xp = if (won) 12 else 3
         val kind = TeenPattiEngine.kind(s.hands[me])
         val showWin = won && e.reason != com.ngdstudio.mindimania.teenpatti.WinReason.LAST_STANDING
+        // the table never ends, so each hand counts as one game (like Rummy)
+        com.ngdstudio.mindimania.analytics.Analytics.event("game_end", "game" to "teen_patti", "won" to won, "players" to s.players, "variant" to s.setup.variant.name.lowercase(), "net" to net.name.lowercase())
         viewModelScope.launch {
             var earned: List<Achievement> = emptyList()
             val np = c.profile.update { p ->
@@ -732,7 +756,7 @@ class TeenPattiViewModel(app: Application) : AndroidViewModel(app) {
         if (_ui.value.result != null) return
         val place = s.placeOf(me)
         val won = place == 1
-        com.ngdstudio.mindimania.analytics.Analytics.event("game_end", "game" to "teen_patti", "won" to won, "place" to place, "players" to s.players, "net" to "local")
+        com.ngdstudio.mindimania.analytics.Analytics.event("game_end", "game" to "teen_patti_match", "won" to won, "place" to place, "players" to s.players, "net" to net.name.lowercase())
         viewModelScope.launch {
             SaveFiles.delete(saveFile)
             var result: TeenPattiResult? = null

@@ -5,6 +5,7 @@ import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.media.SoundPool
 import android.os.Build
+import android.os.VibrationAttributes
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
@@ -226,7 +227,35 @@ class Haptics(context: Context) {
         }
     }
 
+    /**
+     * It's my turn: two long, strong pulses (about 1.6 s), sent as an alert rather than touch feedback so phones that
+     * mute or soften touch vibration still play it, and it can be felt with the phone lying on a table.
+     */
+    fun turn() {
+        val v = vibrator ?: return
+        if (!enabled || !v.hasVibrator()) return
+        val timings = longArrayOf(0, 700, 250, 700)
+        runCatching {
+            when {
+                Build.VERSION.SDK_INT >= 33 -> v.vibrate(
+                    VibrationEffect.createWaveform(timings, intArrayOf(0, 255, 0, 255), -1),
+                    VibrationAttributes.createForUsage(VibrationAttributes.USAGE_ALARM),
+                )
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.O -> @Suppress("DEPRECATION") v.vibrate(
+                    VibrationEffect.createWaveform(timings, intArrayOf(0, 255, 0, 255), -1),
+                    AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ALARM).build(),
+                )
+                else -> @Suppress("DEPRECATION") v.vibrate(timings, -1)
+            }
+        }
+    }
+
     fun tick() = vibrate(12, 60)
+
+    companion object {
+        /** If it's still my turn and I haven't moved after this long, buzz again. */
+        const val TURN_REMIND_MS = 8_000L
+    }
     fun light() = vibrate(20, 90)
     fun medium() = vibrate(35, 150)
     fun heavy() = vibrate(60, 255)

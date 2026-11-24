@@ -710,6 +710,10 @@ Patti. Table chips only (`START_CHIPS` 4000; each point lost costs `POINT_VALUE`
   the open pile.
 * Turn: `PickClosed` / `PickOpen` (phase `Pick`) then `Discard` or `Declare` (phase `Discard`). `Drop` before picking:
   20 points before your first pick, 40 later. An empty closed pile is rebuilt from the open pile (`Reshuffled`).
+* Declaring is two steps for people: `StartDeclare(card)` puts the card in the finish slot (phase
+  `Declaring(seat, card)`, event `DeclareStarted`; others see it face down) and the player gets 30 s
+  (`RummyViewModel.ARRANGE_MS`) on the "Arrange your cards and declare" screen; then `Declare(card, groups)`. When the
+  time runs out the cards are declared as arranged. Bots (and a bot standing in for a player who left) declare in one go.
 * `Declare(card, groups)`: the groups (card ids) must cover the other 13 cards. Valid (`RummyMelds.evaluate`) =
   every group valid, ≥ 2 sequences, ≥ 1 pure → phase `Showdown(declarer, pending)`: everyone still in sends
   `Arrange(groups)` and loses that arrangement's points. Invalid → `WrongShow` (80 points, out of the hand, play goes on).
@@ -755,6 +759,10 @@ Design notes: [`docs/MULTIPLAYER_PLAN.md`](docs/MULTIPLAYER_PLAN.md). Supports M
 seats); empty seats are filled by bots. Teen Patti and Rummy rooms need 6 or fewer people (the tiles are disabled
 otherwise). Spider is single-device only.
 
+> **Teen Patti and Rummy rooms are switched off for now** (`Net.TEEN_PATTI_RUMMY_ROOMS = false`): the host room
+> screen doesn't show their tiles, so they are played against bots only. All their Wi-Fi code below (messages,
+> redaction, host/guest view models, tests) is kept and still tested; set the flag to `true` to offer them again.
+
 ### 11.1 How rooms work
 
 ```
@@ -776,7 +784,7 @@ MultiplayerSession.hostRoom()                        MultiplayerSession.join(ip,
 | Host → guest | `Welcome`, `Rejected`, `Lobby(RoomState)`, `Start` / `Sync` / `Steps` (Mania), `MindiStart` / `MindiSync` / `MindiSteps` (Mindi), `BhabhiStart` / `BhabhiSync` / `BhabhiSteps` (Bhabhi), `TeenPattiStart` / `TeenPattiSync` / `TeenPattiSteps`, `RummyStart` / `RummySync` / `RummySteps`, `SeatsChanged` (bots that replaced broke players), `ActionRejected`, `Emote`, `Ended`, `Kicked` |
 | Both | `Ping` (heartbeat) |
 
-* **Settings** (`Net`): `PROTOCOL = 5` (v3 added Bhabhi rooms, v4 the Bhabhi wrong-thulla fine, v5 Teen Patti and Rummy rooms), ports 47820–47835, heartbeat 3 s, socket timeout 15 s, remote turn limit 30 s
+* **Settings** (`Net`): `PROTOCOL = 6` (v3 added Bhabhi rooms, v4 the Bhabhi wrong-thulla fine, v5 Teen Patti and Rummy rooms, v6 the Rummy arrange-before-declare step), ports 47820–47835, heartbeat 3 s, socket timeout 15 s, remote turn limit 30 s
   (then the host plays a safe move for that player). Mindi rooms can set their own turn timer.
 
 ### 11.2 The host decides everything
@@ -1083,7 +1091,7 @@ sure back does something sensible (§13.5).
 
 | Feature | Code | Notes |
 |---|---|---|
-| Analytics | `analytics/Analytics.kt` | `Analytics.event(name, "key" to value)`; screen views come from the nav listener in `AppNavHost`. Events: `game_start` (Spider), `game_end` (game, won, players/place, net, daily), `daily_gift`, `mp_host`, `mp_join`, `notif_permission`, `app_update_offer`, `app_update_flow`. User property `app_language`. |
+| Analytics | `analytics/Analytics.kt` | `Analytics.event(name, "key" to value)`; screen views come from the nav listener in `AppNavHost`. Events: `game_start` (every game: game, net, resume), `game_end` (game, won, players/place, net, daily; Teen Patti and Rummy send one per hand, Teen Patti with its variant), `daily_gift`, `mp_host`, `mp_join`, `notif_permission`, `app_update_offer`, `app_update_flow`. User property `app_language`. |
 | Crashlytics | same object | Crash keys `screen`, `app_language`; `Analytics.recordError(t)` for caught problems. The Gradle plugin uploads the R8 mapping on release builds. |
 | Privacy switch | `Settings.shareData` | Settings → Legal → "Share usage & crash data" turns Analytics and Crashlytics collection off (Firebase remembers it). |
 | Daily reminder (local) | `notify/Reminders.kt` | WorkManager, every 24 h around 19:00; skipped if the app was opened in the last 8 h (`Settings.lastOpenAt`). Text: gift ready → today's Spider challenge → "the table is ready". Switch: Settings → Notifications → Daily reminder. Test it now (debug builds only, `src/debug`): `adb shell am broadcast -n com.ngdstudio.mindimania/.notify.DebugReminderReceiver`. Other debug-only commands: `.notify.DebugTokenReceiver` (prints the FCM token, `adb logcat -s FCMToken`) and `.debug.DebugUnlockAllReceiver` (unlocks every Collection item). |

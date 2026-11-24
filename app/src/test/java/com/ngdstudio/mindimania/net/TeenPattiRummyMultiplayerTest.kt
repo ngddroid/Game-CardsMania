@@ -71,7 +71,7 @@ class TeenPattiRummyMultiplayerTest {
         }
         assertEquals(6, RoomState(game = RoomGame.TEEN_PATTI).maxSeats)
         assertEquals(6, RoomState(game = RoomGame.RUMMY).maxSeats)
-        assertEquals(5, Net.PROTOCOL)
+        assertEquals(6, Net.PROTOCOL)
     }
 
     @Test
