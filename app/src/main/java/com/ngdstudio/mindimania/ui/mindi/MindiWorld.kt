@@ -372,7 +372,8 @@ class MindiWorld(val layout: MindiLayout) : AnimatedWorld {
         val r = java.util.Random(9)
         pp.shader = null
         repeat((w * h / 110).coerceAtMost(50000)) {
-            val a = r.nextInt(6, 16)
+            // nextInt(from, until) on java.util.Random only exists from Android 15: crashes older phones
+            val a = 6 + r.nextInt(10)
             pp.color = if (r.nextBoolean()) (a shl 24) or 0xFFFFFF else (a shl 24)
             val x = r.nextFloat() * w
             val y = r.nextFloat() * h

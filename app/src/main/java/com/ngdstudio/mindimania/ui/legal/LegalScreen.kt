@@ -1,7 +1,9 @@
 package com.ngdstudio.mindimania.ui.legal
 
 import android.content.Intent
+import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
+import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.compose.animation.core.animateFloatAsState
@@ -36,8 +38,11 @@ import com.ngdstudio.mindimania.ui.theme.CM
 fun LegalScreen(doc: String, onBack: () -> Unit) {
     val isPrivacy = doc == "privacy"
     val title = if (isPrivacy) stringResource(R.string.shell_privacy) else stringResource(R.string.shell_terms)
-    // same pages as the website (assets/legal/ is uploaded as-is), shown from the copy built into the app
-    val url = if (isPrivacy) "file:///android_asset/legal/privacy_policy.html" else "file:///android_asset/legal/terms_conditions.html"
+    // the live page from the website first; the copy built into the app (assets/legal/, the same files) when
+    // the site can't be reached or is too slow
+    val page = if (isPrivacy) "privacy_policy.html" else "terms_conditions.html"
+    val liveUrl = SITE + page
+    val localUrl = "file:///android_asset/legal/$page"
     var loaded by remember { mutableStateOf(false) }
     val alpha by animateFloatAsState(if (loaded) 1f else 0f, tween(350), label = "web")
 
@@ -69,7 +74,25 @@ fun LegalScreen(doc: String, onBack: () -> Unit) {
                             settings.allowContentAccess = false
                             settings.domStorageEnabled = false
                             settings.builtInZoomControls = false
+                            var local = false
+                            fun useLocal(view: WebView) {
+                                if (local) return
+                                local = true
+                                view.stopLoading()
+                                view.loadUrl(localUrl)
+                            }
+                            val slow = Runnable { if (!loaded) useLocal(this) }
+                            tag = slow
+                            postDelayed(slow, LIVE_TIMEOUT_MS)
                             webViewClient = object : WebViewClient() {
+                                override fun onReceivedError(view: WebView, request: WebResourceRequest, error: WebResourceError) {
+                                    if (request.isForMainFrame && !local) useLocal(view)
+                                }
+
+                                override fun onReceivedHttpError(view: WebView, request: WebResourceRequest, response: WebResourceResponse) {
+                                    if (request.isForMainFrame && !local && response.statusCode >= 400) useLocal(view)
+                                }
+
                                 override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
                                     val u = request.url
                                     val scheme = u.scheme?.lowercase()
@@ -87,6 +110,8 @@ fun LegalScreen(doc: String, onBack: () -> Unit) {
                                             }
                                             true
                                         }
+                                        // the website's own pages (Privacy <-> Terms links) stay here
+                                        scheme == "https" && u.host == SITE_HOST && !local -> false
                                         scheme == "http" || scheme == "https" -> {
                                             runCatching {
                                                 view.context.startActivity(Intent(Intent.ACTION_VIEW, u).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
@@ -99,15 +124,20 @@ fun LegalScreen(doc: String, onBack: () -> Unit) {
                                 }
 
                                 override fun onPageFinished(view: WebView, url: String?) {
-                                    loaded = true
+                                    // ignore the error page of a failed live load; the local copy is on its way
+                                    if (local == url?.startsWith("file:///android_asset/")) loaded = true
                                 }
                             }
-                            loadUrl(url)
+                            loadUrl(liveUrl)
                         }
                     },
-                    onRelease = { it.destroy() }
+                    onRelease = { (it.tag as? Runnable)?.let(it::removeCallbacks); it.destroy() }
                 )
             }
         }
     }
 }
+
+private const val SITE_HOST = "game-cardmania.web.app"
+private const val SITE = "https://$SITE_HOST/"
+private const val LIVE_TIMEOUT_MS = 6_000L

@@ -343,7 +343,7 @@ class BhabhiWorld(val layout: BhabhiLayout) : AnimatedWorld {
         val r = java.util.Random(11)
         pp.shader = null
         repeat((w * h / 110).coerceAtMost(50000)) {
-            val a = r.nextInt(6, 16)
+            val a = 6 + r.nextInt(10) // not nextInt(6, 16): that one only exists from Android 15
             pp.color = if (r.nextBoolean()) (a shl 24) or 0xFFFFFF else (a shl 24)
             val x = r.nextFloat() * w
             val y = r.nextFloat() * h

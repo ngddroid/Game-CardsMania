@@ -302,7 +302,6 @@ private val teenPattiRules = listOf(
     RuleSection(R.string.tp_howto_bet_title, listOf(R.string.tp_howto_bet_1, R.string.tp_howto_bet_2, R.string.tp_howto_bet_3, R.string.tp_howto_bet_4, R.string.tp_howto_bet_5)),
     RuleSection(R.string.tp_howto_show_title, listOf(R.string.tp_howto_show_1, R.string.tp_howto_show_2, R.string.tp_howto_show_3)),
     RuleSection(R.string.tp_howto_rank_title, listOf(R.string.tp_howto_rank_1, R.string.tp_howto_rank_2, R.string.tp_howto_rank_3)),
-    RuleSection(R.string.tp_section_variant, listOf(R.string.tp_var_muflis_desc, R.string.tp_var_joker_desc, R.string.tp_var_lowest_desc, R.string.tp_var_ak47_desc, R.string.tp_var_999_desc, R.string.tp_var_4x_desc, R.string.tp_var_mixed_desc, R.string.tp_howto_var_wild)),
     RuleSection(R.string.tp_howto_tips_title, listOf(R.string.tp_howto_tips_1, R.string.tp_howto_tips_2, R.string.tp_howto_tips_3)),
 )
 

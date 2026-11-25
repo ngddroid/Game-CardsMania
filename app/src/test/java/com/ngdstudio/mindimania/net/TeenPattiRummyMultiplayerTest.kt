@@ -12,7 +12,6 @@ import com.ngdstudio.mindimania.rummy.RummyState
 import com.ngdstudio.mindimania.teenpatti.TPAction
 import com.ngdstudio.mindimania.teenpatti.TPEvent
 import com.ngdstudio.mindimania.teenpatti.TPPhase
-import com.ngdstudio.mindimania.teenpatti.TPVariant
 import com.ngdstudio.mindimania.teenpatti.TeenPattiBot
 import com.ngdstudio.mindimania.teenpatti.TeenPattiEngine
 import com.ngdstudio.mindimania.teenpatti.TeenPattiSeat
@@ -45,7 +44,7 @@ class TeenPattiRummyMultiplayerTest {
 
     @Test
     fun messagesRoundTrip() {
-        val tps = TeenPattiSetup(players = 4, variant = TPVariant.AK47, hands = 0)
+        val tps = TeenPattiSetup(players = 4, hands = 0)
         val tpSteps = TeenPattiEngine.newGame(tps, 5L)
         val tpSeats = List(4) { TeenPattiSeat("P$it", 1000 + it, isHuman = it < 2, remote = it == 1) }
         val rs = RummySetup(players = 3, turnTimer = 30)
@@ -156,7 +155,7 @@ class TeenPattiRummyMultiplayerTest {
         try {
             val host = hostOf(scope)
             assertTrue(host.start("127.0.0.1"))
-            host.update { it.copy(game = RoomGame.TEEN_PATTI, seats = 4, bots = 1, teenPatti = it.teenPatti.copy(variant = TPVariant.MIXED)) }
+            host.update { it.copy(game = RoomGame.TEEN_PATTI, seats = 4, bots = 1, teenPatti = it.teenPatti.copy(sideshow = false)) }
             assertTrue(host.room.value.isTeenPatti)
             val guests = List(2) { RoomClient(scope) }
             guests.forEachIndexed { i, g -> assertNull(g.join("127.0.0.1", host.port, NetMsg.Hello("G$i", i, "tp-token-$i"))) }

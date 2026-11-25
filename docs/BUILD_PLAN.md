@@ -384,9 +384,10 @@ highlight banner plays for 1.2 s, for example *"Lumi stacked +18 on you!"*.
 
 ## 6. App icon, splash and brand
 
-- **Icon:** an adaptive vector icon. Three fanned gem cards (Ruby, Sapphire, Emerald) with a gold "CM" monogram gem in
-  front, on a royal-purple radial burst. It has a monochrome layer (Android 13 themed icons) and a round variant. A
-  512×512 PNG for the Play Store is rendered from the same artwork, from an SVG via macOS `qlmanage`/`sips`.
+- **Icon:** the "Mindi & Mania" artwork (`tools/icon_source.png`): an Ace of spades, a red 7 and a 10 of hearts fanned
+  behind a gold "CM" gem, with the MINDI & MANIA lettering, on a purple light burst. `tools/make_icon.py` fits it inside
+  the adaptive-icon safe zone on a matching purple glow, and makes the themed (monochrome) layer, the Android 7 icons,
+  the splash icon, the 512×512 Play Store PNG and the website logo from it.
 - **Splash:** the system `core-splashscreen` shows the icon on a royal background. It hands off to a Compose splash
   where cards fan out from the monogram, a light sweep crosses the "CARDS MANIA" logotype, a gem loading bar fills while
   the card bitmaps pre-render, and the screen then transitions to Onboarding or Home.
@@ -439,7 +440,7 @@ app/src/main/java/com/ngdstudio/mindimania/
 └─ nav/         Routes.kt, AppNavHost.kt
 app/src/main/assets/  terms.html · privacy.html
 app/src/main/res/raw/ *.wav / *.ogg  (generated SFX + music)
-tools/        gen_audio.py (stdlib-only synth) · icon.svg
+tools/        gen_audio.py (stdlib-only synth) · make_icon.py + icon_source.png (app icon)
 docs/         BUILD_PLAN.md (this file)
 ```
 
@@ -528,7 +529,7 @@ numpy and ffmpeg are not installed on this Mac. It writes 16-bit WAV files into 
 | 9 | Round and match result screens, scoring, rewards | `ui/game/Result*` |
 | 10 | Audio: generate SFX and music, then `SoundManager`, `MusicPlayer`, `Haptics` | `tools/gen_audio.py`, `res/raw/*`, `audio/*` |
 | 11 | Data: settings, profile, stats, unlocks, saved game (resume) | `data/*` |
-| 12 | App icon (adaptive, monochrome, round) and Play Store 512 PNG | `res/drawable/ic_launcher_*`, `mipmap-anydpi-v26`, `tools/icon.svg` |
+| 12 | App icon (adaptive, monochrome, round) and Play Store 512 PNG | `res/mipmap-*/ic_launcher*`, `mipmap-anydpi-v26`, `tools/make_icon.py`, `tools/icon_source.png` |
 | 13 | Splash (system + animated) | `ui/splash/*` |
 | 14 | Onboarding (4 pages, no skip) and profile setup | `ui/onboarding/*` |
 | 15 | Main shell with a custom animated bottom bar (Home, Events, Collection, Profile) | `nav/*`, `ui/home/*` |

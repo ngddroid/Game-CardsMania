@@ -37,8 +37,14 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+    lint {
+        // a call that needs a newer Android than minSdk crashes older phones (Mindi on Android 11 did):
+        // stop the release build instead
+        fatal += "NewApi"
+    }
     buildFeatures {
         compose = true
+        buildConfig = true // BuildConfig.DEBUG: debug-only shortcuts such as the fully open Collection
     }
     androidResources {
         // SoundPool / MediaPlayer open res/raw sounds as file descriptors, which only works for files stored

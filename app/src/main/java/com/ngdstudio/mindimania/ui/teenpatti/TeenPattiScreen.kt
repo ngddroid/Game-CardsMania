@@ -265,12 +265,10 @@ private fun TopBar(s: TeenPattiState, layout: TeenPattiLayout, onPause: () -> Un
         // landscape: title top-left, leaving the top-centre seat free
         Column(Modifier.weight(1f), horizontalAlignment = if (layout.landscape) Alignment.Start else Alignment.CenterHorizontally) {
             Text(
-                if (s.endless) stringResource(R.string.tp_top_title_endless, variantName(s.variant), s.handNo)
-                else stringResource(R.string.tp_top_title, variantName(s.variant), s.handNo, s.setup.hands),
+                if (s.endless) stringResource(R.string.tp_top_title_endless, stringResource(R.string.tp_title), s.handNo)
+                else stringResource(R.string.tp_top_title, stringResource(R.string.tp_title), s.handNo, s.setup.hands),
                 color = CM.GoldLight, fontWeight = FontWeight.Black, fontSize = 14.sp, letterSpacing = 1.sp)
             Text(stringResource(R.string.tp_top_sub, s.boot, s.stake), color = CM.TextDim, fontSize = 11.sp, fontWeight = FontWeight.Bold)
-            // this hand's special rule (it used to sit in the middle of the table)
-            variantHint(s)?.let { Text(it, color = Color(0xFFFFD08A), fontSize = 10.sp, fontWeight = FontWeight.Black, letterSpacing = 0.5.sp) }
         }
         Spacer(Modifier.width(8.dp))
         // landscape: the emote button lives up here (the bottom row is next to my seat's name and chips)
@@ -353,7 +351,7 @@ private fun SeatView(seat: Int, s: TeenPattiState, ui: TeenPattiUi, layout: Teen
                 if (!info.isHuman) Box(Modifier.size(6.dp).clip(CircleShape).background(DifficultyInfo.color(info.difficulty)))
             }
             ChipCount(s.chips[seat])
-            // once the hands are opened: what this player held (with wild cards counted)
+            // once the hands are opened: what this player held
             if (seat in s.shown && !s.folded[seat]) ShownHandLabel(handLabel(s, seat), winner)
         }
         ui.emotes[seat]?.let { (text, at) -> EmoteBubble(text, at, Modifier.align(Alignment.TopCenter).offset(x = avDp * 0.6f, y = (-avDp * 0.2f))) }
@@ -462,17 +460,12 @@ private fun MySeatView(s: TeenPattiState, ui: TeenPattiUi, layout: TeenPattiLayo
     if (s.inHand[me] && !s.folded[me] && s.hands[me].size == 3 && (s.seen[me] || me in s.shown)) {
         val c = layout.cardsOf(me)
         val text = handLabel(s, me)
-        val strong = s.seen[me] && when (s.variant) {
-            com.ngdstudio.mindimania.teenpatti.TPVariant.NINE99 -> TeenPattiEngine.nine99(s.hands[me]) >= 800
-            com.ngdstudio.mindimania.teenpatti.TPVariant.MUFLIS -> TeenPattiEngine.kind(s.hands[me]) == TPKind.HIGH_CARD
-            else -> (TeenPattiEngine.handKind(s, me) ?: TPKind.HIGH_CARD) >= TPKind.PAIR
-        }
+        val strong = s.seen[me] && TeenPattiEngine.handKind(s, me) >= TPKind.PAIR
         val textColor = if (strong) CM.GoldLight else Color.White.copy(alpha = 0.85f)
         run {
-            // portrait: above my cards (above a stepped-up wild card at the reveal)
-            val lift = if (me in s.shown && TeenPattiEngine.wildsAs(s, me).isNotEmpty()) layout.myCardH * layout.wildLift(me) else 0f
+            // portrait: above my cards
             Box(
-                Modifier.fillMaxWidth().offset { IntOffset(0, (c.y - layout.myCardH * 0.5f - lift - 24 * density.density).roundToInt()) },
+                Modifier.fillMaxWidth().offset { IntOffset(0, (c.y - layout.myCardH * 0.5f - 24 * density.density).roundToInt()) },
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -549,11 +542,7 @@ private fun MySeatLandscape(s: TeenPattiState, ui: TeenPattiUi, layout: TeenPatt
         horizontalArrangement = Arrangement.spacedBy(5.dp, Alignment.End), verticalAlignment = Alignment.CenterVertically,
     ) {
         if (showHand) {
-            val strong = when (s.variant) {
-                com.ngdstudio.mindimania.teenpatti.TPVariant.NINE99 -> TeenPattiEngine.nine99(s.hands[me]) >= 800
-                com.ngdstudio.mindimania.teenpatti.TPVariant.MUFLIS -> TeenPattiEngine.kind(s.hands[me]) == TPKind.HIGH_CARD
-                else -> (TeenPattiEngine.handKind(s, me) ?: TPKind.HIGH_CARD) >= TPKind.PAIR
-            }
+            val strong = TeenPattiEngine.handKind(s, me) >= TPKind.PAIR
             Text(
                 handLabel(s, me), color = if (strong) CM.GoldLight else Color.White.copy(alpha = 0.9f), fontSize = 13.sp, fontWeight = FontWeight.Black, maxLines = 1,
                 modifier = Modifier.clip(RoundedCornerShape(50)).background(Color(0x99000000)).padding(horizontal = 9.dp, vertical = 2.dp),

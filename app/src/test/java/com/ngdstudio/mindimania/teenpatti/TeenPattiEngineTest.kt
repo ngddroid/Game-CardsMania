@@ -286,7 +286,7 @@ class TeenPattiEngineTest {
                 }
                 s = steps.last().state
                 hands++
-                assertTrue("everyone is dealt in", s.inHand.all { it } || s.variant == TPVariant.CLASSIC)
+                assertTrue("everyone is dealt in", s.inHand.all { it })
                 continue
             }
             assertFalse(s.isOver)
@@ -294,5 +294,19 @@ class TeenPattiEngineTest {
         }
         assertFalse(s.isOver)
         assertTrue("someone went broke and was refilled in 120 hands", refills > 0)
+    }
+
+    @Test
+    fun savesFromWhenVariationsExistedStillLoadAsClassic() {
+        // a setup and a game saved by the old version, with a variation and a turned-up joker
+        val setup = AppJson.decodeFromString(TeenPattiSetup.serializer(), """{"players":5,"variant":"AK47","sideshow":false}""")
+        assertEquals(5, setup.players)
+        assertFalse(setup.sideshow)
+        val s = TeenPattiEngine.newGame(setup, 3L).last().state
+        val json = AppJson.encodeToString(TeenPattiState.serializer(), s).dropLast(1) +
+            ""","variant":"JOKER","joker":{"id":7,"rank":9,"suit":0}}"""
+        val back = AppJson.decodeFromString(TeenPattiState.serializer(), json)
+        assertEquals(s, back)
+        assertEquals(TeenPattiEngine.BOOT, back.boot)
     }
 }

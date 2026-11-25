@@ -155,32 +155,6 @@
     <string name="tp_howto_ex_1">રાણીની ટ્રેલ: તેને ફક્ત મોટી ટ્રેલ હરાવી શકે.</string>
     <string name="tp_howto_ex_2">અલગ સૂટમાં A-2-3: એક સિક્વન્સ, મૂળભૂત રીતે ફક્ત A-K-Q થી નીચે.</string>
 
-    <!-- Variations -->
-    <string name="tp_section_variant">વેરિએશન</string>
-    <string name="tp_var_classic">ક્લાસિક</string>
-    <string name="tp_var_muflis">મુફલિસ</string>
-    <string name="tp_var_joker">જોકર</string>
-    <string name="tp_var_lowest">લો જોકર</string>
-    <string name="tp_var_ak47">AK47</string>
-    <string name="tp_var_999">999</string>
-    <string name="tp_var_4x">4× બૂટ</string>
-    <string name="tp_var_mixed">મિક્સ</string>
-    <string name="tp_var_classic_desc">ક્લાસિક: શ્રેષ્ઠ ત્રણ પત્તાં જીતે.</string>
-    <string name="tp_var_muflis_desc">મુફલિસ: બધું ઊંધું: સૌથી નાનો હાથ જીતે. ટ્રેલ સૌથી નબળો અને અલગ સૂટનો 5-3-2 સૌથી સારો.</string>
-    <string name="tp_var_joker_desc">જોકર: વહેંચ્યા પછી એક પત્તું ખુલ્લું કરાય છે. એ નંબરનાં બધાં પત્તાં જોકર છે અને કોઈ પણ પત્તાની જગ્યા લઈ શકે.</string>
-    <string name="tp_var_lowest_desc">લો જોકર: દરેક હાથનું સૌથી નાનું પત્તું જોકર છે (તેની જોડી હોય તો બંને).</string>
-    <string name="tp_var_ak47_desc">AK47: દરેક એક્કો, બાદશાહ, 4 અને 7 જોકર છે.</string>
-    <string name="tp_var_999_desc">999: દસ્સો અને ચિત્રવાળાં પત્તાં 0, એક્કો 1. તમારાં પત્તાં સૌથી મોટી સંખ્યા બનાવે; 999 ની સૌથી નજીક જીતે.</string>
-    <string name="tp_var_4x_desc">4× બૂટ: ક્લાસિક નિયમો, પણ બૂટ ચાર ગણો, તેથી દરેક પૉટ મોટો શરૂ થાય.</string>
-    <string name="tp_var_mixed_desc">મિક્સ: દરેક હાથમાં અલગ વેરિએશન રમાય.</string>
-    <string name="tp_hint_muflis">સૌથી નાનો હાથ જીતે</string>
-    <string name="tp_hint_joker">દરેક %1$s જોકર છે</string>
-    <string name="tp_hint_lowest">સૌથી નાનું પત્તું જોકર છે</string>
-    <string name="tp_hint_ak47">A · K · 4 · 7 જોકર છે</string>
-    <string name="tp_hint_999">999 ની સૌથી નજીક જીતે</string>
-    <string name="tp_hint_4x">4× બૂટ</string>
-    <string name="tp_score_999">સ્કોર %1$d</string>
-    <string name="tp_howto_var_wild">જોકર પત્તાં પર સોનેરી ★ હોય છે અને તે હંમેશાં એ પત્તું બને જેનાથી તમારો શ્રેષ્ઠ હાથ બને. ટેબલ પર દેખાતા હાથના નામમાં તે ગણાઈ ગયાં હોય છે.</string>
     <string name="tp_winner">વિજેતા</string>
     <string name="tp_won_round">%1$s એ આ રાઉન્ડ જીત્યો</string>
     <string name="tp_you_won_round">તમે આ રાઉન્ડ જીત્યા!</string>

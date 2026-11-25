@@ -155,32 +155,6 @@
     <string name="tp_howto_ex_1">बेगम का ट्रेल: इसे सिर्फ़ इससे बड़ा ट्रेल हरा सकता है।</string>
     <string name="tp_howto_ex_2">अलग सूट में A-2-3: एक सीक्वेंस, डिफ़ॉल्ट में सिर्फ़ A-K-Q से नीचे।</string>
 
-    <!-- Variations -->
-    <string name="tp_section_variant">वेरिएशन</string>
-    <string name="tp_var_classic">क्लासिक</string>
-    <string name="tp_var_muflis">मुफ़लिस</string>
-    <string name="tp_var_joker">जोकर</string>
-    <string name="tp_var_lowest">लो जोकर</string>
-    <string name="tp_var_ak47">AK47</string>
-    <string name="tp_var_999">999</string>
-    <string name="tp_var_4x">4× बूट</string>
-    <string name="tp_var_mixed">मिक्स</string>
-    <string name="tp_var_classic_desc">क्लासिक: सबसे अच्छे तीन पत्ते जीतते हैं।</string>
-    <string name="tp_var_muflis_desc">मुफ़लिस: सब उल्टा: सबसे छोटा हाथ जीतता है। ट्रेल सबसे कमज़ोर और अलग सूट का 5-3-2 सबसे अच्छा।</string>
-    <string name="tp_var_joker_desc">जोकर: बाँटने के बाद एक पत्ता सीधा खोला जाता है। उस नंबर के सभी पत्ते जोकर हैं और किसी भी पत्ते की जगह ले सकते हैं।</string>
-    <string name="tp_var_lowest_desc">लो जोकर: हर हाथ का सबसे छोटा पत्ता जोकर है (उसकी जोड़ी हो तो दोनों)।</string>
-    <string name="tp_var_ak47_desc">AK47: हर इक्का, बादशाह, 4 और 7 जोकर है।</string>
-    <string name="tp_var_999_desc">999: दहला और तस्वीर वाले पत्ते 0, इक्का 1। आपके पत्ते सबसे बड़ी संख्या बनाते हैं; 999 के सबसे पास वाला जीतता है।</string>
-    <string name="tp_var_4x_desc">4× बूट: क्लासिक नियम, पर बूट चार गुना, इसलिए हर पॉट बड़ा शुरू होता है।</string>
-    <string name="tp_var_mixed_desc">मिक्स: हर हाथ में अलग वेरिएशन खेला जाता है।</string>
-    <string name="tp_hint_muflis">सबसे छोटा हाथ जीतेगा</string>
-    <string name="tp_hint_joker">हर %1$s जोकर है</string>
-    <string name="tp_hint_lowest">सबसे छोटा पत्ता जोकर है</string>
-    <string name="tp_hint_ak47">A · K · 4 · 7 जोकर हैं</string>
-    <string name="tp_hint_999">999 के सबसे पास जीतेगा</string>
-    <string name="tp_hint_4x">4× बूट</string>
-    <string name="tp_score_999">स्कोर %1$d</string>
-    <string name="tp_howto_var_wild">जोकर पत्तों पर सुनहरा ★ होता है और वे हमेशा वह पत्ता बनते हैं जिससे आपका सबसे अच्छा हाथ बने। टेबल पर दिखे हाथ के नाम में वे पहले से गिने जाते हैं।</string>
     <string name="tp_winner">विजेता</string>
     <string name="tp_won_round">%1$s ने यह राउंड जीता</string>
     <string name="tp_you_won_round">आपने यह राउंड जीता!</string>

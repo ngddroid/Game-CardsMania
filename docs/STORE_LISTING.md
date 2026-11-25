@@ -41,7 +41,7 @@ Gujarati (78/80):
 
 ## Full description (4000 max)
 
-English (3316/4000). Use it for the Hindi and Gujarati listings too until you have translations (Play shows the
+English (3226/4000). Use it for the Hindi and Gujarati listings too until you have translations (Play shows the
 English text when a language has none):
 ```text
 Play Mindi, Teen Patti, Rummy, Bhabhi, Spider Solitaire and three fast color card games in one app. Mindi & Mania is a desi card game collection you can play offline against smart bots, or with friends and family on the same Wi-Fi – no internet and no sign-up needed.
@@ -50,7 +50,7 @@ Play Mindi, Teen Patti, Rummy, Bhabhi, Spider Solitaire and three fast color car
 The classic Indian team card game. Play with 4, 6 or 8 players in two teams (one or two decks), pick how the trump (hukum) is chosen – hidden, cut or open – and win the tens (mindis) with your partner. Take every ten for a Mendikot, or every trick for a whitewash. Play a single hand or a full match.
 
 ♥ TEEN PATTI (3 PATTI)
-The famous three-card game for 3 to 6 players at an endless table with a friendly dealer. Play blind or seen, chaal or raise, ask for a sideshow or call a show, and win the pot with a trail, a pure sequence or a colour. Eight variations: Classic, Muflis, Joker, Low Joker, AK47, 999, 4× Boot and Mixed. At the reveal you see every hand and which card each joker became.
+The famous three-card game for 3 to 6 players at an endless table with a friendly dealer. Play blind or seen, chaal or raise, ask for a sideshow or call a show, and win the pot with a trail, a pure sequence or a colour. Simple classic rules, and at the reveal you see every hand.
 
 ♣ RUMMY (13-CARD INDIAN RUMMY)
 Classic 13-card Points Rummy for 2 to 6 players. Make a pure sequence, more sequences and sets with the wild joker, drag and drop your cards into groups, then put a card in the finish slot, arrange your hand and declare first! Drop option, wrong-show penalty and a clear result table.
@@ -83,6 +83,11 @@ Whether you call it Mindi, Mendikot or Dehla Pakad, Teen Patti or 3 Patti, India
 Questions or ideas? Write to us at store.ngdtechnolab@gmail.com
 ```
 
+## App icon (Graphics → App icon)
+
+Upload `tools/play_store_icon_512.png` (512 × 512 PNG, the "Mindi & Mania" artwork). Play rounds its corners itself.
+The icon on phones is made from the same picture by `tools/make_icon.py`.
+
 ## Category and tags
 
 * **App or game:** Game
@@ -94,11 +99,11 @@ Questions or ideas? Write to us at store.ngdtechnolab@gmail.com
 
 ## Release notes for version 1.0 (500 max)
 
-English (344/500):
+English (353/500):
 ```text
 Welcome to Mindi & Mania! 🎉
 • Mindi (Mendikot) for 4, 6 or 8 players
-• Teen Patti with 8 variations
+• Classic Teen Patti for 3 to 6 players
 • 13-card Rummy with drag & drop
 • Bhabhi (Thulla) for 3–8 players
 • Spider Solitaire: hard but always-winnable deals
@@ -106,11 +111,11 @@ Welcome to Mindi & Mania! 🎉
 • Wi-Fi multiplayer, daily gifts and challenges
 • English, Hindi & Gujarati
 ```
-Hindi (355/500):
+Hindi (373/500):
 ```text
 Mindi & Mania में स्वागत है! 🎉
 • 4, 6 या 8 खिलाड़ियों के लिए मिंडी (मेंडीकोट)
-• 8 वेरिएशन वाला तीन पत्ती
+• 3 से 6 खिलाड़ियों के लिए क्लासिक तीन पत्ती
 • ड्रैग और ड्रॉप वाला 13 पत्तों का रमी
 • 3–8 खिलाड़ियों के लिए भाभी (ठुल्ला)
 • स्पाइडर सॉलिटेयर – कठिन पर हमेशा जीतने लायक डील
@@ -118,11 +123,11 @@ Mindi & Mania में स्वागत है! 🎉
 • Wi-Fi मल्टीप्लेयर, डेली गिफ़्ट और चैलेंज
 • अंग्रेज़ी, हिंदी और गुजराती
 ```
-Gujarati (354/500):
+Gujarati (367/500):
 ```text
 Mindi & Mania માં સ્વાગત છે! 🎉
 • 4, 6 કે 8 ખેલાડીઓ માટે મીંડી (મેંડીકોટ)
-• 8 વેરિએશન સાથે ત્રણ પત્તી
+• 3 થી 6 ખેલાડીઓ માટે ક્લાસિક ત્રણ પત્તી
 • ડ્રેગ અને ડ્રોપ સાથે 13 પત્તાંની રમી
 • 3–8 ખેલાડીઓ માટે ભાભી (ઠુલ્લા)
 • સ્પાઇડર સોલિટેર – અઘરી પણ હંમેશાં જીતી શકાય તેવી ડીલ

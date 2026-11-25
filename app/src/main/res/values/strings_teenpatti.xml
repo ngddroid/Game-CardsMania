@@ -155,32 +155,6 @@
     <string name="tp_howto_ex_1">A trail of Queens: only a higher trail beats it.</string>
     <string name="tp_howto_ex_2">A-2-3 in mixed suits: a sequence, second only to A-K-Q by default.</string>
 
-    <!-- Variations -->
-    <string name="tp_section_variant">Variation</string>
-    <string name="tp_var_classic">Classic</string>
-    <string name="tp_var_muflis">Muflis</string>
-    <string name="tp_var_joker">Joker</string>
-    <string name="tp_var_lowest">Low Joker</string>
-    <string name="tp_var_ak47">AK47</string>
-    <string name="tp_var_999">999</string>
-    <string name="tp_var_4x">4× Boot</string>
-    <string name="tp_var_mixed">Mixed</string>
-    <string name="tp_var_classic_desc">Classic: the best three cards win.</string>
-    <string name="tp_var_muflis_desc">Muflis: everything is upside down: the lowest hand wins. A trail is the worst hand and 5-3-2 in mixed suits the best.</string>
-    <string name="tp_var_joker_desc">Joker: after the deal one card is turned face up. Every card of that rank is wild and can stand for any card.</string>
-    <string name="tp_var_lowest_desc">Low Joker: the lowest card in each hand is wild (both, if you hold a pair of them).</string>
-    <string name="tp_var_ak47_desc">AK47: every Ace, King, 4 and 7 is wild.</string>
-    <string name="tp_var_999_desc">999: tens and pictures count 0, Ace counts 1. Your cards make the biggest number they can; closest to 999 wins.</string>
-    <string name="tp_var_4x_desc">4× Boot: classic rules, but the boot is four times bigger, so every pot starts bigger.</string>
-    <string name="tp_var_mixed_desc">Mixed: a different variation is played every hand.</string>
-    <string name="tp_hint_muflis">LOWEST HAND WINS</string>
-    <string name="tp_hint_joker">EVERY %1$s IS WILD</string>
-    <string name="tp_hint_lowest">LOWEST CARD IS WILD</string>
-    <string name="tp_hint_ak47">A · K · 4 · 7 ARE WILD</string>
-    <string name="tp_hint_999">CLOSEST TO 999 WINS</string>
-    <string name="tp_hint_4x">4× BOOT</string>
-    <string name="tp_score_999">Score %1$d</string>
-    <string name="tp_howto_var_wild">Wild cards show a gold ★ and always count as whatever card makes your best hand. Hand names on the table already include them.</string>
     <string name="tp_winner">WINNER</string>
     <string name="tp_won_round">%1$s won this round</string>
     <string name="tp_you_won_round">You won this round!</string>

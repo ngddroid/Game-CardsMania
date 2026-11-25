@@ -366,8 +366,8 @@ class TeenPattiViewModel(app: Application) : AndroidViewModel(app) {
         is TPEvent.SideshowResult -> if (e.accepted) 1900 else 800
         is TPEvent.ShowCalled -> 700
         is TPEvent.AllIn -> 900
-        // the cards turn up, then wild cards swap for what they play as
-        is TPEvent.Showdown -> 1500L + e.seats.size * 260
+        // the cards turn up and stay a moment
+        is TPEvent.Showdown -> 1000L + e.seats.size * 260
         is TPEvent.PotWon -> 1900
         is TPEvent.MatchOver -> 600
         is TPEvent.Refilled -> 1300
@@ -407,7 +407,7 @@ class TeenPattiViewModel(app: Application) : AndroidViewModel(app) {
                 if (net == NetRole.GUEST) return
                 val v = version
                 viewModelScope.launch {
-                    // give everyone time to read the opened hands (and what the wild cards became)
+                    // give everyone time to read the opened hands
                     delay(((if (s.shown.isNotEmpty()) 2300 else 700) * speedFactor).toLong())
                     if (version != v) return@launch
                     val steps = TeenPattiEngine.nextHand(s)
@@ -602,9 +602,7 @@ class TeenPattiViewModel(app: Application) : AndroidViewModel(app) {
             is TPEvent.PotWon -> {
                 val i = e.winners.indexOf(me)
                 if (i >= 0) {
-                    // only where a high card is the weakest hand (not Muflis, 999 or the wild-card games)
-                    val classicRanks = s.variant == com.ngdstudio.mindimania.teenpatti.TPVariant.CLASSIC || s.variant == com.ngdstudio.mindimania.teenpatti.TPVariant.FOUR_X_BOOT
-                    val high = classicRanks && TeenPattiEngine.kind(s.hands[me]) == TPKind.HIGH_CARD
+                    val high = TeenPattiEngine.kind(s.hands[me]) == TPKind.HIGH_CARD
                     notes = notes.copy(
                         blindWins = notes.blindWins + if (!s.seen[me]) 1 else 0,
                         biggestPot = maxOf(notes.biggestPot, e.amounts[i]),
@@ -653,7 +651,7 @@ class TeenPattiViewModel(app: Application) : AndroidViewModel(app) {
         val kind = TeenPattiEngine.kind(s.hands[me])
         val showWin = won && e.reason != com.ngdstudio.mindimania.teenpatti.WinReason.LAST_STANDING
         // the table never ends, so each hand counts as one game (like Rummy)
-        com.ngdstudio.mindimania.analytics.Analytics.event("game_end", "game" to "teen_patti", "won" to won, "players" to s.players, "variant" to s.setup.variant.name.lowercase(), "net" to net.name.lowercase())
+        com.ngdstudio.mindimania.analytics.Analytics.event("game_end", "game" to "teen_patti", "won" to won, "players" to s.players, "net" to net.name.lowercase())
         viewModelScope.launch {
             var earned: List<Achievement> = emptyList()
             val np = c.profile.update { p ->

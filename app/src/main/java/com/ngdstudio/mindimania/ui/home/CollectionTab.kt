@@ -60,6 +60,7 @@ import androidx.annotation.StringRes
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import com.ngdstudio.mindimania.LocalApp
+import com.ngdstudio.mindimania.BuildConfig
 import com.ngdstudio.mindimania.R
 import com.ngdstudio.mindimania.i18n.Strings
 import com.ngdstudio.mindimania.audio.Sfx
@@ -111,7 +112,8 @@ private data class ShopItem(val category: Category, val name: String, val title:
             Category.SPIDER -> "spiderbg:$name"
         }
 
-    fun owned(p: Profile) = category == Category.SPIDER || price == 0 || key in p.unlocked
+    // debug builds: everything is open, to try every table, back and frame without earning coins
+    fun owned(p: Profile) = BuildConfig.DEBUG || category == Category.SPIDER || price == 0 || key in p.unlocked
     fun equipped(p: Profile) = when (category) {
         Category.TABLES -> p.theme == name
         Category.BACKS -> p.back == name

@@ -151,9 +151,8 @@ private fun OpenSeatRow() {
 
 /** One-line summary of the room's match settings. */
 fun roomSummary(room: RoomState): String = if (room.isTeenPatti) {
-    // "Teen Patti · 4 players · AK47"
-    listOf(Strings.get(R.string.shell_game_teenpatti), Strings.get(R.string.mp_sum_players, room.teenPatti.players),
-        com.ngdstudio.mindimania.ui.teenpatti.variantName(room.teenPatti.variant)).joinToString(" · ")
+    // "Teen Patti · 4 players"
+    listOf(Strings.get(R.string.shell_game_teenpatti), Strings.get(R.string.mp_sum_players, room.teenPatti.players)).joinToString(" · ")
 } else if (room.isRummy) {
     listOf(Strings.get(R.string.shell_game_rummy), Strings.get(R.string.mp_sum_players, room.rummy.players)).joinToString(" · ")
 } else if (room.isBhabhi) {

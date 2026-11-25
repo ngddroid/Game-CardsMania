@@ -50,7 +50,6 @@ import com.ngdstudio.mindimania.R
 import com.ngdstudio.mindimania.audio.Sfx
 import com.ngdstudio.mindimania.data.DifficultyInfo
 import com.ngdstudio.mindimania.engine.model.Difficulty
-import com.ngdstudio.mindimania.teenpatti.TPVariant
 import com.ngdstudio.mindimania.teenpatti.TeenPattiEngine
 import com.ngdstudio.mindimania.teenpatti.TeenPattiSetup
 import com.ngdstudio.mindimania.ui.components.ButtonStyle
@@ -130,26 +129,6 @@ fun TeenPattiSetupScreen(onBack: () -> Unit, onStart: (TeenPattiLaunch) -> Unit)
                     }
                     Spacer(Modifier.height(8.dp))
                     Text(stringResource(R.string.tp_chips_note, TeenPattiEngine.START_CHIPS, TeenPattiEngine.BOOT), color = CM.TextDim, fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                }
-
-                GlassPanel(Modifier.fillMaxWidth()) {
-                    SectionHeader(stringResource(R.string.tp_section_variant))
-                    Spacer(Modifier.height(10.dp))
-                    // 3 per row so longer names ("Low Joker") fit
-                    TPVariant.entries.chunked(3).forEach { row ->
-                        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                            row.forEach { v ->
-                                ChoiceChip(
-                                    stringResource(variantNameRes(v)), setup.variant == v, { setup = setup.copy(variant = v) }, Modifier.weight(1f),
-                                    color = if (v == TPVariant.CLASSIC || v == TPVariant.MIXED) CM.Gold else Color(0xFFFF8A4C),
-                                )
-                            }
-                            repeat(3 - row.size) { Spacer(Modifier.weight(1f)) }
-                        }
-                        Spacer(Modifier.height(6.dp))
-                    }
-                    Spacer(Modifier.height(4.dp))
-                    Text(stringResource(variantDescRes(setup.variant)), color = CM.Text, fontSize = 13.sp, fontWeight = FontWeight.Bold)
                 }
 
                 GlassPanel(Modifier.fillMaxWidth()) {

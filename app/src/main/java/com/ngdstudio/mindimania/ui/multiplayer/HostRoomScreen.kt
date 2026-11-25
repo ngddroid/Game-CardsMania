@@ -73,7 +73,6 @@ import com.ngdstudio.mindimania.ui.rummy.RummyGameTile
 import com.ngdstudio.mindimania.ui.rummy.RummyLaunch
 import com.ngdstudio.mindimania.ui.teenpatti.TeenPattiGameTile
 import com.ngdstudio.mindimania.ui.teenpatti.TeenPattiLaunch
-import com.ngdstudio.mindimania.teenpatti.TPVariant
 import com.ngdstudio.mindimania.teenpatti.TeenPattiEngine
 import com.ngdstudio.mindimania.teenpatti.TeenPattiSetup
 import com.ngdstudio.mindimania.rummy.RummyEngine
@@ -614,26 +613,12 @@ private fun TimerAndSpeed(room: RoomState, timer: Int, setTimer: (Int) -> Unit, 
     }
 }
 
-/** Lobby options for a Teen Patti room: table size, bots, the variation, sideshow / A-2-3, turn timer and speed. */
+/** Lobby options for a Teen Patti room: table size, bots, sideshow / A-2-3, turn timer and speed. */
 @Composable
 private fun TeenPattiRoomOptions(room: RoomState, update: ((RoomState) -> RoomState) -> Unit) {
     val setup = room.teenPatti
     fun tp(t: (TeenPattiSetup) -> TeenPattiSetup) = update { it.copy(teenPatti = t(it.teenPatti)) }
     TableSeats(room, TeenPattiEngine.MIN_PLAYERS..TeenPattiEngine.MAX_PLAYERS, update) { r, n -> r.copy(teenPatti = r.teenPatti.copy(players = n)) }
-    GlassPanel(Modifier.fillMaxWidth()) {
-        SectionHeader(stringResource(R.string.tp_section_variant))
-        Spacer(Modifier.height(10.dp))
-        TPVariant.entries.chunked(3).forEach { row ->
-            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                row.forEach { v ->
-                    ChoiceChip(stringResource(com.ngdstudio.mindimania.ui.teenpatti.variantNameRes(v)), setup.variant == v, { tp { it.copy(variant = v) } }, Modifier.weight(1f))
-                }
-                repeat(3 - row.size) { Spacer(Modifier.weight(1f)) }
-            }
-            Spacer(Modifier.height(6.dp))
-        }
-        Text(stringResource(com.ngdstudio.mindimania.ui.teenpatti.variantDescRes(setup.variant)), color = CM.TextDim, fontSize = 12.sp, fontWeight = FontWeight.Bold)
-    }
     GlassPanel(Modifier.fillMaxWidth()) {
         SectionHeader(stringResource(R.string.mp_match))
         Spacer(Modifier.height(6.dp))

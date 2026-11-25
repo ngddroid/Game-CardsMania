@@ -35,20 +35,6 @@ data class TCard(val id: Int, val rank: Int, val suit: Int) {
 /** Hand kinds, weakest first (ordinal = strength). */
 enum class TPKind { HIGH_CARD, PAIR, COLOR, SEQUENCE, PURE_SEQUENCE, TRAIL }
 
-/**
- * Traditional Teen Patti variations (house rules). Each hand is played with one of them; MIXED picks a new one for
- * every hand.
- *  - MUFLIS: the ranking is turned upside down, the lowest hand wins.
- *  - JOKER: after the deal one card is turned up; every card of that rank is wild.
- *  - LOWEST_JOKER: the lowest-ranked card(s) in each hand are wild.
- *  - AK47: every A, K, 4 and 7 is wild.
- *  - NINE99: 10/J/Q/K count 0, A counts 1; the three cards make the biggest 3-digit number they can, closest to 999 wins.
- *  - FOUR_X_BOOT: classic rules with four times the boot.
- * A wild card stands for whatever card makes the best hand.
- */
-@Serializable
-enum class TPVariant { CLASSIC, MUFLIS, JOKER, LOWEST_JOKER, AK47, NINE99, FOUR_X_BOOT, MIXED }
-
 @Serializable
 sealed interface TPPhase {
     @Serializable @SerialName("bet")
@@ -97,10 +83,6 @@ data class TeenPattiState(
     val shown: List<Int> = emptyList(),
     val handsWon: List<Int>,
     val phase: TPPhase = TPPhase.Betting,
-    /** The variation this hand is played with (never MIXED). */
-    val variant: TPVariant = TPVariant.CLASSIC,
-    /** JOKER only: the card turned up after the deal (not in anyone's hand). */
-    val joker: TCard? = null,
     /** What everyone paid to be dealt into this hand. */
     val boot: Int = TeenPattiEngine.BOOT,
 ) {
@@ -123,7 +105,7 @@ data class TeenPattiState(
 sealed interface TPEvent {
     /** A new hand: everyone in paid [boot]. */
     @Serializable @SerialName("Dealt")
-    data class Dealt(val handNo: Int, val dealer: Int, val boot: Int, val variant: TPVariant = TPVariant.CLASSIC, val joker: TCard? = null) : TPEvent
+    data class Dealt(val handNo: Int, val dealer: Int, val boot: Int) : TPEvent
 
     @Serializable @SerialName("Saw")
     data class Saw(val seat: Int) : TPEvent
@@ -221,8 +203,6 @@ object TeenPattiEngine {
     /** The blind stake never goes above this (a seen chaal is at most twice it). */
     const val MAX_STAKE = BOOT * 16
     val HAND_CHOICES = listOf(5, 10, 15)
-    /** The variations a hand can actually be played with (MIXED picks one of these). */
-    val PLAYABLE = TPVariant.entries.filter { it != TPVariant.MIXED }
 
     fun deck(): List<TCard> = buildList {
         var id = 0
@@ -237,7 +217,7 @@ object TeenPattiEngine {
 
     // ------------------------------------------------------------------ hand ranking
 
-    /** Kind of a 3-card hand as dealt (no wild cards). */
+    /** Kind of a 3-card hand. */
     fun kind(cards: List<TCard>): TPKind = kindOf(score(cards, true))
 
     fun kindOf(score: Long): TPKind = TPKind.entries[(score / KIND_STEP).toInt().coerceIn(0, TPKind.entries.lastIndex)]
@@ -277,135 +257,28 @@ object TeenPattiEngine {
         return TPKind.HIGH_CARD.ordinal * KIND_STEP + high
     }
 
-    /** Ranks that are wild in [hand] under [variant] ([joker] = the turned-up card in JOKER). */
-    fun wildRanks(variant: TPVariant, hand: List<TCard>, joker: TCard?): Set<Int> = when (variant) {
-        TPVariant.JOKER -> joker?.let { setOf(it.rank) } ?: emptySet()
-        TPVariant.AK47 -> AK47_RANKS
-        TPVariant.LOWEST_JOKER -> hand.minOfOrNull { it.rank }?.let { setOf(it) } ?: emptySet()
-        else -> emptySet()
-    }
+    /** [seat]'s hand score. */
+    fun score(s: TeenPattiState, seat: Int): Long = score(s.hands[seat], s.setup.a23Second)
 
-    private val AK47_RANKS = setOf(14, 13, 4, 7)
+    /** Kind of [seat]'s hand. */
+    fun handKind(s: TeenPattiState, seat: Int): TPKind = kindOf(score(s, seat))
 
-    /** 999: 10 and pictures count 0, Ace 1; the digits in their best order (0..999). */
-    fun nine99(cards: List<TCard>): Int {
-        val d = cards.map { if (it.rank == 14) 1 else if (it.rank >= 10) 0 else it.rank }.sortedDescending()
-        return d[0] * 100 + d[1] * 10 + d[2]
-    }
+    private val tables = HashMap<Boolean, LongArray>()
 
-    /** The score of [cards] under [variant]: higher always wins (Muflis is turned upside down here). */
-    fun handScore(cards: List<TCard>, variant: TPVariant, a23Second: Boolean, joker: TCard?): Long = when (variant) {
-        TPVariant.MUFLIS -> -score(cards, a23Second)
-        TPVariant.NINE99 -> nine99(cards).toLong()
-        TPVariant.JOKER, TPVariant.AK47, TPVariant.LOWEST_JOKER -> bestWithWilds(cards, wildRanks(variant, cards, joker), a23Second)
-        else -> score(cards, a23Second)
-    }
-
-    /**
-     * What each wild card in [cards] plays as in the best hand (wild card id → the card it stands for, id -1), or empty
-     * when the variation has no wild cards or the hand holds none. Used to show the substitutes when hands are opened.
-     */
-    fun wildsAs(cards: List<TCard>, variant: TPVariant, a23Second: Boolean, joker: TCard?): Map<Int, TCard> {
-        if (variant != TPVariant.JOKER && variant != TPVariant.AK47 && variant != TPVariant.LOWEST_JOKER) return emptyMap()
-        val wild = wildRanks(variant, cards, joker)
-        val w = cards.filter { it.rank in wild }
-        val nat = cards.filter { it.rank !in wild }
-        if (w.isEmpty()) return emptyMap()
-        val out = LinkedHashMap<Int, TCard>()
-        when (nat.size) {
-            0 -> w.forEachIndexed { i, c -> out[c.id] = TCard(-1, 14, i) } // A-A-A
-            1 -> {
-                // a trail of the natural card: the wilds take the other suits
-                val suits = (0..3).filter { it != nat[0].suit }
-                w.forEachIndexed { i, c -> out[c.id] = TCard(-1, nat[0].rank, suits[i]) }
-            }
-            else -> {
-                val (x, y) = nat
-                val sameSuit = x.suit == y.suit
-                var best = Long.MIN_VALUE
-                var bestRank = 2
-                var bestFlush = false
-                for (r in 2..14) {
-                    val plain = scoreRanks(x.rank, y.rank, r, false, a23Second)
-                    if (plain > best) { best = plain; bestRank = r; bestFlush = false }
-                    if (sameSuit && r != x.rank && r != y.rank) {
-                        val fl = scoreRanks(x.rank, y.rank, r, true, a23Second)
-                        if (fl > best) { best = fl; bestRank = r; bestFlush = true }
-                    }
-                }
-                // a suit that makes the flush when it helps, otherwise one that breaks it (and never copies a held card)
-                val suit = if (bestFlush) x.suit else (0..3).first { it != x.suit && (bestRank != y.rank || it != y.suit) }
-                out[w[0].id] = TCard(-1, bestRank, suit)
-            }
-        }
-        return out
-    }
-
-    /** [seat]'s wild cards and what they stand for in this hand's variation. */
-    fun wildsAs(s: TeenPattiState, seat: Int): Map<Int, TCard> =
-        s.hands.getOrNull(seat)?.let { wildsAs(it, s.variant, s.setup.a23Second, s.joker) } ?: emptyMap()
-
-    /** Best hand when cards of [wild] ranks may stand for any card. */
-    fun bestWithWilds(cards: List<TCard>, wild: Set<Int>, a23Second: Boolean): Long {
-        val nat = cards.filter { it.rank !in wild }
-        return when (nat.size) {
-            3 -> score(cards, a23Second)
-            0 -> TPKind.TRAIL.ordinal * KIND_STEP + 14 // three wilds: A-A-A
-            1 -> TPKind.TRAIL.ordinal * KIND_STEP + nat[0].rank // two wilds copy the natural card
-            else -> {
-                val (x, y) = nat
-                val sameSuit = x.suit == y.suit
-                var best = Long.MIN_VALUE
-                for (r in 2..14) {
-                    best = maxOf(best, scoreRanks(x.rank, y.rank, r, false, a23Second))
-                    // a joker can take the suit of the other two, but never copy one of them exactly
-                    if (sameSuit && r != x.rank && r != y.rank) best = maxOf(best, scoreRanks(x.rank, y.rank, r, true, a23Second))
-                }
-                best
-            }
-        }
-    }
-
-    /** [seat]'s hand score in this hand's variation. */
-    fun score(s: TeenPattiState, seat: Int): Long = handScore(s.hands[seat], s.variant, s.setup.a23Second, s.joker)
-
-    /** Kind of [seat]'s best hand (wilds used), null in 999 where kinds don't count. Muflis: the kind as dealt. */
-    fun handKind(s: TeenPattiState, seat: Int): TPKind? = when (s.variant) {
-        TPVariant.NINE99 -> null
-        TPVariant.MUFLIS -> kind(s.hands[seat])
-        else -> kindOf(score(s, seat))
-    }
-
-    /** Ids of the wild cards in [seat]'s hand. */
-    fun wildIds(s: TeenPattiState, seat: Int): Set<Int> {
-        val h = s.hands.getOrNull(seat) ?: return emptySet()
-        val w = wildRanks(s.variant, h, s.joker)
-        return h.filter { it.rank in w }.map { it.id }.toSet()
-    }
-
-    private val tables = HashMap<String, LongArray>()
-
-    /**
-     * Every one of the 22 100 possible hands' scores under [variant], sorted (built once per variation, A-2-3 rule and,
-     * in JOKER, joker rank).
-     */
-    private fun table(a23Second: Boolean, variant: TPVariant = TPVariant.CLASSIC, jokerRank: Int = 0): LongArray {
-        val v = if (variant == TPVariant.FOUR_X_BOOT || variant == TPVariant.MIXED) TPVariant.CLASSIC else variant
-        val key = "$v/$a23Second/${if (v == TPVariant.JOKER) jokerRank else 0}"
-        synchronized(tables) { tables[key]?.let { return it } }
+    /** Every one of the 22 100 possible hands' scores, sorted (built once per A-2-3 rule). */
+    private fun table(a23Second: Boolean): LongArray {
+        synchronized(tables) { tables[a23Second]?.let { return it } }
         val d = deck()
-        val joker = if (v == TPVariant.JOKER) TCard(-1, jokerRank, 0) else null
         val out = LongArray(22100)
         var k = 0
-        for (i in 0 until 52) for (j in i + 1 until 52) for (l in j + 1 until 52) out[k++] = handScore(listOf(d[i], d[j], d[l]), v, a23Second, joker)
+        for (i in 0 until 52) for (j in i + 1 until 52) for (l in j + 1 until 52) out[k++] = score(listOf(d[i], d[j], d[l]), a23Second)
         out.sort()
-        synchronized(tables) { tables[key] = out }
+        synchronized(tables) { tables[a23Second] = out }
         return out
     }
 
-    /** Share of all possible hands [seat]'s hand beats in this hand's variation (ties count half), 0..1. */
-    fun strength(s: TeenPattiState, seat: Int): Double =
-        percentileIn(table(s.setup.a23Second, s.variant, s.joker?.rank ?: 0), score(s, seat))
+    /** Share of all possible hands [seat]'s hand beats (ties count half), 0..1. */
+    fun strength(s: TeenPattiState, seat: Int): Double = percentileIn(table(s.setup.a23Second), score(s, seat))
 
     /** Share of all possible hands that [score] beats (ties count half), 0..1. */
     fun percentile(score: Long, a23Second: Boolean): Double = percentileIn(table(a23Second), score)
@@ -461,26 +334,22 @@ object TeenPattiEngine {
         val n = s0.players
         val handNo = s0.handNo + 1
         val rng = Rng(s0.seed xor (handNo * -0x61c8864680b583ebL))
-        var variant = if (s0.setup.variant == TPVariant.MIXED) PLAYABLE[rng.nextInt(PLAYABLE.size)] else s0.setup.variant
-        // a 4× boot hand needs at least two players who can pay it
-        if (variant == TPVariant.FOUR_X_BOOT && s0.chips.count { it >= BOOT * 4 } < 2) variant = TPVariant.CLASSIC
-        val boot = if (variant == TPVariant.FOUR_X_BOOT) BOOT * 4 else BOOT
+        val boot = BOOT
         val inHand = (0 until n).map { s0.chips[it] >= boot }
         val dealer = nextFrom(s0.dealer, n) { inHand[it] }
         val cards = deck().toMutableList()
         rng.shuffle(cards)
         var k = 0
         val hands = List(n) { seat -> if (inHand[seat]) sortHand(List(3) { cards[k++] }) else emptyList() }
-        val joker = if (variant == TPVariant.JOKER) cards[k] else null
         val chips = s0.chips.mapIndexed { i, c -> if (inHand[i]) c - boot else c }
         val put = inHand.map { if (it) boot else 0 }
         val s = s0.copy(
             handNo = handNo, dealer = dealer, chips = chips, hands = hands, inHand = inHand,
             folded = List(n) { false }, seen = List(n) { false }, put = put, pot = put.sum(), stake = boot,
             turn = nextFrom(dealer, n) { inHand[it] }, blindChaals = List(n) { 0 }, actions = 0, shown = emptyList(),
-            phase = TPPhase.Betting, variant = variant, joker = joker, boot = boot,
+            phase = TPPhase.Betting, boot = boot,
         )
-        return pre + TPStep(TPEvent.Dealt(handNo, dealer, boot, variant, joker), s)
+        return pre + TPStep(TPEvent.Dealt(handNo, dealer, boot), s)
     }
 
     // ------------------------------------------------------------------ moves

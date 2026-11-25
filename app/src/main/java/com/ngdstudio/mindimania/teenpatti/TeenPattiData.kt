@@ -18,8 +18,6 @@ data class TeenPattiSetup(
     val sideshow: Boolean = true,
     /** House rule: A-2-3 is the second-best sequence (after A-K-Q). Off = A-2-3 is the lowest sequence. */
     val a23Second: Boolean = true,
-    /** Which variation is played (MIXED = a different one every hand). */
-    val variant: com.ngdstudio.mindimania.teenpatti.TPVariant = com.ngdstudio.mindimania.teenpatti.TPVariant.CLASSIC,
     val difficulty: Difficulty = Difficulty.NORMAL,
     /** Seconds per turn, 0 = off. */
     val turnTimer: Int = 0,

@@ -40,10 +40,6 @@ private class TSprite(val id: Int, var card: TCard?) {
     var z = 0f
     var removeAt = -1L
     var moving = false
-    /** A substitute: the card a wild card plays as, drawn small on top of it with a gold frame. */
-    var ghost = false
-    /** Not drawn before this time (uptime ms). */
-    var showAt = 0L
 }
 
 /** A chip flying between a seat and the pot. */
@@ -79,12 +75,7 @@ class TeenPattiWorld(val layout: TeenPattiLayout) : AnimatedWorld {
     private var shadow: Bitmap? = null
     private var glow: Bitmap? = null
     private val order = ArrayList<TSprite>(24)
-    /** Ids of wild cards in every hand this deal (they get a star badge when face up). */
-    private var wild: Set<Int> = emptySet()
-    /** The turned-up joker card (JOKER variation) sits left of the pot under this sprite id. */
-    private val jokerSpriteId = 10_000
     private companion object {
-        const val GHOST_BASE = 20_000
         const val SEAT_BASE = 30_000
     }
 
@@ -93,9 +84,6 @@ class TeenPattiWorld(val layout: TeenPattiLayout) : AnimatedWorld {
      * cards arrive as placeholders and only show their real face (a new id) when they are opened.
      */
     private fun sid(seat: Int, i: Int) = SEAT_BASE + seat * 10 + i
-
-    /** Where the turned-up joker card sits. */
-    val jokerPos: Offset get() = layout.jokerPos
 
     // ------------------------------------------------------------------ steps
 
@@ -107,7 +95,6 @@ class TeenPattiWorld(val layout: TeenPattiLayout) : AnimatedWorld {
         val L = layout
         val now = SystemClock.uptimeMillis()
         val sf = if (reduceMotion) sf0 * 0.6f else sf0
-        wild = (0 until s.players).flatMap { TeenPattiEngine.wildIds(s, it) }.toSet()
         when (e) {
             is TPEvent.Dealt -> {
                 sprites.clear()
@@ -134,22 +121,10 @@ class TeenPattiWorld(val layout: TeenPattiLayout) : AnimatedWorld {
                     val delay = start - now + (k++ * 70L * sf).toLong()
                     tween(sp, sl.x, sl.y, sl.rot, sl.w, now, delay, (260 * sf).toLong(), 0.1f)
                 }
-                // one line, "Hand 4/10 · AK47"; in landscape under the pot (above it is the top seat's name)
-                val handText = (if (s.endless) Strings.get(R.string.tp_pop_hand_n, e.handNo) else Strings.get(R.string.tp_pop_hand, e.handNo, s.setup.hands)) +
-                    (if (e.variant != com.ngdstudio.mindimania.teenpatti.TPVariant.CLASSIC) " · " + variantName(e.variant) else "")
+                // one line, "Hand 4/10"; in landscape under the pot (above it is the top seat's name)
+                val handText = if (s.endless) Strings.get(R.string.tp_pop_hand_n, e.handNo) else Strings.get(R.string.tp_pop_hand, e.handNo, s.setup.hands)
                 val popY = L.center.y + L.dealerH * 0.12f
                 fx.pop(handText, L.center.x, popY, 0xFFFFE27A.toInt(), now, 26f, 1400)
-                e.joker?.let { j ->
-                    // the joker is turned up from the deck once everyone has their cards
-                    val sp = TSprite(jokerSpriteId, j)
-                    sp.x = L.dealerHands.x; sp.y = L.dealerHands.y; sp.w = L.smallCardW * 0.6f
-                    sp.z = 50f
-                    sprites[jokerSpriteId] = sp
-                    val at = start - now + (k * 70L * sf).toLong()
-                    tween(sp, jokerPos.x, jokerPos.y, -8f, L.smallCardW * 1.05f, now, at, (300 * sf).toLong(), 0f)
-                    flip(sp, true, now + at + (200 * sf).toLong(), (240 * sf).toLong())
-                    fx.sparkles(jokerPos.x, jokerPos.y, L.smallCardW, 10, 0xFFFFE89A.toInt())
-                }
             }
             is TPEvent.Saw -> {
                 if (e.seat == L.me) {
@@ -245,8 +220,6 @@ class TeenPattiWorld(val layout: TeenPattiLayout) : AnimatedWorld {
                         if (seat != L.me) tween(sp, slots[i].x, slots[i].y, slots[i].rot, slots[i].w, now, at - now, (280 * sf).toLong(), 0f)
                         flip(sp, true, at + (140 * sf).toLong(), (220 * sf).toLong())
                     }
-                    // once the cards are up, each wild card steps back and the card it plays as flips into its place
-                    swapWilds(s, seat, k, at + (700 * sf).toLong(), sf)
                 }
             }
             is TPEvent.PotWon -> {
@@ -290,18 +263,6 @@ class TeenPattiWorld(val layout: TeenPattiLayout) : AnimatedWorld {
                         sprites[sp.id] = sp
                     }
                 }
-                for (seat in 0 until s.players) {
-                    if (!s.inHand[seat] || s.folded[seat]) continue
-                    if (seat in s.shown) swapWilds(s, seat, s.shown.indexOf(seat), 0L, 0.01f)
-                }
-                s.joker?.let { j ->
-                    val sp = TSprite(jokerSpriteId, j)
-                    sp.x = jokerPos.x; sp.y = jokerPos.y; sp.w = L.smallCardW * 1.05f; sp.rot = -8f
-                    sp.tx = sp.x; sp.ty = sp.y; sp.tw = sp.w; sp.trot = sp.rot
-                    sp.faceUp = true
-                    sp.z = 50f
-                    sprites[jokerSpriteId] = sp
-                }
             }
         }
     }
@@ -314,43 +275,6 @@ class TeenPattiWorld(val layout: TeenPattiLayout) : AnimatedWorld {
         fx.pop(text, cx, y, color, now, size, dur, rise = rise)
     }
 
-    /**
-     * The reveal for wild cards (Joker, Low Joker, AK47): each wild card rises half a card and slips behind the row,
-     * and the card it plays as flips face up in its place (gold frame). The row then reads as the hand that counts,
-     * e.g. J♦ [K→J♣] 8♠ = a pair of Jacks, while the wild card still peeks out behind it.
-     * Lifts downward instead when there's no room above (a seat at the top of the table).
-     */
-    private fun swapWilds(s: TeenPattiState, seat: Int, k: Int, at: Long, sf: Float) {
-        val subs = TeenPattiEngine.wildsAs(s, seat)
-        if (subs.isEmpty()) return
-        val L = layout
-        val now = SystemClock.uptimeMillis()
-        val slots = if (seat == L.me) L.cardSlots(seat) else L.cardSlots(seat, shown = true)
-        s.hands[seat].forEachIndexed { i, c ->
-            val asCard = subs[c.id] ?: return@forEachIndexed
-            val sl = slots[i]
-            val h = sl.w * 1.4f
-            val delay = (at - now).coerceAtLeast(0) + i * (120 * sf).toLong()
-            val k = L.wildLift(seat)
-            val up = sl.y - h * 0.5f - h * k >= L.tableTop
-            val wildSprite = sprites[sid(seat, i)]
-            if (wildSprite != null) {
-                wildSprite.z = 700f + k * 10 + i
-                tween(wildSprite, sl.x, sl.y + (if (up) -h * k else h * k), 0f, sl.w * 0.94f, now, delay, (300 * sf).toLong().coerceAtLeast(1), 0f)
-            }
-            val g = TSprite(GHOST_BASE + sid(seat, i), asCard)
-            g.ghost = true
-            g.faceUp = false
-            g.x = sl.x; g.y = sl.y; g.w = sl.w; g.rot = 0f
-            g.tx = g.x; g.ty = g.y; g.tw = g.w; g.trot = 0f
-            g.z = 800f + k * 10 + i + 0.5f
-            // hidden until the wild card starts to move, then turns face up in the slot
-            g.showAt = now + delay + (120 * sf).toLong()
-            sprites[g.id] = g
-            flip(g, true, g.showAt + (60 * sf).toLong(), (280 * sf).toLong())
-        }
-    }
-
     /** [seat]'s cards slide to the middle, turn over and vanish. */
     private fun packCards(s: TeenPattiState, seat: Int, at: Long, sf: Float, keepFaces: Boolean = false) {
         val L = layout
@@ -361,7 +285,6 @@ class TeenPattiWorld(val layout: TeenPattiLayout) : AnimatedWorld {
             tween(sp, L.center.x + (i - 1) * 4f, L.center.y + L.smallCardW * 0.3f, (i - 1) * 9f, L.smallCardW * 0.7f, now, d, (320 * sf).toLong(), 0f)
             if (!keepFaces || sp.faceUp) flip(sp, false, at + (160 * sf).toLong(), (180 * sf).toLong())
             sp.removeAt = at + (520 * sf).toLong()
-            sprites[GHOST_BASE + sid(seat, i)]?.removeAt = at
         }
     }
 
@@ -397,7 +320,7 @@ class TeenPattiWorld(val layout: TeenPattiLayout) : AnimatedWorld {
         if (fx.isActive(now)) return true
         if (chips.isNotEmpty() || now < dealingUntil) return true
         if (now < potShowFrom || (potHideAt != Long.MAX_VALUE && now < potHideAt)) return true
-        for (sp in sprites.values) if (sp.moving || sp.flipFrom != null || sp.removeAt > 0 || sp.showAt > now) return true
+        for (sp in sprites.values) if (sp.moving || sp.flipFrom != null || sp.removeAt > 0) return true
         return false
     }
 
@@ -446,7 +369,7 @@ class TeenPattiWorld(val layout: TeenPattiLayout) : AnimatedWorld {
         val r = java.util.Random(23)
         pp.shader = null
         repeat((w * h / 110).coerceAtMost(50000)) {
-            val a = r.nextInt(6, 16)
+            val a = 6 + r.nextInt(10) // not nextInt(6, 16): that one only exists from Android 15
             pp.color = if (r.nextBoolean()) (a shl 24) or 0xFFFFFF else (a shl 24)
             val x = r.nextFloat() * w
             val y = r.nextFloat() * h
@@ -496,7 +419,7 @@ class TeenPattiWorld(val layout: TeenPattiLayout) : AnimatedWorld {
         for (sp in sprites.values) order += sp
         order.sortWith(drawOrder)
         val mine0 = sid(layout.me, 0)
-        for (sp in order) if (sp.showAt <= now) drawSprite(c, sp, now, sp.id in mine0..mine0 + 2)
+        for (sp in order) drawSprite(c, sp, now, sp.id in mine0..mine0 + 2)
         drawChips(c, now)
         fx.draw(c, now, layout.width, layout.height)
         c.restore()
@@ -549,25 +472,6 @@ class TeenPattiWorld(val layout: TeenPattiLayout) : AnimatedWorld {
             val y = ch.fy + (ch.ty - ch.fy) * e - kotlin.math.sin(e * Math.PI).toFloat() * layout.chipR * 3f
             drawChip(c, x, y, ch.color, if (t > 0.85f) (1f - (t - 0.85f) / 0.15f).coerceIn(0f, 1f) else 1f)
         }
-    }
-
-    /** A gold star in the bottom-left corner of a wild card (the part a fanned hand never covers). */
-    private fun drawWildBadge(c: Canvas, w: Float, h: Float) {
-        val r = w * 0.17f
-        val x = -w / 2 + r * 1.25f
-        val y = h / 2 - r * 1.25f
-        p.style = Paint.Style.FILL
-        p.color = 0xFFFFB300.toInt()
-        c.drawCircle(x, y, r, p)
-        p.style = Paint.Style.STROKE
-        p.strokeWidth = r * 0.18f
-        p.color = 0xFFFFFFFF.toInt()
-        c.drawCircle(x, y, r, p)
-        p.style = Paint.Style.FILL
-        p.textAlign = Paint.Align.CENTER
-        p.textSize = r * 1.4f
-        p.color = 0xFF4A2A00.toInt()
-        c.drawText("★", x, y + r * 0.5f, p)
     }
 
     private fun drawChip(c: Canvas, x: Float, y: Float, color: Int, alpha: Float) {
@@ -631,13 +535,6 @@ class TeenPattiWorld(val layout: TeenPattiLayout) : AnimatedWorld {
         }
         rect.set(-w / 2, -h / 2, w / 2, h / 2)
         c.drawBitmap(bmp, null, rect, paint)
-        if (sp.ghost) {
-            p.style = Paint.Style.STROKE
-            p.strokeWidth = w * 0.07f
-            p.color = 0xFFFFC93C.toInt()
-            c.drawRoundRect(rect, w * 0.1f, w * 0.1f, p)
-            p.style = Paint.Style.FILL
-        } else if (up && card != null && sp.id != jokerSpriteId && card.id in wild) drawWildBadge(c, w, h)
         if (angle != 0f) {
             p.color = Fx.withAlpha(0xFF000000.toInt(), abs(angle) / 90f * 0.3f)
             c.drawRoundRect(rect, w * 0.1f, w * 0.1f, p)
@@ -646,49 +543,8 @@ class TeenPattiWorld(val layout: TeenPattiLayout) : AnimatedWorld {
     }
 }
 
-/** What [seat]'s hand is called in this hand's variation: the kind (wilds used), or the 999 score. */
-fun handLabel(s: TeenPattiState, seat: Int): String {
-    if (s.variant == com.ngdstudio.mindimania.teenpatti.TPVariant.NINE99) return Strings.get(R.string.tp_score_999, TeenPattiEngine.nine99(s.hands[seat]))
-    return TeenPattiEngine.handKind(s, seat)?.let { kindName(it) } ?: ""
-}
-
-/** Localised name of a variation. */
-fun variantName(v: com.ngdstudio.mindimania.teenpatti.TPVariant): String = Strings.get(variantNameRes(v))
-
-fun variantNameRes(v: com.ngdstudio.mindimania.teenpatti.TPVariant): Int = when (v) {
-    com.ngdstudio.mindimania.teenpatti.TPVariant.CLASSIC -> R.string.tp_var_classic
-    com.ngdstudio.mindimania.teenpatti.TPVariant.MUFLIS -> R.string.tp_var_muflis
-    com.ngdstudio.mindimania.teenpatti.TPVariant.JOKER -> R.string.tp_var_joker
-    com.ngdstudio.mindimania.teenpatti.TPVariant.LOWEST_JOKER -> R.string.tp_var_lowest
-    com.ngdstudio.mindimania.teenpatti.TPVariant.AK47 -> R.string.tp_var_ak47
-    com.ngdstudio.mindimania.teenpatti.TPVariant.NINE99 -> R.string.tp_var_999
-    com.ngdstudio.mindimania.teenpatti.TPVariant.FOUR_X_BOOT -> R.string.tp_var_4x
-    com.ngdstudio.mindimania.teenpatti.TPVariant.MIXED -> R.string.tp_var_mixed
-}
-
-fun variantDescRes(v: com.ngdstudio.mindimania.teenpatti.TPVariant): Int = when (v) {
-    com.ngdstudio.mindimania.teenpatti.TPVariant.CLASSIC -> R.string.tp_var_classic_desc
-    com.ngdstudio.mindimania.teenpatti.TPVariant.MUFLIS -> R.string.tp_var_muflis_desc
-    com.ngdstudio.mindimania.teenpatti.TPVariant.JOKER -> R.string.tp_var_joker_desc
-    com.ngdstudio.mindimania.teenpatti.TPVariant.LOWEST_JOKER -> R.string.tp_var_lowest_desc
-    com.ngdstudio.mindimania.teenpatti.TPVariant.AK47 -> R.string.tp_var_ak47_desc
-    com.ngdstudio.mindimania.teenpatti.TPVariant.NINE99 -> R.string.tp_var_999_desc
-    com.ngdstudio.mindimania.teenpatti.TPVariant.FOUR_X_BOOT -> R.string.tp_var_4x_desc
-    com.ngdstudio.mindimania.teenpatti.TPVariant.MIXED -> R.string.tp_var_mixed_desc
-}
-
-/** Short reminder of this hand's special rule for the table, or null in classic. */
-fun variantHint(s: TeenPattiState): String? = when (s.variant) {
-    com.ngdstudio.mindimania.teenpatti.TPVariant.MUFLIS -> Strings.get(R.string.tp_hint_muflis)
-    com.ngdstudio.mindimania.teenpatti.TPVariant.JOKER -> s.joker?.let { Strings.get(R.string.tp_hint_joker, rankLabel(it.rank)) }
-    com.ngdstudio.mindimania.teenpatti.TPVariant.LOWEST_JOKER -> Strings.get(R.string.tp_hint_lowest)
-    com.ngdstudio.mindimania.teenpatti.TPVariant.AK47 -> Strings.get(R.string.tp_hint_ak47)
-    com.ngdstudio.mindimania.teenpatti.TPVariant.NINE99 -> Strings.get(R.string.tp_hint_999)
-    com.ngdstudio.mindimania.teenpatti.TPVariant.FOUR_X_BOOT -> Strings.get(R.string.tp_hint_4x)
-    else -> null
-}
-
-fun rankLabel(rank: Int): String = when (rank) { 14 -> "A"; 13 -> "K"; 12 -> "Q"; 11 -> "J"; else -> "$rank" }
+/** What [seat]'s hand is called (trail, pair...). */
+fun handLabel(s: TeenPattiState, seat: Int): String = kindName(TeenPattiEngine.handKind(s, seat))
 
 /** Localised name of a hand kind. */
 fun kindName(k: com.ngdstudio.mindimania.teenpatti.TPKind): String = Strings.get(

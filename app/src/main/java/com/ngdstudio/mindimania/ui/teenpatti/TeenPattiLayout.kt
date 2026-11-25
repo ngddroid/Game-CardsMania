@@ -140,16 +140,10 @@ class TeenPattiLayout(
         val half = shownCardW * (spread + 0.5f)
         // clear of the name tag under the avatar (about 50 dp each side of its centre)
         val x = s.x + dir * (maxOf(avatar * 0.5f, 50f * d) + 8f * d + half)
-        // never low enough to reach the strip above my cards (where my wild cards step up at the reveal)
-        val maxY = myCardsY - myCardH * 0.5f - wildLift(me) * myCardH - 8f * d - shownCardW * 1.4f / 2
+        // never low enough to reach my cards
+        val maxY = myCardsY - myCardH * 0.5f - 8f * d - shownCardW * 1.4f / 2
         return Offset(x, minOf(s.y - avatar * 0.05f, maxY))
     }
-
-    /**
-     * How far (in card heights) a wild card steps up behind its row at the reveal. Mine only peeks out, so it stays
-     * clear of the seats beside me on a short screen; an opponent's rises further.
-     */
-    fun wildLift(seat: Int): Float = if (rel(seat) == 0) (if (landscape) 0.2f else 0.26f) else 0.42f
 
     /** Landscape: my hand's name ends here, left of my avatar (right-aligned to it). */
     val myLabelRight: Float get() = mySeat.x - myAvatar / 2 - 10f * d
@@ -161,12 +155,6 @@ class TeenPattiLayout(
 
     /** Where chips fly to: the pot total under the dealer. */
     val potPos: Offset get() = Offset(center.x, potLabelY)
-
-    /**
-     * Where the turned-up joker card sits, out of the middle (which belongs to the dealer): top-left under the title in
-     * landscape, beside the dealer in portrait.
-     */
-    val jokerPos: Offset get() = if (landscape) Offset(leftInset + 52f * d, topInset + hudH + 50f * d) else Offset(center.x + dealerW * 0.8f, center.y)
 
     /** Where [seat]'s chips leave from: just in front of the avatar. */
     fun chipFrom(seat: Int): Offset {

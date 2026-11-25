@@ -7,8 +7,7 @@ import kotlin.random.Random
 /**
  * Teen Patti bots. They only use what a real player knows: their own cards once seen, and what everyone did.
  *
- * Strength = the share of all possible hands this hand beats in this hand's variation ([TeenPattiEngine.strength]),
- * so wild cards, Muflis and 999 are judged by their own odds. The chance to beat
+ * Strength = the share of all possible hands this hand beats ([TeenPattiEngine.strength]). The chance to beat
  * every opponent is roughly strength ^ opponents; seen opponents who keep paying make that worse ("pressure").
  * That chance is weighed against the price of the call (pot odds) and against the bot's own stack.
  * Easy bots misjudge their hand a lot and bluff often; Hard and Expert read the betting and almost never call
