@@ -1,0 +1,21 @@
+# Gradle and Android Studio files made on each computer
+.gradle/
+.idea/
+.kotlin/
+build/
+local.properties
+captures/
+.externalNativeBuild/
+.cxx/
+*.iml
+.DS_Store
+
+# signed builds and their R8 mapping (keep them safe, but outside git)
+app/release/
+*.apk
+*.aab
+
+# signing keys: never in git
+*.jks
+*.keystore
+keystore.properties

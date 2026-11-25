@@ -20,7 +20,7 @@ android {
         minSdk = 24
         targetSdk = 37
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -84,6 +84,8 @@ dependencies {
     implementation(libs.androidx.work.runtime.ktx)
     // Google Play in-app updates
     implementation(libs.play.app.update.ktx)
+    // app-update pulls in Fragment 1.1.0, too old for registerForActivityResult (release lint stops the build)
+    implementation(libs.androidx.fragment)
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
